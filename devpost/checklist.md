@@ -76,7 +76,7 @@ Slice numbers are this checklist's own. Where the plan names a Block, the slice 
   Learner check: On your phone, open the Ledger. Find your new invoice at the top as Unpaid, due in 30 days. Mark it paid with a reference, then mark it unpaid, try the Corazon SB chip, and look at the overdue row.
   Commit: `Add Ledger with stats, filters and payments`
 
-- [ ] **7. Eileen can edit or void an invoice and add a special order line**
+- [x] **7. Eileen can edit or void an invoice and add a special order line**
   Becomes usable: Edit opens Deliver loaded from the saved snapshot. Saving updates the invoice and its Ledger total. Void asks once, stamps "Void", keeps the number taken, and the Ledger greys the row and leaves it out of every stat. "+ Add special order" adds a free-text line that prints like any other line.
   Why now: These are correction paths on top of a working loop. They reuse DeliveryForm and the Ledger, so they're cheap now and would be guesswork earlier. Cafe switching on Edit is decided here (`prd.md > Open Questions`).
   PRD ref: `prd.md > Deliver (New Delivery and Edit)` (Edit, Special order line), `prd.md > Invoice` (Void)
@@ -174,3 +174,6 @@ Activity mode:
 - **A void invoice can't be edited or emailed** (409 from `PUT` and the email route). Its screen keeps Print and Download PDF for her records and hides Send, Edit and Void. The PRD didn't say; this is the agent's call, flagged at the slice 7 checkpoint.
 - **The VOID stamp is see-through and sits below the lines,** so the prices underneath stay readable on screen, in print and in the PDF.
 - **`.btn` now styles links too** (`display: inline-flex`), so Edit, a link to the Edit page, looks and sizes like the other buttons.
+- **Void rows are crossed out, not just greyed (learner decision at the slice 7 check).** The number and total have a line through them, next to the "Void" stamp, in muted ink. That's how slice 6 built it, so no code changed. The PRD's Void row and its check now say "crossed out".
+- **Slice 7 learner check passed on production (learner).** 110172026 ($97) was voided from its Ledger row: the row is crossed out, the stats went to 1 / $128.00 / $128.00, and the number stays taken. 110172026-2 was edited: the quantity change saved, and the added special order line prints on the invoice. The three agent calls above (cafe locked on Edit, a void invoice can't be edited or emailed, the stamp below the lines) are approved.
+

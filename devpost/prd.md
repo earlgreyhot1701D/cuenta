@@ -296,7 +296,7 @@ Source: `scope.md > The POC Boundary` (Ledger).
 - Tapping "Paid Oct 20" opens the same sheet with a Mark unpaid button and one confirm.
 - The row returns to unpaid and the totals recompute. She can flip it any number of times.
 
-**Void row:** greyed with a "Void" stamp, can't be marked paid, and is excluded from all three stats.
+**Void row:** crossed out (a line through the number and total) with a "Void" stamp, can't be marked paid, and is excluded from all three stats.
 
 **Opening an invoice:** tapping a row (outside its button) opens that invoice.
 
@@ -305,7 +305,7 @@ Source: `scope.md > The POC Boundary` (Ledger).
 - [ ] Marking it paid mutes the row, shows "Paid [date]" with the reference, and updates Open and Outstanding but not This month.
 - [ ] Mark unpaid restores it and the totals.
 - [ ] An unpaid invoice dated more than 30 days ago shows the blush due date, "overdue N days" and the left rule.
-- [ ] A void invoice appears greyed with "Void" and counts in no stat.
+- [ ] A void invoice appears crossed out with "Void" and counts in no stat.
 - [ ] The Corazon SB chip shows only that cafe's invoices.
 
 ### Customers (read-only)
