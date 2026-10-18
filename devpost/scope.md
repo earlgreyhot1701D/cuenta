@@ -66,7 +66,7 @@ She comes back every delivery day. The count tells her what to bake and bring ne
 ## The POC Boundary
 - **Login:** a single PIN gate.
 - **Data:** Products and Customers, each cafe with a standing product list, a location code, and an optional seeded logo. Mock seed data only in the repo. The Customers tab is read-only for the hackathon.
-- **Count:** per cafe, with the last count and its date shown in grey beside blank steppers.
+- **Count:** per cafe, with the last count and its date shown in grey beside blank steppers, plus a read-only Past counts list.
 - **Delivery:**
   - totals in integer cents
   - invoice numbers as text, location code + MMDDYYYY, suggested and overwritable, unique
@@ -106,5 +106,6 @@ She comes back every delivery day. The count tells her what to bake and bring ne
 - **Real customer data in the repo:** mock data only. Real data goes in at Handoff from a gitignored file.
 
 ## Changes Since Approval
+- **During `5-build` (learner-directed):** a read-only Past counts list on Count, since Eileen looks back through a paper book of counts today and will ask for it on day one. Built in the final polish slice, not Handoff.
 - **During `5-build` (learner-directed):** Resend domain verification is no longer a gate on email. The sender lives in env, and the switch happens in the final polish slice.
 - **During `3-prd` (learner-directed):** Alma replaces Corazon Cocina Ventura as the fourth account. Invoice numbers changed to Eileen's location-code + date scheme. Seeded per-cafe logos moved into the POC. The Customers tab is read-only until Handoff.

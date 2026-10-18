@@ -124,12 +124,19 @@ Source: `scope.md > The Core Loop`.
 - **After Save:** the grey line on each saved row updates to today's date and the new number, the steppers clear, and a quiet "Saved" shows for two seconds.
 - **Unsaved changes:** switching cafes with entries pending prompts once before discarding them.
 
+**Past counts** (added during `5-build`, learner-directed; Eileen keeps a paper book of old counts today):
+- One link under the cafe picker, "Past counts", opens a plain read-only list for the selected cafe.
+- Newest day first. Each day shows its date, then the product and number for each row saved that day.
+- No editing, no charts. Same style as the rest of the app.
+- A cafe never counted shows "No counts yet."
+
 **Checks:**
 - [ ] Picking Corazon Cocina shows its standing products with blank steppers and the grey last-count line.
 - [ ] Entering two numbers and saving updates only those two grey lines to today; the other rows keep their old dates.
 - [ ] Save is disabled with every row blank.
 - [ ] Switching cafes with unsaved entries prompts once.
 - [ ] Saving a count changes nothing on any invoice, and creating an invoice changes no count.
+- [ ] After two saves on different days, Past counts shows both dates, newest first, with the right numbers under each.
 
 ### Deliver (New Delivery and Edit)
 Source: `scope.md > The Core Loop`, `scope.md > The POC Boundary`.
@@ -333,7 +340,7 @@ These are requirements, not implementation. `4-spec` decides how to build them.
 
 ## What We're Building
 - **PIN gate**
-- **Count,** with blank steppers, partial save and the grey last count
+- **Count,** with blank steppers, partial save, the grey last count, and a read-only Past counts list
 - **Deliver,** with the standing list, grey shelf counts, live totals in cents, the suggested and unique invoice number, and Edit
 - **Invoice,** matching the Canva form, with seeded logos, Print, Download PDF, Void, and the status line
 - **Email,** with the confirm sheet, a real send with the PDF, success and failure states, and Resend

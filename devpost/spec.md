@@ -194,6 +194,7 @@ Carried forward from `prd.md > Look and Feel` and `design/DESIGN.md`.
   - `POST /api/counts {customerId, entries:[{productId, quantity}]}` saves only the entered rows
   - after saving, it refreshes the page data, clears the steppers, and shows "Saved" for 2 seconds
 - **Unsaved-changes prompt:** shown when switching cafes, and when leaving by the bottom nav. The nav checks a shared "dirty" flag.
+- **Past counts:** a "Past counts" link under the picker opens `app/(app)/count/past/page.tsx?cafe=`. It reads every count row for that cafe through `lib/queries/counts.ts`, groups them by `counted_on` (newest first, then by standing-list position), and renders them read-only. Added in `5-build`, built in slice 8.
 - PRD ref: `prd.md > Count`.
 
 ### Deliver Screen (New and Edit)
@@ -423,6 +424,7 @@ cuenta/
 │   │   ├── layout.tsx                  # Job: app frame with the bottom nav
 │   │   ├── page.tsx                    # Job: redirect / to /count
 │   │   ├── count/page.tsx              # Job: load data for the Count screen
+│   │   ├── count/past/page.tsx         # Job: show one cafe's past counts, newest day first
 │   │   ├── deliver/page.tsx            # Job: load data for a new delivery
 │   │   ├── invoices/[id]/page.tsx      # Job: show one invoice and its actions
 │   │   ├── invoices/[id]/edit/page.tsx # Job: load an invoice snapshot into the delivery form
