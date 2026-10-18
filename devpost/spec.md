@@ -81,7 +81,7 @@ PRD ref: `prd.md > The Core Journey`.
 | Tests | **Vitest** for pure helpers; **Playwright** for one judge-path smoke test *(agent recommendation)* | The learner already uses Playwright | https://vitest.dev · https://playwright.dev |
 
 **Not looked up, so verify early:**
-- **Current versions.** Check the current versions of Next.js, the serverless Chromium package and Drizzle. Next.js 16 may rename `middleware.ts` to `proxy.ts`; use whichever the installed version expects.
+- **Current versions.** Check the current versions of Next.js, the serverless Chromium package and Drizzle. Next.js 16 uses `proxy.ts` (formerly `middleware.ts`) for the PIN check, and that's what the code uses.
 - **Vercel Hobby limits.** Check the function size and duration limits during Spike 1.
 - **Hobby terms.** The Hobby plan may forbid commercial use. Revisit at Block 8.
 
@@ -462,7 +462,7 @@ cuenta/
 │           ├── payment/route.ts        # Job: mark paid or unpaid
 │           ├── pdf/route.ts            # Job: return the invoice PDF for download
 │           ├── email/route.ts          # Job: render the PDF and send it via Resend
-├── proxy.ts                            # Job: require a PIN session (middleware.ts if the Next.js version expects it)
+├── proxy.ts                            # Job: require a PIN session (Next.js 16's proxy, formerly middleware)
 ├── components/
 │   ├── nav/BottomNav.tsx               # Job: the four-tab nav with the unsaved-changes guard
 │   ├── nav/unsaved.ts                  # Job: the shared "unsaved entries" flag a form raises and the nav checks

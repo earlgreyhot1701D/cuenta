@@ -53,7 +53,7 @@ She comes back every delivery day. The count tells her what to bake and bring ne
 - It's a test of their learning goal: a plan sharp enough that the build lands at 100% of what they imagined, with the leftovers caught on paper first.
 
 ## What "Working" Looks Like
-**Hackathon done:** a judge can follow the four-step path on the deployed URL with mock data, under three minutes, and every step works.
+**Hackathon done (deadline Sun Oct 26, 2pm Pacific / 5pm Eastern):** a judge can follow the four-step path on the deployed URL with mock data, under three minutes, and every step works.
 1. Count screen, pick Corazon Cocina. The last count shows in grey with its date under each product. Enter two numbers and save.
 2. New delivery for Corazon Cocina. The menu shows prices and the latest shelf count beside each line. Enter quantities, totals compute live, create the invoice.
 3. The invoice matches her Canva form, with its invoice number (location code + date) and today's date. Print opens the browser dialog. Send email, check the Email pop-up, tap Send email, and "Last sent" shows on it, with a real send on camera.
