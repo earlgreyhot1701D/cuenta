@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     // Keys are globs, so "[id]" would be a character class; "*" matches the dynamic segment.
     "/api/invoices/*/pdf": ["./node_modules/@sparticuz/chromium/bin/**/*"],
+    "/api/invoices/*/email": ["./node_modules/@sparticuz/chromium/bin/**/*"],
   },
   async headers() {
     // Private tool: no response, page or static file is for search engines.

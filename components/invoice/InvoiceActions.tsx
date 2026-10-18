@@ -1,12 +1,17 @@
-// Job: the Invoice screen's action buttons (Print and Download PDF; Email, Edit and Void join in later slices).
+// Job: the Invoice screen's action buttons: Print, Download PDF and Email (Edit and Void join in slice 7).
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { EmailSheet } from "./EmailSheet";
+import { attachmentName } from "@/lib/email/invoice-email";
 import styles from "./InvoiceActions.module.css";
 
-export function InvoiceActions({ invoiceId, number }: { invoiceId: string; number: string }) {
+export function InvoiceActions({ invoiceId, number, emailed }: { invoiceId: string; number: string; emailed: boolean }) {
+  const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
+  const [emailOpen, setEmailOpen] = useState(false);
 
   async function downloadPdf() {
     const route = `/api/invoices/${invoiceId}/pdf`;
@@ -23,7 +28,7 @@ export function InvoiceActions({ invoiceId, number }: { invoiceId: string; numbe
       const url = URL.createObjectURL(await res.blob());
       const a = document.createElement("a");
       a.href = url;
-      a.download = `Invoice-${number.replace(/[^A-Za-z0-9_-]/g, "_")}.pdf`;
+      a.download = attachmentName(number);
       a.click();
       setTimeout(() => URL.revokeObjectURL(url), 10_000);
     } catch (err) {
@@ -43,10 +48,23 @@ export function InvoiceActions({ invoiceId, number }: { invoiceId: string; numbe
         <button className="btn" type="button" onClick={downloadPdf} disabled={busy}>
           {busy ? "Making PDF…" : "Download PDF"}
         </button>
+        <button className="btn" type="button" onClick={() => setEmailOpen(true)}>
+          {emailed ? "Resend" : "Email invoice"}
+        </button>
       </div>
       <p className="quiet" role="status">
         {message}
       </p>
+      {emailOpen && (
+        <EmailSheet
+          invoiceId={invoiceId}
+          onClose={() => setEmailOpen(false)}
+          onSent={() => {
+            setEmailOpen(false);
+            router.refresh();
+          }}
+        />
+      )}
     </div>
   );
 }

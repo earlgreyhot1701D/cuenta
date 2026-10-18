@@ -1,7 +1,8 @@
 // Job: a one-question confirm sheet with Cancel and a confirm action.
 "use client";
 
-import styles from "./Confirm.module.css";
+import { Sheet } from "./Sheet";
+import styles from "./Sheet.module.css";
 
 export function Confirm({
   message,
@@ -15,24 +16,16 @@ export function Confirm({
   onCancel: () => void;
 }) {
   return (
-    <div className={styles.backdrop} onClick={onCancel}>
-      <div
-        className={styles.sheet}
-        role="alertdialog"
-        aria-modal="true"
-        aria-label={message}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <p className={styles.message}>{message}</p>
-        <div className={styles.actions}>
-          <button className="btn" type="button" onClick={onCancel} autoFocus>
-            Cancel
-          </button>
-          <button className="btn btn-primary" type="button" onClick={onConfirm}>
-            {confirmLabel}
-          </button>
-        </div>
+    <Sheet label={message} onClose={onCancel} role="alertdialog">
+      <p className={styles.message}>{message}</p>
+      <div className={styles.actions}>
+        <button className="btn" type="button" onClick={onCancel} autoFocus>
+          Cancel
+        </button>
+        <button className="btn btn-primary" type="button" onClick={onConfirm}>
+          {confirmLabel}
+        </button>
       </div>
-    </div>
+    </Sheet>
   );
 }

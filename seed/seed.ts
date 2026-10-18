@@ -4,10 +4,11 @@ config({ path: ".env.local" });
 
 import { sql } from "drizzle-orm";
 import { addDays, todayPacific } from "../lib/dates";
-import { mockCounts, mockCustomers, mockProducts } from "./mock-data";
 
 async function main() {
   const { db, schema } = await import("../db/client");
+  // Loaded after dotenv so SEED_BILLING_EMAIL from .env.local is visible.
+  const { mockCounts, mockCustomers, mockProducts } = await import("./mock-data");
 
   await db.execute(sql`truncate invoice_lines, invoices, counts, standing_items, products, customers`);
 

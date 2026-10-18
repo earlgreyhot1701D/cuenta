@@ -72,3 +72,19 @@ export async function getInvoice(id: string): Promise<{ invoice: Invoice; lines:
     .orderBy(asc(schema.invoiceLines.position));
   return { invoice, lines };
 }
+
+/** A successful send: stamp it, keep its message id, and clear any earlier failure. */
+export async function markEmailSent(id: string, messageId: string): Promise<void> {
+  await db
+    .update(schema.invoices)
+    .set({ emailSentAt: new Date(), emailMessageId: messageId, emailLastFailedAt: null, updatedAt: new Date() })
+    .where(eq(schema.invoices.id, id));
+}
+
+/** A failed send: record it without touching an earlier successful send. */
+export async function markEmailFailed(id: string): Promise<void> {
+  await db
+    .update(schema.invoices)
+    .set({ emailLastFailedAt: new Date(), updatedAt: new Date() })
+    .where(eq(schema.invoices.id, id));
+}

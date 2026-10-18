@@ -107,6 +107,7 @@ PRD ref: `prd.md > The Core Journey`.
 | `RESEND_API_KEY` | Resend |
 | `EMAIL_FROM` | `invoices@lacondesabakingcompany.com` |
 | `EMAIL_REPLY_TO` | Eileen's Gmail |
+| `SEED_BILLING_EMAIL` | seed only: the test inbox every mock cafe with an email bills to (Alma stays without one). Local only, never committed |
 | `APP_URL` | the app's own public URL, which headless Chrome loads |
 | `BUSINESS_CHEF_LINE` | footer signature line ("Chef …"). Placeholder "Chef Example Name" except in production |
 | `BUSINESS_ADDRESS_LINES` | invoice footer address. Placeholder in the repo and the mock deploy ("619 Example Street…"); Eileen's real kitchen address only in production env |

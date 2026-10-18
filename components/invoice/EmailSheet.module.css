@@ -1,0 +1,33 @@
+.title {
+  font-size: 22px;
+  margin-bottom: 1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.field input {
+  font-size: 18px;
+  min-height: var(--touch);
+}
+
+.body {
+  margin: 0 0 0.75rem;
+  padding: 0.85rem 1rem;
+  background: var(--paper);
+  border: var(--hairline);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+.attachment {
+  margin: 0 0 0.5rem;
+  font-size: 15px;
+  color: var(--ink-muted);
+}

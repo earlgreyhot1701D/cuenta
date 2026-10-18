@@ -10,13 +10,16 @@ export const mockProducts = [
 
 const PLACEHOLDER_LOGO = "/logos/placeholder.png";
 
+// Mock cafes bill to one test inbox from .env.local (never committed); Alma stays without email on purpose.
+const TEST_INBOX = process.env.SEED_BILLING_EMAIL || "billing@example.com";
+
 export const mockCustomers = [
   {
     code: 1,
     name: "Corazon Cocina",
     phone: "(555) 555-0101",
     addressLines: ["38 Example Street, Stall 1", "Santa Barbara, CA 93101"],
-    billingEmail: "corazon-sb@example.com",
+    billingEmail: TEST_INBOX,
     logoPath: PLACEHOLDER_LOGO,
     sort: 1,
     standing: ["strawberry-tres-leches", "coconut-tres-leches", "coconut-rice-pudding", "pixie-flan", "mexican-wedding-cookies"],
@@ -26,7 +29,7 @@ export const mockCustomers = [
     name: "Little Heart Cafecito",
     phone: "(555) 555-0102",
     addressLines: ["109 Example Avenue", "Santa Barbara, CA 93101"],
-    billingEmail: "littleheart@example.com",
+    billingEmail: TEST_INBOX,
     logoPath: null,
     sort: 2,
     standing: ["mexican-wedding-cookies", "coconut-rice-pudding", "strawberry-tres-leches"],
@@ -46,7 +49,7 @@ export const mockCustomers = [
     name: "Corazon SUR",
     phone: "(555) 555-0104",
     addressLines: ["801 Example Road", "Carpinteria, CA 93013"],
-    billingEmail: "corazon-sur@example.com",
+    billingEmail: TEST_INBOX,
     logoPath: PLACEHOLDER_LOGO,
     sort: 4,
     standing: ["strawberry-tres-leches", "pixie-flan", "mexican-wedding-cookies", "coconut-tres-leches"],

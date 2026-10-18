@@ -49,3 +49,10 @@ export function formatStamp(moment: Date): string {
   const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
   return `${get("month")} ${get("day")} ${get("hour")}:${get("minute")}${get("dayPeriod").toLowerCase()}`;
 }
+
+/** "October 17, 2026" from YYYY-MM-DD. */
+export function formatLong(ymd: string): string {
+  const [y, m, d] = ymd.split("-").map(Number);
+  const month = new Date(Date.UTC(y, m - 1, 1)).toLocaleString("en-US", { month: "long", timeZone: "UTC" });
+  return `${month} ${d}, ${y}`;
+}

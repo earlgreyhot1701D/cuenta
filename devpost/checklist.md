@@ -141,3 +141,8 @@ Activity mode:
 - **The Chromium tracing key is `/api/invoices/*/pdf`.** The first deploy failed with the Chromium `bin/` missing, because `[id]` in an `outputFileTracingIncludes` key is a glob character class.
 - **PIN hardened now, not at polish.** Six digits; 5 wrong tries per IP or 20 overall in 15 minutes lock for 15 minutes with a 429; constant-time compare; failures logged with IP and never the digits. Four digits with no lockout was 10,000 guesses with no brake on a public URL (learner decision). PRD, spec and the "PIN lockout" Later item are updated.
 - **Brand files committed, plus `X-Robots-Tag: noindex, nofollow` on every response.** It's set in `next.config.ts` headers rather than the proxy, because the proxy skips static files. The rest of the brand wiring is added to slice 8.
+- **Slice 5 send path verified on Vercel** with Resend's test inbox, `delivered@resend.dev`. Status was `delivered`, with Reply-To set and `Invoice-110172026.pdf` attached at 96,071 bytes, identical to Download PDF. The message ID `01a14cff…` matches the Vercel log line, and there's no address in any log. The box stays open until the same send lands in the learner's own inbox.
+- **Mock cafes bill to `SEED_BILLING_EMAIL`, read from `.env.local`;** Alma keeps no email. The learner asked for their inbox on the mock cafes; it stays out of the public repo, and Alma is the PRD's "No email on file" case.
+- **Provider errors go to the log only** (addresses scrubbed). The browser sees just the quiet failure line, as the PRD specifies.
+- **The "No email on file" note sits outside the To label.** Inside it, the field's accessible name read "To No email on file for Alma".
+

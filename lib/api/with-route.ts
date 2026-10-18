@@ -10,6 +10,8 @@ export class HttpError extends Error {
     public status: number,
     message: string,
     public body?: Record<string, unknown>,
+    /** Extra detail for the log line only (never sent to the browser); email addresses are scrubbed. */
+    public logDetail?: string,
   ) {
     super(message);
   }
@@ -40,7 +42,8 @@ export function withRoute<C>(route: string, handler: Handler<C>, opts: { public?
     } catch (err) {
       if (err instanceof HttpError) {
         const res = NextResponse.json({ error: err.message, ...err.body }, { status: err.status });
-        return done(res, "rejected", err.message);
+        const detail = err.logDetail ? `${err.message} (${err.logDetail.replace(/\S+@\S+/g, "<email>")})` : err.message;
+        return done(res, "rejected", detail);
       }
       const message = err instanceof Error ? err.message : String(err);
       return done(NextResponse.json({ error: "Something went wrong." }, { status: 500 }), "error", message);
