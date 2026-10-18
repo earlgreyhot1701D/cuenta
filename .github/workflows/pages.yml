@@ -1,0 +1,64 @@
+# Publishes only the planning pages (devpost/*.html) to GitHub Pages
+name: Pages
+
+on:
+  push:
+    branches: [master]
+    paths: ['devpost/*.html', '.github/workflows/pages.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Collect the planning pages
+        run: |
+          mkdir site
+          cp devpost/*.html site/
+          cat > site/index.html <<'HTML'
+          <!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <title>Cuenta planning pages</title>
+            <style>
+              body { margin: 0; padding: 32px 16px; background: #fff; color: #111; font: 18px/1.5 "Times New Roman", Times, serif; }
+              main { max-width: 640px; margin: 0 auto; }
+              a { color: #111; }
+              @media (prefers-color-scheme: dark) { body { background: #111; color: #eee; } a { color: #eee; } }
+            </style>
+          </head>
+          <body>
+            <main>
+              <h1>Cuenta</h1>
+              <p>Planning pages for <a href="https://github.com/earlgreyhot1701D/cuenta">Cuenta</a>.</p>
+              <ul>
+                <li><a href="scope.html">Scope</a></li>
+                <li><a href="prd.html">Product requirements</a></li>
+                <li><a href="spec.html">Technical spec</a></li>
+                <li><a href="app-map.html">App map</a></li>
+              </ul>
+            </main>
+          </body>
+          </html>
+          HTML
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v4
