@@ -32,3 +32,8 @@ next-env.d.ts
 .vercel
 .env*
 !.env.example
+
+# Demo recording: the saved sign-in (deleted after each run), raw video and frames, and the final MP4 (goes to YouTube)
+/.demo-auth.json
+/demo-raw/
+/devpost/demo.mp4
