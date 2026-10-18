@@ -1,0 +1,100 @@
+.row {
+  display: grid;
+  grid-template-columns: 1fr 6.5rem 4.5rem 6.5rem;
+  align-items: center;
+  gap: 1rem;
+  min-height: var(--row-min);
+  padding: 0.75rem 0;
+  border-bottom: var(--hairline);
+}
+
+.desc {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.name {
+  font-size: 19px;
+  line-height: 1.2;
+}
+
+.shelf {
+  font-size: 10px;
+  color: var(--ink-muted);
+}
+
+.price,
+.qty {
+  display: flex;
+  align-items: baseline;
+  gap: 0.15rem;
+}
+
+.price input,
+.qty input {
+  width: 100%;
+  min-height: var(--touch);
+  text-align: right;
+  font-size: 19px;
+}
+
+.qty input {
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+.dollar {
+  color: var(--ink-muted);
+}
+
+.invalid {
+  border-bottom-style: dashed;
+}
+
+.total {
+  text-align: right;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 19px;
+}
+
+.mobileLabel {
+  display: none;
+}
+
+@media (max-width: 699px) {
+  .row {
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-areas:
+      "desc desc desc"
+      "price qty total";
+    gap: 0.25rem 1rem;
+  }
+
+  .desc {
+    grid-area: desc;
+  }
+
+  .price {
+    grid-area: price;
+  }
+
+  .qty {
+    grid-area: qty;
+  }
+
+  .total {
+    grid-area: total;
+    align-self: end;
+    padding-bottom: 0.6rem;
+  }
+
+  .mobileLabel {
+    display: inline;
+    font-size: 10px;
+    color: var(--ink-muted);
+    margin-right: 0.35rem;
+  }
+}

@@ -16,7 +16,7 @@ Slice numbers are this checklist's own. Where the plan names a Block, the slice 
 
 ## Slices
 
-- [ ] **1. Eileen can unlock the app and save a shelf count on her phone**
+- [x] **1. Eileen can unlock the app and save a shelf count on her phone**
   Becomes usable: On the deployed URL, the PIN screen lets her in for 30 days. She lands on Count, picks Corazon Cocina, sees each standing product with blank steppers and a grey "last counted Oct 9: 3" (or "not counted yet"), enters two numbers, and saves. Only those two lines update. `/health` reports the database and the version.
   Why now: This sets up everything later slices sit on: the scaffold, Neon, Drizzle and seed data, the PIN gate, the Pacific date helper, logging, the tokens and bottom nav, and a live Vercel deploy. It does that through a real screen instead of plumbing. Deploying now also means Spike 1 (slice 4) can run on real Vercel straight away.
   PRD ref: `prd.md > PIN Gate`, `prd.md > Count`, `prd.md > Operational Requirements`, `prd.md > States and Boundaries`
@@ -26,7 +26,7 @@ Slice numbers are this checklist's own. Where the plan names a Block, the slice 
   Learner check: On your phone, open the deployed URL, enter a wrong PIN and then the right one, pick Corazon Cocina, enter two counts, Save. Confirm only those two grey lines change to today, and compare the screen with `design/count_inventory.png`.
   Commit: `Add PIN gate, Count screen, health and deploy`
 
-- [ ] **2. Eileen can build a delivery from a cafe's standing list and create an invoice**
+- [x] **2. Eileen can build a delivery from a cafe's standing list and create an invoice**
   Becomes usable: On Deliver, she picks Corazon Cocina and sees its standing list with prices, blank quantities, and the grey last shelf count beside each line. Totals compute live to the cent. The date defaults to today in Pacific time and `110172026` is suggested, following the date and cafe until she types her own number. A duplicate number is refused with "Already used on …". Create invoice saves a snapshot and opens a plain invoice page that shows the saved lines.
   Why now: This is the first half of the unique kernel: her route, digitized. The invoice snapshot is what every later slice (print, PDF, email, ledger) reads, so its shape has to be right before anything is built on it.
   PRD ref: `prd.md > Deliver (New Delivery and Edit)`, `prd.md > The Core Journey` (step 3)
@@ -98,7 +98,7 @@ Slice numbers are this checklist's own. Where the plan names a Block, the slice 
 
 ## Hands-on Checkpoints
 
-- [ ] Early usable behavior explored: after slice 1 (Count on your phone against the Stitch mockup, so app-style drift is caught before four more screens copy it)
+- [x] Early usable behavior explored: after slice 1 (Count on your phone against the Stitch mockup, so app-style drift is caught before four more screens copy it) — Done: Eileen ran it on her own phone (wrong and right PIN, Corazon counts, cafe-switch prompt, side by side with the mockup). No changes.
 - [ ] Kernel fidelity explored: after slice 3 (printed invoice against the Canva reference; this feedback shapes the PDF and the email)
 - [ ] Final kick-the-tires exploration and feedback completed
 

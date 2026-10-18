@@ -23,7 +23,7 @@
   cursor: pointer;
 }
 
-.card .label {
+.card :global(.label) {
   font-size: 10px;
   color: var(--ink-muted);
 }
@@ -38,6 +38,6 @@
   color: var(--paper);
 }
 
-.selected .label {
+.selected :global(.label) {
   color: var(--paper);
 }

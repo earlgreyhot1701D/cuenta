@@ -1,0 +1,29 @@
+.invoice {
+  max-width: 720px;
+}
+
+.lines {
+  list-style: none;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  border-top: 1px solid var(--ink);
+}
+
+.line {
+  display: grid;
+  grid-template-columns: 1fr 3rem 5rem 6rem;
+  gap: 1rem;
+  padding: 0.6rem 0;
+  border-bottom: var(--hairline);
+}
+
+.line span:not(:first-child) {
+  text-align: right;
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 22px;
+}
