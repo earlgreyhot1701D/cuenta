@@ -13,8 +13,10 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",
+    "@sparticuz/chromium": "^153.0.0",
     "drizzle-orm": "^0.45.4",
     "next": "^16.4.2",
+    "puppeteer-core": "^25.14.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },

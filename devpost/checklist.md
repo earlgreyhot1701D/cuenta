@@ -46,7 +46,7 @@ Slice numbers are this checklist's own. Where the plan names a Block, the slice 
   Learner check: Open the invoice from slice 2, press Print, and save it as a PDF or print it. Lay it next to the Canva reference, and check a Little Heart invoice has an empty logo space. Tell me what doesn't match.
   Commit: `Add Canva-matched invoice document and print`
 
-- [ ] **4. Eileen can download the invoice as a PDF (Spike 1)**
+- [x] **4. Eileen can download the invoice as a PDF (Spike 1)**
   Becomes usable: Download PDF on the Invoice screen saves `Invoice-[number].pdf`, rendered by headless Chrome from the token-gated print route. It's the same layout as Print.
   Why now: This is the project's one critical technical risk. Email depends on it, so it's proven right after the layout it renders, and before email builds on it. It has a 60-minute timebox, then the declared fallback: a hosted renderer on the same print URL.
   PRD ref: `prd.md > Invoice` (Download PDF)
@@ -99,7 +99,7 @@ Slice numbers are this checklist's own. Where the plan names a Block, the slice 
 ## Hands-on Checkpoints
 
 - [x] Early usable behavior explored: after slice 1 (Count on your phone against the Stitch mockup, so app-style drift is caught before four more screens copy it) — Done: Eileen ran it on her own phone (wrong and right PIN, Corazon counts, cafe-switch prompt, side by side with the mockup). No changes.
-- [ ] Kernel fidelity explored: after slice 3 (printed invoice against the Canva reference; this feedback shapes the PDF and the email)
+- [ ] Kernel fidelity explored: after slice 3 (printed invoice against the Canva reference; this feedback shapes the PDF and the email) — Open: the overlay check against the Canva reference passed, and the learner approved going on. Eileen's physical print on her Windows laptop and the kitchen printer, laid on her form, is set for the next day and closes this box. Date format `10/17/2026` accepted for now.
 - [ ] Final kick-the-tires exploration and feedback completed
 
 ## Final Review
@@ -128,3 +128,14 @@ Activity mode:
 - The footer chef line now comes from a new `BUSINESS_CHEF_LINE` env var. The spec says footer identity comes from env, never from source code, and the chef line had no variable. The placeholder is in the repo and the mock deploy; Eileen's real line goes in production at Handoff.
 - The Canva PNGs were trimmed to their visible ink before use, and each is placed at the learner's PDF-point coordinates. The exports carried transparent padding (`footer-title.png` was about half padding), so pixel sizes didn't match the PDF boxes. The invoice is laid out in PDF points scaled from the page width, so screen, print and PDF share one coordinate system.
 - `MAX_LINES_ONE_PAGE` was measured at 8: the form's 36pt spacing holds up to 5 lines, then tightens evenly to a 22pt minimum. A 9-line invoice shows "Too many lines for one page". The printed page box is 10.95in, so sub-pixel rounding never adds a blank second page.
+- **Spike 1 PASSED** (about 10 of 60 minutes, on Vercel production with `@sparticuz/chromium` 153.0.0 and `puppeteer-core` 25.14.0):
+  - **Longevity:** released Sep 11, 2026; runs on the Vercel Node runtime.
+  - **Size:** the PDF function is 71.3 MB (66.8 MB of it is the compressed Chromium). That's well under Hobby's 250 MB.
+  - **Speed:** cold 5.96 s server-side (6.97 s from the client) against a 10 s target. Warm 0.71–1.66 s server-side (1.1–2.0 s from the client) against 3 s.
+  - **Output:** a one-page Letter PDF with Limelight, Tinos and all 7 images.
+  - **Duration:** `maxDuration` is 60.
+  - **Security:** no token appears in our logs or Vercel's. A bad or missing token returns 404, and no session returns 401.
+  - The fallback renderer wasn't needed.
+- **Tinos added after Times New Roman** in the invoice stack. Serverless Chromium ships only Open Sans, so the PDF body would have rendered in a sans-serif. Tinos is metric-compatible with Times New Roman, so Eileen's Windows print (Times New Roman) and the PDF (Tinos) lay out identically.
+- **The PDF waits for load, fonts and decoded images** instead of `networkidle0`. Dev-mode hot reload never goes network-idle and reloads the print page. Production was verified with `next start` and on Vercel.
+- **The Chromium tracing key is `/api/invoices/*/pdf`.** The first deploy failed with the Chromium `bin/` missing, because `[id]` in an `outputFileTracingIncludes` key is a glob character class.

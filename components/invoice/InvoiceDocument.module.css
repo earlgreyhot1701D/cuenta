@@ -8,7 +8,7 @@
   aspect-ratio: 612 / 792;
   background: #ffffff;
   color: #111111;
-  font-family: "Times New Roman", "TeX Gyre Termes", Times, serif;
+  font-family: "Times New Roman", var(--font-tinos), "TeX Gyre Termes", Times, serif;
   overflow: hidden;
 }
 

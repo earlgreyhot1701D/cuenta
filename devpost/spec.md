@@ -155,7 +155,7 @@ Carried forward from `prd.md > Look and Feel` and `design/DESIGN.md`.
 
 **Invoice type** (`components/invoice/`):
 - **INVOICE:** Limelight.
-- **Body:** `"Times New Roman", "TeX Gyre Termes", Times, serif`.
+- **Body:** `"Times New Roman", Tinos, "TeX Gyre Termes", Times, serif`. Tinos (self-hosted with `next/font`) is metric-compatible with Times New Roman. Serverless Chromium has no system fonts, so the PDF renders in Tinos, and its lines break exactly where Eileen's Windows print does.
 - **Images, not text:** the wordmark, the footer block title, and the DESCRIPTION / QTY / PRICE / TOTAL headers are PNGs in `public/invoice/`, exported from Canva. DK Otago never enters the repo.
 - **Rule:** the invoice uses only its own fonts and never the app fonts.
 
@@ -254,11 +254,12 @@ Carried forward from `prd.md > Look and Feel` and `design/DESIGN.md`.
 
 ### PDF Renderer
 - **What it does:** `lib/pdf/render-invoice-pdf.ts` mints a token, launches Chromium with `lib/pdf/browser.ts`, and opens `${APP_URL}/print/invoice/[id]?t=…`.
-- It waits for `networkidle0` and `document.fonts.ready`, then runs `page.pdf({ format: 'Letter', printBackground: true, preferCSSPageSize: true })` and returns a Buffer.
+- It waits for `load`, `document.fonts.ready` and every image to decode, then runs `page.pdf({ format: 'Letter', printBackground: true, preferCSSPageSize: true })` and returns a Buffer.
 - **Used by:**
   - `GET /api/invoices/[id]/pdf`, which serves `Invoice-[number].pdf` as an attachment for Download PDF
   - the email route
-- `maxDuration` is set explicitly on both routes, with the value confirmed in Spike 1.
+- `maxDuration` is 60 seconds on both routes; Spike 1 measured a cold render at about 6 seconds server-side.
+- **Bundling:** `serverExternalPackages` covers `@sparticuz/chromium` and `puppeteer-core`, and `outputFileTracingIncludes` adds the Chromium `bin/` to the PDF and email routes. Route keys are globs, so the route is written `/api/invoices/*/pdf`, not `[id]`.
 - **Fallback, declared now:** if Spike 1 fails after 60 minutes, `browser.ts` is swapped for a hosted HTML-to-PDF endpoint, such as Browserless's free tier, that renders the *same* print URL. There is never a second layout.
 - PRD ref: `prd.md > Invoice`, `prd.md > Email Invoice`.
 

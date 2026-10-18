@@ -21,7 +21,7 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
         <p className="quiet">{invoice.cafeName}</p>
         {!fitsOnePage(lines.length) && <p className="quiet">Too many lines for one page</p>}
       </div>
-      <InvoiceActions />
+      <InvoiceActions invoiceId={invoice.id} number={invoice.number} />
       <div className={styles.frame} data-invoice-frame>
         <InvoiceDocument invoice={{ ...invoice, lines }} business={getBusiness()} />
       </div>

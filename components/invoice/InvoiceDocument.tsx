@@ -1,11 +1,13 @@
 // Job: render Eileen's Canva invoice form from a saved snapshot, positioned in PDF points.
-import { Limelight } from "next/font/google";
+import { Limelight, Tinos } from "next/font/google";
 import type { Business } from "@/lib/business";
 import { INVOICE_FIRST_LINE_TOP, linePitch } from "@/lib/invoice-capacity";
 import { formatUSD, lineTotal, sumCents } from "@/lib/money";
 import styles from "./InvoiceDocument.module.css";
 
 const limelight = Limelight({ weight: "400", subsets: ["latin"], display: "block" });
+// Metric-compatible with Times New Roman, so the server-rendered PDF (no system fonts) breaks lines like Eileen's print.
+const tinos = Tinos({ weight: ["400", "700"], style: ["normal", "italic"], subsets: ["latin"], variable: "--font-tinos", display: "block" });
 
 export type InvoiceSnapshot = {
   number: string;
@@ -32,7 +34,7 @@ export function InvoiceDocument({ invoice, business }: { invoice: InvoiceSnapsho
   const total = sumCents(lines.map((l) => lineTotal(l.unitPriceCents, l.quantity)));
 
   return (
-    <div className={styles.page} data-invoice-page>
+    <div className={`${styles.page} ${tinos.variable}`} data-invoice-page>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img className={styles.abs} src="/invoice/wordmark.png" alt="La Condesa Baking Company"
         style={{ left: pt(94), top: pt(52), width: pt(197) }} />
