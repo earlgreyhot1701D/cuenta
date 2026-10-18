@@ -1,6 +1,7 @@
 // Job: run the four-step judge path (Count, Deliver, Invoice, Ledger) for Corazon Cocina and time it.
 //
 // Env: E2E_BASE_URL (default http://localhost:3000), E2E_PIN (falls back to APP_PIN from .env.local),
+// E2E_MANUAL_PIN=1 to type the PIN yourself in the browser window (run with --headed; nothing is stored),
 // E2E_SEND=1 to really send the email (otherwise the pop-up is checked and cancelled),
 // E2E_KEEP=1 to keep the test invoice (otherwise it is voided at the end, so stats stay honest).
 import { config } from "dotenv";
@@ -13,8 +14,10 @@ const PRODUCT = "Strawberry Tres Leches Cake";
 const JUDGE_PATH_LIMIT_MS = 3 * 60 * 1000;
 
 test("judge path: Count → Deliver → Invoice (Print, Email) → Ledger, under three minutes", async ({ page }) => {
+  const manualPin = process.env.E2E_MANUAL_PIN === "1";
   const pin = process.env.E2E_PIN || process.env.APP_PIN;
-  test.skip(!pin, "Set E2E_PIN (or APP_PIN in .env.local).");
+  test.skip(!manualPin && !pin, "Set E2E_PIN (or APP_PIN in .env.local), or E2E_MANUAL_PIN=1.");
+  if (manualPin) test.setTimeout(JUDGE_PATH_LIMIT_MS + 5 * 60 * 1000);
   const number = `E2E-${Date.now()}`;
   let invoiceId = "";
 
@@ -26,7 +29,6 @@ test("judge path: Count → Deliver → Invoice (Print, Email) → Ledger, under
     };
   });
 
-  const started = Date.now();
   const step = async (name: string, body: () => Promise<void>) => {
     const t = Date.now();
     await test.step(name, body);
@@ -35,10 +37,18 @@ test("judge path: Count → Deliver → Invoice (Print, Email) → Ledger, under
 
   await step("PIN", async () => {
     await page.goto("/pin");
-    await page.getByLabel("PIN").fill(pin!);
-    await page.getByRole("button", { name: "Enter" }).click();
-    await page.waitForURL(/\/count/);
+    if (manualPin) {
+      console.log("Type the PIN in the browser window and press Enter (5 minutes).");
+      await page.waitForURL(/\/count/, { timeout: 5 * 60 * 1000 });
+    } else {
+      await page.getByLabel("PIN").fill(pin!);
+      await page.getByRole("button", { name: "Enter" }).click();
+      await page.waitForURL(/\/count/);
+    }
   });
+
+  // The judge path is Count through Ledger; the PIN is a one-time step per device.
+  const started = Date.now();
 
   try {
     await step("1. Count", async () => {
