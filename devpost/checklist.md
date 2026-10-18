@@ -108,15 +108,15 @@ Slice numbers are this checklist's own. Where the plan names a Block, the slice 
 
 ## Code Tour and App Map
 
-- [ ] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
-- [ ] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
-- [ ] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
+- [x] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
+- [x] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
+- [x] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
 
-Activity and evidence: 
-Route and stops: 
-Edit outcome: 
-Reflection: 
-Activity mode: 
+Activity and evidence: Focused alternative (plan-first learner), tied to the spec's useful unknown, "Where does the missing 20% leak: PRD, spec, or checking?" The evidence came from this build: the spec caught the UTC dates, the PIN-blocked PDF and linked prices on paper; the pre-commit review caught real data in the mockups; the hands-on timed run caught the frozen-looking Send (a PRD gap in States and Boundaries) and the per-cafe product lists (a scope-kernel error that had passed every plan-based check). The learner traced the one-menu error to its source: a pre-planning brief that inferred per-cafe lists from sample invoices and entered scope as already decided.
+Route and stops: Not toured interactively. The map has a reference route for Create invoice: `DeliveryForm` `save()` / `useDeliveryLines` `payload()` → `POST /api/invoices` → `parseDelivery` → `createInvoice` → `InvoicePage` → `InvoiceDocument`.
+Edit outcome: Not applicable (focused alternative; no code edit offered).
+Reflection: Offered and answered. Recorded in the learner's own words in the gitignored learner profile. Its project-level fact (the per-cafe guess came from a pre-planning brief built on sample invoices) is in the app map's practice note.
+Activity mode: Focused alternative. Map: `devpost/app-map.html`, from code at `0158483`; checked offline at 390px (light) and 1280px (dark), with scripts on and off, with no errors and no horizontal scroll.
 
 ## Block 8: Handoff (after submission)
 

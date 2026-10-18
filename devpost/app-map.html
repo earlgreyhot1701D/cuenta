@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cuenta App Map</title>
+<style>
+  :root {
+    --paper: #ffffff; --ink: #1a1a1a; --muted: #5f5855;
+    --blush: #efe6e1; --accent: #8a4b3f; --rule: #bfb6b2; --code: #f6f2f0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #1c1a19; --ink: #f1ece9; --muted: #b3aba7;
+      --blush: #3a2a26; --accent: #f0a99a; --rule: #5a524f; --code: #2a2624;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #1c1a19; --ink: #f1ece9; --muted: #b3aba7;
+    --blush: #3a2a26; --accent: #f0a99a; --rule: #5a524f; --code: #2a2624;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 17px/1.55 Georgia, "Times New Roman", serif; }
+  main { max-width: 860px; margin: 0 auto; padding: 40px 16px 80px; }
+  .eyebrow, .label { font: 600 12px/1.2 system-ui, sans-serif; letter-spacing: .14em; text-transform: uppercase; }
+  .eyebrow { color: var(--accent); }
+  h1 { font-size: 40px; font-weight: 400; margin: 8px 0 4px; }
+  h2 { font-size: 24px; font-weight: 400; margin: 0 0 10px; }
+  h3 { font-size: 19px; font-weight: 400; margin: 0 0 4px; }
+  .lede { color: var(--muted); font-style: italic; margin: 0; }
+  section { padding: 26px 0; border-top: 1px dotted var(--rule); }
+  code { font: 14px/1.4 ui-monospace, Consolas, monospace; background: var(--code); padding: 1px 5px; border-radius: 3px; overflow-wrap: anywhere; }
+  pre { font: 14px/1.5 ui-monospace, Consolas, monospace; background: var(--code); padding: 12px 14px; overflow-x: auto; margin: 8px 0; }
+  ul, ol { padding-left: 22px; margin: 6px 0; } li { margin: 6px 0; }
+  .pieces { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-top: 12px; }
+  .piece { border: 1px solid var(--rule); padding: 10px 12px; }
+  .piece b { display: block; font-weight: 400; font-size: 18px; }
+  .piece span { color: var(--muted); font-size: 15px; }
+  .stop { border-left: 3px solid var(--accent); padding: 4px 0 4px 14px; margin: 16px 0; }
+  .stop .where { color: var(--muted); font-size: 15px; }
+  .practice { background: var(--blush); padding: 16px 18px; }
+  table { width: 100%; border-collapse: collapse; font-size: 16px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px dotted var(--rule); vertical-align: top; }
+  th { font: 600 12px/1.2 system-ui, sans-serif; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  details { margin: 8px 0; } summary { cursor: pointer; }
+  summary:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  a { color: var(--accent); }
+  svg { width: 100%; height: auto; display: block; margin: 12px 0; }
+  svg .box { fill: var(--paper); stroke: var(--ink); stroke-width: 1.2; }
+  svg .soft { fill: var(--blush); stroke: var(--rule); }
+  svg text { fill: var(--ink); font: 13px system-ui, sans-serif; }
+  svg .small { fill: var(--muted); font-size: 11px; }
+  svg .arrow { stroke: var(--accent); stroke-width: 1.6; fill: none; }
+  svg .head { fill: var(--accent); }
+  .foot { color: var(--muted); font-size: 15px; }
+</style>
+</head>
+<body>
+<main>
+  <p class="eyebrow">Cuenta · App map</p>
+  <h1>Where things live</h1>
+  <p class="lede">A take-home guide to the finished proof of concept: what the main pieces are, one action followed through the code, where to start a change, and one practice worth reusing.</p>
+
+  <section>
+    <h2>What the app is</h2>
+    <p>Cuenta turns Eileen's paper invoice into a phone-and-laptop app for La Condesa Baking Company. She counts what's left on a cafe's shelf, builds a delivery from her menu, gets her own Canva invoice back (print, PDF or email), and tracks who has paid in the Ledger. It's one Next.js app on Vercel, with a Neon Postgres database and Resend for email, behind a six-digit PIN.</p>
+    <div class="pieces">
+      <div class="piece"><b>Count</b><span>shelf counts per cafe, reference only</span></div>
+      <div class="piece"><b>Deliver</b><span>one menu for every cafe, live totals, special orders</span></div>
+      <div class="piece"><b>Invoice</b><span>her Canva form: Print, PDF, Email, Edit, Void</span></div>
+      <div class="piece"><b>Ledger</b><span>who owes what, overdue, paid, void</span></div>
+      <div class="piece"><b>Customers</b><span>the menu once, then each cafe's details</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>One action, end to end: Create invoice</h2>
+    <p>On Deliver, Eileen picks a cafe, types quantities and taps <b>Create invoice</b>. A moment later she's looking at her invoice. This is the path it takes.</p>
+    <svg viewBox="0 0 820 230" role="img" aria-labelledby="flow-title flow-desc">
+      <title id="flow-title">Create invoice, from tap to printed form</title>
+      <desc id="flow-desc">The Deliver form in the browser sends the delivery to the invoices API on the server. The API checks it against the menu and saves an invoice snapshot in Postgres. The browser then opens the Invoice page, which reads the snapshot and draws Eileen's Canva form.</desc>
+      <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="head" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+      <rect class="soft" x="8" y="8" width="250" height="214"/><text class="small" x="20" y="28">BROWSER</text>
+      <rect class="soft" x="290" y="8" width="250" height="214"/><text class="small" x="302" y="28">SERVER (Vercel)</text>
+      <rect class="soft" x="572" y="8" width="240" height="214"/><text class="small" x="584" y="28">STORAGE (Neon)</text>
+      <rect class="box" x="24" y="44" width="218" height="58"/><text x="36" y="66">1 · Deliver form</text><text class="small" x="36" y="86">DeliveryForm save()</text>
+      <rect class="box" x="306" y="44" width="218" height="58"/><text x="318" y="66">2 · POST /api/invoices</text><text class="small" x="318" y="86">parseDelivery → createInvoice</text>
+      <rect class="box" x="588" y="44" width="208" height="58"/><text x="600" y="66">invoices + invoice_lines</text><text class="small" x="600" y="86">the saved snapshot</text>
+      <rect class="box" x="24" y="150" width="218" height="58"/><text x="36" y="172">Her Canva invoice</text><text class="small" x="36" y="192">what Eileen sees</text>
+      <rect class="box" x="306" y="150" width="218" height="58"/><text x="318" y="172">3 · Invoice page</text><text class="small" x="318" y="192">InvoicePage → InvoiceDocument</text>
+      <path class="arrow" d="M242,73 L300,73" marker-end="url(#ah)"/>
+      <path class="arrow" d="M524,73 L582,73" marker-end="url(#ah)"/>
+      <path class="arrow" d="M692,102 L692,179 L530,179" marker-end="url(#ah)"/>
+      <path class="arrow" d="M306,179 L248,179" marker-end="url(#ah)"/>
+      <text class="small" x="548" y="196">reads it back</text>
+    </svg>
+
+    <p class="label">Reference route (three stops)</p>
+    <div class="stop">
+      <h3>1 · The form gathers the delivery</h3>
+      <p class="where"><code>components/deliver/DeliveryForm.tsx</code>, search <code>async function save</code>; line state in <code>components/deliver/useDeliveryLines.ts</code>, search <code>payload: ()</code></p>
+      <p>The menu rows and special orders live in <code>useDeliveryLines</code>, which turns what she typed into cents and totals. <code>save()</code> sends the cafe, date, number and <code>payload()</code> lines to the server, then opens the new invoice. A taken number comes back as a 409 and shows under Invoice #.</p>
+    </div>
+    <div class="stop">
+      <h3>2 · The server checks it and saves a snapshot</h3>
+      <p class="where"><code>app/api/invoices/route.ts</code> (<code>export const POST</code>) → <code>lib/invoice-input.ts</code> (<code>parseDelivery</code>) → <code>lib/queries/invoices.ts</code> (<code>createInvoice</code>)</p>
+      <p><code>parseDelivery</code> accepts only products from <code>listProducts()</code> (the one menu) plus complete special orders, and drops blank lines. <code>createInvoice</code> copies the cafe's details and each line's name and price onto the invoice in one transaction. That's why later price changes never rewrite an old invoice.</p>
+    </div>
+    <div class="stop">
+      <h3>3 · The Invoice page draws her form</h3>
+      <p class="where"><code>app/(app)/invoices/[id]/page.tsx</code> (<code>InvoicePage</code>) → <code>components/invoice/InvoiceDocument.tsx</code> (<code>InvoiceDocument</code>)</p>
+      <p>The page reads the snapshot back and hands it to <code>InvoiceDocument</code>, which places every piece in PDF points on a Letter page. The same component draws the screen, the printout and the emailed PDF, so the three always match.</p>
+    </div>
+    <details>
+      <summary>How it's checked</summary>
+      <ul>
+        <li><code>tests/unit/invoice-input.test.ts</code>: blank lines dropped, products off the menu refused, special order rules.</li>
+        <li><code>tests/e2e/judge-path.spec.ts</code>: Count → Deliver → Invoice (Print, Email) → Ledger on a running app, under three minutes.</li>
+      </ul>
+    </details>
+  </section>
+
+  <section>
+    <h2>To change this, start here</h2>
+    <table>
+      <thead><tr><th>To change…</th><th>Start in</th></tr></thead>
+      <tbody>
+        <tr><td>The menu: products, prices, their order</td><td><code>seed/mock-data.ts</code> (<code>mockProducts</code>); real data at Handoff. Read by <code>lib/queries/products.ts</code> (<code>listProducts</code>)</td></tr>
+        <tr><td>The invoice layout or fonts</td><td><code>components/invoice/InvoiceDocument.tsx</code> and its <code>.module.css</code></td></tr>
+        <tr><td>Lines that fit on one page</td><td><code>lib/invoice-capacity.ts</code> (<code>MAX_LINES_ONE_PAGE</code>)</td></tr>
+        <tr><td>The suggested invoice number</td><td><code>lib/invoice-number.ts</code> (<code>suggestNumber</code>)</td></tr>
+        <tr><td>The email's subject and body</td><td><code>lib/email/invoice-email.ts</code> (<code>buildInvoiceEmail</code>); the sender comes from <code>EMAIL_FROM</code> in env, never code</td></tr>
+        <tr><td>Ledger stats or overdue rules</td><td><code>lib/ledger-stats.ts</code> (<code>ledgerStats</code>, <code>rowState</code>)</td></tr>
+        <tr><td>Button wording on the Invoice page</td><td><code>components/invoice/InvoiceActions.tsx</code></td></tr>
+        <tr><td>The "?" How it works page</td><td><code>app/(app)/help/page.tsx</code> (<code>SECTIONS</code>)</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>A practice to reuse</h2>
+    <div class="practice">
+      <p><b>Write sharing and "how many" as a check you can see, not just a noun.</b></p>
+      <p>The plan's first kernel sentence said Eileen "builds a delivery from each cafe's standing list". It was in <code>scope.md</code> from its first commit, then copied into the PRD, the spec, a <code>standing_items</code> table, and every screen and API that lists products. Every check passed, because every check tested the plan: a list per cafe. No check said what Eileen actually does: <em>one menu, the same products and prices for every cafe</em>. A hands-on timed run caught it, and it took a migration to fix.</p>
+      <p>The PRD now has the check that would have caught it on day one: "Picking any cafe shows every menu product…" (<code>prd.md &gt; Count</code>) and "Every cafe sees the same products and prices" (<code>prd.md &gt; Deliver</code>). The same run caught a second gap of the same kind: <code>prd.md &gt; States and Boundaries</code> had no "working" state, so a five-second send looked frozen.</p>
+      <p>Where it came from: the per-cafe lists were inferred in a pre-planning brief from sample invoices, where one cafe's invoice had cookies and the others didn't. But an invoice shows what was ordered, not what's available. The guess entered scope as if it were already decided, so the scope interview, which checks the answers it asks for, never asked about it.</p>
+      <p><b>On the next project:</b> anything brought into scope from your own notes or inferred from documents gets confirmed with the real user before it goes in the kernel. For each thing the core sentence names (a list, a price, a customer), add one observable check that states whether it's shared or per-something and how many there are. Add a "slow action shows what it's doing" line to States and Boundaries. Then a wrong assumption fails a check during planning instead of surfacing after the build.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Run it again</h2>
+<pre>cp .env.example .env.local   # fill in the values
+npm install
+npm run db:migrate
+npm run db:seed              # mock data only; wipes the database it points at
+npm run dev                  # http://localhost:3000
+npm test                     # unit tests
+npm run test:e2e             # judge path; E2E_BASE_URL, E2E_PIN or E2E_MANUAL_PIN=1</pre>
+    <p class="foot">Snapshot of the code at commit <code>0158483</code>, the last code change before this map. It's a snapshot and will drift as the app changes. Open this file in any browser; it needs no network.</p>
+  </section>
+</main>
+</body>
+</html>
