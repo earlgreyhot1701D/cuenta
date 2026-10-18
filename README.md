@@ -14,6 +14,8 @@ Live at [cuentasb.vercel.app](https://cuentasb.vercel.app). The app sits behind 
 
 One minute and thirty-nine seconds on the production app, with mock data: Count, Deliver, the invoice, Download PDF, Send email, the Ledger and the menu.
 
+Built from an empty folder to a working app in about 20 hours, sleep included, using the Devpost Learn skill pack.
+
 ## The problem
 
 Eileen runs a wholesale bakery that serves four cafes. She counted what was left on each cafe's shelf on paper. She filled in her invoice forms by hand and did the math by hand. And she kept track of who owed her, and since when, in her head.
@@ -41,16 +43,19 @@ The full judge path (Count, Deliver, Invoice with Print and Email, Ledger) runs 
 | **Customers** | The menu once at the top, then each cafe's details, read-only |
 | **How it works** | A "?" on every page opens a plain-words guide to each button |
 
+<p align="center">
+  <img src="docs/images/app-invoice.png" alt="The Invoice page: Print, Download PDF, Send email, Edit and Void above the branded La Condesa invoice" width="100%"><br>
+  <b>Invoice</b>
+</p>
+
 <table>
   <tr>
-    <td width="33%"><img src="docs/images/app-invoice.png" alt="The Invoice page: Print, Download PDF, Send email, Edit and Void above the branded La Condesa invoice"></td>
-    <td width="33%"><img src="docs/images/app-ledger.png" alt="The Ledger: Open, Outstanding and This month stats, cafe filters, and invoice rows marked paid, unpaid or void"></td>
-    <td width="33%"><img src="docs/images/app-customers.png" alt="Customers: the menu with five products and prices, then the cafe cards"></td>
+    <td width="50%"><img src="docs/images/app-ledger.png" alt="The Ledger: Open, Outstanding and This month stats, cafe filters, and invoice rows marked paid, unpaid or void"></td>
+    <td width="50%"><img src="docs/images/app-customers.png" alt="Customers: the menu with five products and prices, then the cafe cards"></td>
   </tr>
   <tr>
-    <td align="center">Invoice</td>
-    <td align="center">Ledger</td>
-    <td align="center">Customers</td>
+    <td align="center"><b>Ledger</b></td>
+    <td align="center"><b>Customers</b></td>
   </tr>
 </table>
 
@@ -59,7 +64,7 @@ The full judge path (Count, Deliver, Invoice with Print and Email, Ledger) runs 
 One Next.js app on Vercel, with Neon Postgres for data, Resend for email and headless Chromium for the PDF.
 
 ```mermaid
-flowchart LR
+flowchart TB
   subgraph B["Browser: phone or laptop"]
     UI["Count, Deliver, Invoice,<br/>Ledger, Customers"]
   end
