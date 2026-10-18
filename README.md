@@ -165,7 +165,7 @@ The costliest mistake came from the plan itself. The first scope said each cafe 
 ## Known limits and roadmap
 
 **Known limits**
-- Email goes out from Resend's test sender until the bakery's domain is verified. Switching is two environment values and a redeploy.
+- Email now goes out from the bakery's verified domain. The switch happened on Oct 18, after the demo video was recorded.
 - One PIN for one user. There are no accounts or roles.
 - Products and cafes change through the seed file. Customers is read-only.
 
