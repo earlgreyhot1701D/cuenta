@@ -2,7 +2,7 @@
 //
 // Run: npx tsx scripts/record-demo.ts   (not part of the app; nothing imports it)
 // 1. A headed window opens on /pin. Type the PIN there. Its sign-in is saved to .demo-auth.json (gitignored).
-// 2. A new, already signed-in window records Count → Deliver → Invoice → Download PDF → Email → Ledger → Customers.
+// 2. A new, already signed-in window records Count → Deliver → Invoice → Download PDF → Email → Ledger → Customers → Ledger.
 // 3. The sign-in file is deleted at the end, even on failure. The raw video lands in demo-raw/ (gitignored).
 // Dry run: DEMO_BASE_URL=http://localhost:3107 DEMO_SKIP_SIGNIN=1 with a .demo-auth.json made for that server.
 // It writes mock data to production: one count, one invoice (emailed to the mock cafe, marked paid).
@@ -15,7 +15,9 @@ const BASE = process.env.DEMO_BASE_URL || "https://cuentasb.vercel.app";
 const AUTH = path.resolve(".demo-auth.json");
 const RAW = path.resolve("demo-raw");
 const SIZE = { width: 1280, height: 800 };
-const HOLD = 2000;
+const HOLD = 3000;
+/** Stretches every hold evenly, to land the video at 85–95 seconds on production. */
+const PACE = 1.15;
 const CAFE = /Corazon Cocina/;
 
 /** A cursor dot and click ripple, injected into the recording browser only, so viewers can see what's tapped. */
@@ -54,9 +56,9 @@ async function glideTo(page: Page, target: Locator) {
   if (!box) throw new Error("Nothing to point at");
   const to = { x: box.x + box.width / 2, y: box.y + box.height / 2 };
   await page.mouse.move(mouse.x, mouse.y);
-  await page.mouse.move(to.x, to.y, { steps: 20 });
+  await page.mouse.move(to.x, to.y, { steps: 40 });
   mouse = to;
-  await page.waitForTimeout(150);
+  await page.waitForTimeout(450);
 }
 
 async function tap(page: Page, target: Locator) {
@@ -67,10 +69,10 @@ async function tap(page: Page, target: Locator) {
 async function type(page: Page, target: Locator, text: string, opts: { append?: boolean } = {}) {
   await tap(page, target);
   if (opts.append) await target.press("End");
-  await target.pressSequentially(text, { delay: 90 });
+  await target.pressSequentially(text, { delay: 120 });
 }
 
-const hold = (page: Page, ms = HOLD) => page.waitForTimeout(ms);
+const hold = (page: Page, ms = HOLD) => page.waitForTimeout(Math.round(ms * PACE));
 
 async function signIn() {
   const browser = await chromium.launch({ headless: false });
@@ -143,9 +145,9 @@ async function record() {
     mark(`3 Invoice ${number}`);
     await page.getByRole("heading", { name: `Invoice ${number}` }).waitFor();
     await page.evaluate(() => document.fonts.ready);
-    await hold(page, 2000);
+    await hold(page, 3000);
     await page.getByText("INVOICE TOTAL").evaluate((el) => el.scrollIntoView({ behavior: "smooth", block: "center" }));
-    await hold(page, 2200);
+    await hold(page, 3000);
     await page.evaluate(() => window.scrollTo({ top: 0, behavior: "smooth" }));
     await hold(page, 900);
 
@@ -159,7 +161,7 @@ async function record() {
     await download.saveAs(pdfPath);
     await hold(page, 700);
     await page.goto(`${pathToFileURL(pdfPath).href}#view=Fit`);
-    await hold(page, 3200);
+    await hold(page, 3500);
 
     // 5. Email
     mark("5 Email");
@@ -170,30 +172,37 @@ async function record() {
     const dialog = page.getByRole("dialog");
     await dialog.getByLabel("To").waitFor();
     await glideTo(page, dialog.getByLabel("To"));
-    await hold(page, 1800);
+    await hold(page, 3000);
     await tap(page, dialog.getByRole("button", { name: /^Send (email|again)$/ }));
     await page.getByRole("button", { name: "Sending…" }).waitFor({ timeout: 5_000 }).catch(() => {});
     await page.getByText(/^Last sent /).first().waitFor({ timeout: 60_000 });
-    await hold(page, 2000);
+    await hold(page, 3000);
 
     // 6. Ledger
     mark("6 Ledger");
     await tap(page, nav("Ledger"));
     await page.waitForURL(/\/ledger$/);
-    await hold(page, 2000);
+    await hold(page, 3000);
     const row = page.getByRole("listitem").filter({ hasText: number });
     await tap(page, row.getByRole("button", { name: "Unpaid" }));
     await page.getByRole("button", { name: "Mark paid" }).waitFor();
-    await hold(page, 1200);
+    await hold(page, 2000);
     await tap(page, page.getByRole("button", { name: "Mark paid" }));
     await row.getByRole("button", { name: /^Paid / }).waitFor();
-    await hold(page, 2200);
+    await hold(page, 3000);
 
     // 7. Customers
     mark("7 Customers");
     await tap(page, nav("Customers"));
     await page.getByRole("heading", { name: "Customers" }).waitFor();
-    await hold(page, 4500);
+    await hold(page, 3000);
+
+    // Ending: back on the Ledger, so the video closes on who owes what.
+    mark("8 Ledger (ending)");
+    await tap(page, nav("Ledger"));
+    await page.waitForURL(/\/ledger$/);
+    await page.getByRole("heading", { name: "Ledger" }).waitFor();
+    await hold(page, 3000);
     mark("end");
   } finally {
     const video = page.video();
