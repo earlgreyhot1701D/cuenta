@@ -122,8 +122,8 @@ Activity mode: Focused alternative. Map: `devpost/app-map.html`, from code at `0
 
 Not a slice. It starts only after the demo video is recorded and the submission commit is tagged. It happens in the **same production deployment and database**: Eileen's real data replaces the mock data, with no second deployment (learner decision). In this order:
 
-- [ ] 1. Record the demo video on production with the mock data (`spec.md > Where It Runs and How Someone Tries It`, Demo video).
-- [ ] 2. Tag the submission commit (for example `git tag submission`) and push the tag, so the judged code stays findable after Handoff changes.
+- [x] 1. Record the demo video on production with the mock data (`spec.md > Where It Runs and How Someone Tries It`, Demo video).
+- [x] 2. Tag the submission commit (for example `git tag submission`) and push the tag, so the judged code stays findable after Handoff changes.
 - [ ] 3. Back up the mock data with a Neon branch snapshot of `main` (for example a branch named `mock-snapshot`), so the judged state can be brought back.
 - [ ] 4. Clear all demo data (invoices, counts, test invoices) after the Neon snapshot, before seeding Eileen's real data.
 - [ ] 5. Seed Eileen's real menu (one product list and one set of prices, shared by every cafe), her cafes and the real Corazon logo into production from the gitignored `private/` file. Set the real `BUSINESS_*` footer values and `EMAIL_REPLY_TO` in Vercel, then redeploy.
@@ -230,4 +230,5 @@ A separate demo deployment is a Later item, only when a second customer wants a 
   - The old Gmail is still in git history, in `public/.well-known/security.txt` from commit `072c23f`, and becomes readable when the repo goes public. The public-repo audit decides whether to rewrite history or accept it.
   - Turn on private vulnerability reporting when the repo goes public.
   - Add the GitHub Pages workflow (`.github/workflows/pages.yml`, publishing only `devpost/*.html` and an index) and switch Pages on. The README already links its screenshots to `https://earlgreyhot1701d.github.io/cuenta/…`.
+- **Shipped (Oct 18, `6-ship`):** the learner accepted the old Gmail staying in history (no rewrite, no force-push). Tagged `61aa4f9` as `submission-2026-10-18` and pushed it, made the repo public, and added `.github/workflows/pages.yml`. Pages is live and all four README links load. The learner turns on private vulnerability reporting.
 
