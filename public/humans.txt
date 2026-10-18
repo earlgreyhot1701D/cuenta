@@ -1,0 +1,18 @@
+/* TEAM */
+Built by: La Shara Cordero
+Site: clewlabs.org
+GitHub: github.com/earlgreyhot1701D
+Writing: dev.to/earlgreyhot1701d
+
+Built for: Eileen Foster Randall, La Condesa Baking Company, Santa Barbara
+
+/* THANKS */
+Devpost Build With AI: Basics, October 2026
+
+/* SITE */
+Name: Cuenta
+Standards: HTML5, CSS Modules, TypeScript
+Stack: Next.js, Neon Postgres, Resend, Vercel
+Type: Limelight, Times New Roman
+
+AI assisted. Human approved. Powered by NLP.

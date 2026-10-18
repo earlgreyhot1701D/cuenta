@@ -1,0 +1,13 @@
+{
+  "name": "Cuenta",
+  "short_name": "Cuenta",
+  "description": "Count, deliver, invoice, ledger for La Condesa Baking Company.",
+  "start_url": "/count",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#EFE6E1",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

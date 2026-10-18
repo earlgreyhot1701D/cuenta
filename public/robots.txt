@@ -1,0 +1,3 @@
+# Cuenta is a private tool behind a PIN. Nothing here is for search engines.
+User-agent: *
+Disallow: /

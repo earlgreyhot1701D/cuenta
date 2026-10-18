@@ -9,7 +9,8 @@ const nextConfig: NextConfig = {
     "/api/invoices/*/pdf": ["./node_modules/@sparticuz/chromium/bin/**/*"],
   },
   async headers() {
-    return [{ source: "/print/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] }];
+    // Private tool: no response, page or static file is for search engines.
+    return [{ source: "/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] }];
   },
 };
 
