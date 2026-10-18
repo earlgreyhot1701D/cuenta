@@ -1,0 +1,34 @@
+# Personal learning context — kept out of commits by default
+/devpost/learner-profile.md
+
+# Local credentials
+.env
+.env.*
+!.env.example
+
+# Neon CLI local context
+/.neon
+
+# Fidelity reference with real customer details: local only, never committed
+/design/canva-invoice-reference.png
+# Stitch mockups contain real contact details: local only, never committed
+/design/*.html
+/design/*.png
+
+# Real cafe logos and real seed data stay outside git
+/private/
+node_modules
+
+# Build output and dependencies
+/node_modules
+/.next
+/out
+next-env.d.ts
+*.tsbuildinfo
+/.vercel
+/test-results
+/playwright-report
+
+.vercel
+.env*
+!.env.example

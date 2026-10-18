@@ -1,0 +1,24 @@
+/* Job: color, type and spacing tokens for the app (the invoice has its own). */
+:root {
+  --ink: #111111;
+  --ink-muted: #555555;
+  --paper: #ffffff;
+  --blush: #efe6e1;
+  --rule: #222222;
+
+  --font-display: var(--font-bodoni), "Bodoni 72", Didot, serif;
+  --font-body: var(--font-garamond), Garamond, Georgia, serif;
+  --font-label: var(--font-grotesk), "Helvetica Neue", Arial, sans-serif;
+
+  --gutter: 1rem;
+  --row-min: 44px;
+  --touch: 48px;
+  --nav-height: 64px;
+  --hairline: 1px dotted var(--rule);
+}
+
+@media (min-width: 900px) {
+  :root {
+    --gutter: 2.5rem;
+  }
+}

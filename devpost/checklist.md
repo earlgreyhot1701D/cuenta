@@ -1,0 +1,125 @@
+---
+doc: checklist
+status: approved
+---
+
+# Build Checklist
+
+Build mode: fast
+
+Slice numbers are this checklist's own. Where the plan names a Block, the slice says so: Block 1 is slice 1, Block 3 (invoice fidelity) is slice 3, the Block 6 mock-data audit is in slice 8. Block 8 (Handoff) stays after submission, per `scope.md > Later`, and is not slice 8. Each slice's PASS/FAIL cites both its PRD heading and its spec heading (`spec.md > Decisions and Open Issues`, useful unknown).
+
+**Learner prerequisites (outside the code):**
+- **Before slice 1:** the learner sets up Neon and Vercel with their CLIs and puts `DATABASE_URL` in `.env.local`.
+- **Before slice 5:** a `RESEND_API_KEY`. The domain DNS is not a gate. Slice 5 sends from Resend's onboarding sender to the learner's own inbox, and slice 8 switches to the verified domain.
+- **Before slice 3:** the Canva PNGs (wordmark, footer block title, the DESCRIPTION/QTY/PRICE/TOTAL headers).
+
+## Slices
+
+- [ ] **1. Eileen can unlock the app and save a shelf count on her phone**
+  Becomes usable: On the deployed URL, the PIN screen lets her in for 30 days. She lands on Count, picks Corazon Cocina, sees each standing product with blank steppers and a grey "last counted Oct 9: 3" (or "not counted yet"), enters two numbers, and saves. Only those two lines update. `/health` reports the database and the version.
+  Why now: This sets up everything later slices sit on: the scaffold, Neon, Drizzle and seed data, the PIN gate, the Pacific date helper, logging, the tokens and bottom nav, and a live Vercel deploy. It does that through a real screen instead of plumbing. Deploying now also means Spike 1 (slice 4) can run on real Vercel straight away.
+  PRD ref: `prd.md > PIN Gate`, `prd.md > Count`, `prd.md > Operational Requirements`, `prd.md > States and Boundaries`
+  Spec ref: `spec.md > Stack`, `spec.md > Where It Runs and How Someone Tries It`, `spec.md > File Structure`, `spec.md > Data Model`, `spec.md > Look and Feel`, `spec.md > Components` (PIN Gate, Count Screen, Logging and Health, Dates and Money Helpers)
+  Build: Scaffold Next.js (TypeScript, App Router, CSS Modules) to the spec's file structure, with a `Job:` comment on every file. Use the current Next.js file convention for `proxy.ts`/`middleware.ts`. Add `.env.example`, Drizzle with all six tables (the migration is created once, here), and the mock seed: four cafes, five products by slug, standing lists, the placeholder logo and some older counts. Add `lib/dates.ts`, `lib/money.ts`, `lib/invoice-number.ts`, `lib/session.ts`, `lib/log.ts`, `lib/api/with-route.ts`, `lib/api/client.ts`, `/health`, the PIN screen and `POST /api/session`, the PIN check, the app layout with BottomNav, `tokens.css`/`globals.css` and fonts, plus the Count page, CountForm, Stepper and `POST /api/counts`, the last-cafe cookie, and the unsaved-changes prompt on cafe switch. Then do the Vitest unit tests and the Drizzle longevity check, and deploy to Vercel.
+  Verify (mechanical): `npm run build` passes. The Vitest units pass for dates (a 5:30pm Pacific instant gives today's date and `suggestNumber(1,'2026-10-17')` = `110172026`), money and invoice-number. `/health` returns `db:'up'` locally and on Vercel. With no session, a page redirects to `/pin` and an API returns 401. A wrong PIN gives 401 and the right PIN sets the cookie. A count POST adds rows only for the entered products. Adding a sixth seed product and reseeding shows it on Count with no code change, then it gets reverted. Logs show one JSON line per request, with no PIN or env values.
+  Learner check: On your phone, open the deployed URL, enter a wrong PIN and then the right one, pick Corazon Cocina, enter two counts, Save. Confirm only those two grey lines change to today, and compare the screen with `design/count_inventory.png`.
+  Commit: `Add PIN gate, Count screen, health and deploy`
+
+- [ ] **2. Eileen can build a delivery from a cafe's standing list and create an invoice**
+  Becomes usable: On Deliver, she picks Corazon Cocina and sees its standing list with prices, blank quantities, and the grey last shelf count beside each line. Totals compute live to the cent. The date defaults to today in Pacific time and `110172026` is suggested, following the date and cafe until she types her own number. A duplicate number is refused with "Already used on …". Create invoice saves a snapshot and opens a plain invoice page that shows the saved lines.
+  Why now: This is the first half of the unique kernel: her route, digitized. The invoice snapshot is what every later slice (print, PDF, email, ledger) reads, so its shape has to be right before anything is built on it.
+  PRD ref: `prd.md > Deliver (New Delivery and Edit)`, `prd.md > The Core Journey` (step 3)
+  Spec ref: `spec.md > Components` (Deliver Screen, Dates and Money Helpers), `spec.md > Data Model` (`invoices`, `invoice_lines`), `spec.md > The Core Journey Through the System` (step 3)
+  Build: Add the Deliver page (server-provided default date), DeliveryForm and LineRow with an editable unit price, the `numberTouched` logic, `POST /api/invoices` (validation, one transaction for the snapshot, 409 with `{usedOn, cafeName}` on a duplicate), `lib/queries/invoices.ts`, and a minimal `/invoices/[id]` page listing the saved snapshot.
+  Verify (mechanical): `npm run build` and the units pass. A scripted or Playwright run creates an invoice for Corazon Cocina. The DB shows only lines with a quantity of 1 or more, each with its own description and price, plus the cafe snapshot fields. No `counts` row changed. A second POST with the same number returns 409 with the date and cafe. Changing one line's price leaves `products.price_cents` unchanged. Create is disabled with every quantity blank.
+  Learner check: On your laptop, open Deliver, pick Corazon Cocina, check the grey shelf counts match what you saved in slice 1 and that no quantity is pre-filled, type quantities, watch the totals, then Create invoice. Try reusing the same number and see it refused.
+  Commit: `Add Deliver screen and invoice snapshots`
+
+- [ ] **3. The invoice looks exactly like Eileen's Canva form and prints on one Letter page**
+  Becomes usable: The Invoice screen shows her Canva form, filled in with the wordmark, Limelight INVOICE, the cafe block (the placeholder logo for the Corazon cafes, an empty space for the others), the number and date, only the delivered lines, the INVOICE TOTAL, and the blush footer with the `BUSINESS_*` placeholders and the Net 30 line. Print opens the browser dialog and prints one Letter page with no app chrome.
+  Why now: This is the second half of the kernel and the "oh, that's cool" moment. Fidelity is where your 20% usually leaks, so it gets your eyes before the PDF and email copy this layout.
+  PRD ref: `prd.md > Invoice`, `prd.md > Look and Feel` (the printed invoice, Invoice Typography)
+  Spec ref: `spec.md > Components` (Invoice Document, Invoice Screen), `spec.md > Look and Feel` (Invoice type, Print CSS)
+  Build: Add the Canva PNGs to `public/invoice/`, `InvoiceDocument.tsx` and its CSS module, `styles/print.css`, `lib/business.ts`, `lib/invoice-capacity.ts` (measure `MAX_LINES_ONE_PAGE` against Letter), the Invoice screen with the Print button, and the "Too many lines for one page" line.
+  Verify (mechanical): Build passes. A Playwright print-media screenshot at Letter size shows a single page with no nav or buttons. A `page.pdf` page count of 1 at `MAX_LINES_ONE_PAGE` lines. A side-by-side image with the gitignored `design/canva-invoice-reference.png` saved to the scratchpad. The invoice CSS uses no app fonts. `git status` confirms the reference PNG is untracked.
+  Learner check: Open the invoice from slice 2, press Print, and save it as a PDF or print it. Lay it next to the Canva reference, and check a Little Heart invoice has an empty logo space. Tell me what doesn't match.
+  Commit: `Add Canva-matched invoice document and print`
+
+- [ ] **4. Eileen can download the invoice as a PDF (Spike 1)**
+  Becomes usable: Download PDF on the Invoice screen saves `Invoice-[number].pdf`, rendered by headless Chrome from the token-gated print route. It's the same layout as Print.
+  Why now: This is the project's one critical technical risk. Email depends on it, so it's proven right after the layout it renders, and before email builds on it. It has a 60-minute timebox, then the declared fallback: a hosted renderer on the same print URL.
+  PRD ref: `prd.md > Invoice` (Download PDF)
+  Spec ref: `spec.md > Components` (Print Route, PDF Renderer), `spec.md > External Services and Dependencies` (Serverless Chromium, Spike 1 pass criteria), `spec.md > Important Failure Modes`
+  Build: Add `lib/print-token.ts` (60-second HMAC of id and exp), `app/print/invoice/[id]/page.tsx` (404 on a bad token, noindex, never logs the token), `lib/pdf/browser.ts`, `lib/pdf/render-invoice-pdf.ts`, `GET /api/invoices/[id]/pdf` with an explicit `maxDuration`, the Download PDF button, and a 422 response when the capacity is exceeded.
+  Verify (mechanical): Unit tests for the print token: valid, expired, wrong id. On the Vercel deploy: a print URL with no token, an expired token or another invoice's token returns 404. The PDF route without a session returns 401. With a session it returns a one-page Letter PDF. Cold and warm timings are recorded against the criteria (under 10s cold, under 3s warm). Limelight and the PNGs render. The bundle fits Hobby. The package's last release is within six months. The results go under Revisions.
+  Learner check: On the deployed app, Download PDF for your test invoice, open it next to your printed copy from slice 3, and confirm they match.
+  Commit: `Add token-gated print route and PDF download`
+
+- [ ] **5. Eileen can email the invoice with the PDF attached, and the stamp never lies**
+  Becomes usable: Email invoice opens the confirm sheet: To pre-filled from the snapshot and editable, the fixed subject, the filled-in body preview, and the attachment line. Send delivers a real email from whatever `EMAIL_FROM` is set to (Resend's onboarding sender until the domain verifies), then "Sent [time]" stamps on the invoice and the button reads Resend. A failure keeps the sheet open with "Couldn't send. The invoice is saved. Try again or print it." and Retry, and never shows "Sent". A cafe with no email blocks Send until she types one.
+  Why now: This is the last external dependency and the second half of the "oh, that's cool" moment. The Ledger's envelope mark reads this slice's state. It doesn't wait on DNS: the sender comes from env, so the verified domain is an env change in slice 8, with no code change.
+  PRD ref: `prd.md > Email Invoice`
+  Spec ref: `spec.md > Components` (Email Sender, Invoice Screen status line), `spec.md > External Services and Dependencies` (Resend)
+  Build: Add `lib/email/invoice-email.ts`, `lib/email/send.ts` (From and Reply-To read only from `EMAIL_FROM` / `EMAIL_REPLY_TO`, never hardcoded), `lib/email-status.ts`, `POST /api/invoices/[id]/email`, `GET /api/invoices/[id]/email-preview`, `EmailSheet`, the Sheet primitive, and the status line.
+  Verify (mechanical): Units for `email-status` (never sent, success, fail-after-success, fail-only). A forced failure (a bad API key) sets `email_last_failed_at`, returns 502, and leaves an earlier `email_sent_at` untouched. `grep` finds no sender address hardcoded in the code. A real send from the onboarding sender to the learner's inbox on Vercel returns a message ID, and the Vercel log line shows it with no email address in it.
+  Learner check: Email the test invoice to your own inbox. Confirm it arrives (from Resend's onboarding sender for now) with Reply-To set to `EMAIL_REPLY_TO` and `Invoice-[number].pdf` attached, and the stamp appears. Then open the sheet for a cafe with no email on file.
+  Commit: `Add email confirm sheet and Resend delivery`
+
+- [ ] **6. Eileen can see who owes her, and mark invoices paid and unpaid**
+  Becomes usable: The Ledger lists invoices newest first, each with its number, cafe, date, due date, total and envelope mark. It has the Open / Outstanding / This month stats and per-cafe filter chips. Overdue rows get the blush due date, "overdue N days" and the left rule. Mark paid takes a paid date and an optional reference, and the row mutes to "Paid Oct 20". Mark unpaid flips it back after one confirm. Tapping a row opens the invoice. An empty filter shows "No invoices yet."
+  Why now: This closes the core loop and the judge path's last step. It reads everything the earlier slices write.
+  PRD ref: `prd.md > Ledger`, `prd.md > States and Boundaries` (empty Ledger)
+  Spec ref: `spec.md > Components` (Ledger Screen), `spec.md > Data Model` (calculated due date and total)
+  Build: Add `lib/queries/ledger.ts`, `lib/ledger-stats.ts`, the Ledger page with the `?cafe=` filter, LedgerRow, StatRow, PaymentSheet, and `POST`/`DELETE /api/invoices/[id]/payment`. Add an overdue mock invoice to the seed.
+  Verify (mechanical): Units for `ledger-stats` (paid leaves Open and Outstanding but stays in This month, void is excluded, and overdue days from `todayPacific`). Through the API: mark paid, then unpaid, restores the stats. The filter returns only that cafe's invoices. The seeded overdue invoice shows its overdue days.
+  Learner check: On your phone, open the Ledger. Find your new invoice at the top as Unpaid, due in 30 days. Mark it paid with a reference, then mark it unpaid, try the Corazon SB chip, and look at the overdue row.
+  Commit: `Add Ledger with stats, filters and payments`
+
+- [ ] **7. Eileen can edit or void an invoice and add a special order line**
+  Becomes usable: Edit opens Deliver loaded from the saved snapshot. Saving updates the invoice and its Ledger total. Void asks once, stamps "Void", keeps the number taken, and the Ledger greys the row and leaves it out of every stat. "+ Add special order" adds a free-text line that prints like any other line.
+  Why now: These are correction paths on top of a working loop. They reuse DeliveryForm and the Ledger, so they're cheap now and would be guesswork earlier. Cafe switching on Edit is decided here (`prd.md > Open Questions`).
+  PRD ref: `prd.md > Deliver (New Delivery and Edit)` (Edit, Special order line), `prd.md > Invoice` (Void)
+  Spec ref: `spec.md > Components` (Deliver Screen, Invoice Screen), `spec.md > Decisions and Open Issues`
+  Build: Add the Edit page, `PUT /api/invoices/[id]`, `POST /api/invoices/[id]/void`, the Confirm primitive, the special order LineRow with its validation, the void stamp on InvoiceDocument and LedgerRow, and the decision on cafe switching (recorded under Revisions).
+  Verify (mechanical): Edit loads the snapshot prices even after a seed price change. A PUT that changes a quantity changes the Ledger total. Void sets `voided_at`, a reused number still returns 409, and the stats exclude the voided invoice. A special order line with a missing description, a negative price or a quantity of 0 returns 400. A valid one appears in the print screenshot.
+  Learner check: Edit your test invoice's quantity and see the new total on the invoice and in the Ledger. Add a special order and print. Void a different invoice and check its Ledger row.
+  Commit: `Add invoice edit, void and special orders`
+
+- [ ] **8. The whole app is judge-ready: Customers, polish and the judge path end to end**
+  Becomes usable: Read-only Customers shows each cafe's details, logo and standing list with prices. Every screen works on a phone and a laptop. Every request failure shows a one-line message. Leaving Count through the bottom nav with unsaved entries prompts. The mock-data audit passes. The four-step judge path runs on the production URL in under three minutes. Email goes out from invoices@lacondesabakingcompany.com once the domain verifies.
+  Why now: Customers is off the judge path, and polish is only worth doing once there's a working whole to audit (the spec's Block 6 audit).
+  PRD ref: `prd.md > Customers (read-only)`, `prd.md > States and Boundaries`, `prd.md > Operational Requirements` (client failures), `prd.md > The Core Journey` (judge path)
+  Spec ref: `spec.md > Components` (Customers Screen, Logging and Health), `spec.md > Decisions and Open Issues` (Block 6 mock-data audit, file-size flag), `spec.md > File Structure` (`tests/e2e/judge-path.spec.ts`)
+  Build: Add the Customers page, the verified-domain switch, the BottomNav dirty-flag guard, a mobile and laptop layout pass against the Stitch PNGs, one-line error states, `tests/e2e/judge-path.spec.ts`, the mock-data audit (no real logo, no real footer, the reference PNG untracked, mock customers only), and a check for files over 200 lines.
+  Verify (mechanical): The Playwright judge-path spec passes against production with timing recorded. The audit script and `git ls-files` checks are clean. Screenshots at 390px and 1280px for every screen show no horizontal scroll. Killing the DB URL locally shows a one-line error, not a blank page. The 200-line report is recorded. Verified-domain switch: after the learner changes the two env values and redeploys, a test send logs a message ID and Resend shows it sent from invoices@lacondesabakingcompany.com, with no code diff.
+  Learner check: Once Resend shows the domain verified, change `EMAIL_FROM` to invoices@lacondesabakingcompany.com and `EMAIL_REPLY_TO` to Eileen's Gmail in Vercel, redeploy, and send one test. Then, as a judge would, on the production URL: Count, Deliver, Invoice (Print and Email), then Ledger for Corazon Cocina. Time it, and open Customers.
+  Commit: `Add Customers, polish and judge-path test`
+
+## Hands-on Checkpoints
+
+- [ ] Early usable behavior explored: after slice 1 (Count on your phone against the Stitch mockup, so app-style drift is caught before four more screens copy it)
+- [ ] Kernel fidelity explored: after slice 3 (printed invoice against the Canva reference; this feedback shapes the PDF and the email)
+- [ ] Final kick-the-tires exploration and feedback completed
+
+## Final Review
+
+- [ ] Final review complete — feedback resolved and learner confirms ready to ship
+
+## Code Tour and App Map
+
+- [ ] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
+- [ ] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
+- [ ] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
+
+Activity and evidence: 
+Route and stops: 
+Edit outcome: 
+Reflection: 
+Activity mode: 
+
+## Revisions
+
+- Resend domain verification moved from a gate on email to a slice 8 polish item. Slice 5 builds and verifies the full send path with Resend's onboarding sender to the learner's own inbox, and `EMAIL_FROM`/`EMAIL_REPLY_TO` stay env-only, so the switch is two env values and a redeploy. The plan discovered that registrar access and DNS propagation are on Eileen's timeline, not the build's (learner decision at the gut check).
+- Stitch mockups (`design/*.html`, `design/*.png`) made local-only and removed from the first commit by amending it before any push. Only `design/DESIGN.md` stays tracked. The pre-commit secret scan found Eileen's kitchen address, two real phone numbers and two real Gmail addresses in them, so the spec's assumption that their content was invented was wrong. From now on, every commit is preceded by a `git diff --cached --name-only` review.
+- Unrelated to the mockups: `.gitignore` keeps `!.env.example` after the Vercel CLI's `.env*` rule, so the placeholder file stays committable.

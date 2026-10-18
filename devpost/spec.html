@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cuenta Spec</title>
+<style>
+  :root { --paper:#fff; --ink:#1a1a1a; --muted:#6b6461; --blush:#efe6e1; --blush-ink:#a8574a; --rule:#bfb6b2; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --paper:#1c1a19; --ink:#f1ece9; --muted:#a9a19d; --blush:#3a2a26; --blush-ink:#f0a99a; --rule:#5a524f; } }
+  :root[data-theme="dark"] { --paper:#1c1a19; --ink:#f1ece9; --muted:#a9a19d; --blush:#3a2a26; --blush-ink:#f0a99a; --rule:#5a524f; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--paper); color:var(--ink); font:17px/1.55 Georgia,"Times New Roman",serif; }
+  main { max-width:900px; margin:0 auto; padding:40px 16px 80px; }
+  .eyebrow,.label { font:600 12px/1.2 system-ui,sans-serif; letter-spacing:.14em; text-transform:uppercase; }
+  .eyebrow { color:var(--blush-ink); } .label { color:var(--muted); margin:16px 0 6px; }
+  h1 { font-size:44px; margin:8px 0 4px; font-weight:400; } h2 { font-size:22px; font-weight:400; margin:0 0 10px; } h3 { font-size:19px; font-weight:400; margin:0 0 6px; }
+  .lede { color:var(--muted); font-style:italic; margin:0; }
+  section { padding:26px 0; border-top:1px dotted var(--rule); }
+  ul { padding-left:20px; margin:6px 0; } li { margin:4px 0; }
+  .muted { color:var(--muted); }
+  code { font-family:ui-monospace,Consolas,monospace; font-size:13.5px; background:var(--blush); padding:1px 4px; overflow-wrap:anywhere; }
+  table { border-collapse:collapse; width:100%; font-size:15px; }
+  th { font:600 11px/1 system-ui,sans-serif; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); text-align:left; padding:6px 8px 8px 0; border-bottom:1px dotted var(--ink); }
+  td { padding:7px 8px 7px 0; border-bottom:1px dotted var(--rule); vertical-align:top; }
+  .scroll { overflow-x:auto; }
+  svg { width:100%; height:auto; display:block; }
+  svg text { font-family:Georgia,serif; fill:var(--ink); }
+  svg .small { font-size:11px; fill:var(--muted); font-family:system-ui,sans-serif; }
+  svg .box { fill:var(--paper); stroke:var(--ink); stroke-width:1.2; }
+  svg .hot { fill:var(--blush); stroke:var(--blush-ink); }
+  svg .ext { fill:var(--paper); stroke:var(--ink); stroke-dasharray:3 3; }
+  svg .arrow { stroke:var(--ink); stroke-width:1.2; fill:none; marker-end:url(#ah); }
+  svg .tok { stroke:var(--blush-ink); stroke-width:1.4; fill:none; stroke-dasharray:5 3; marker-end:url(#ah2); }
+  svg .hl rect { stroke-width:2.6; }
+  .steps { display:flex; gap:6px; flex-wrap:wrap; margin:14px 0 10px; }
+  .steps button, .tabs button { font:600 13px/1 system-ui,sans-serif; padding:9px 12px; border:1px solid var(--rule); background:var(--paper); color:var(--ink); border-radius:0; cursor:pointer; }
+  .steps button[aria-pressed="true"], .tabs button[aria-selected="true"] { background:var(--ink); color:var(--paper); border-color:var(--ink); }
+  .panel { border:1px dotted var(--rule); padding:16px 18px; }
+  .panel[hidden] { display:none; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .card { border:1px solid var(--rule); padding:12px 14px; }
+  .card.hot { border-color:var(--blush-ink); background:var(--blush); }
+  details { border-top:1px dotted var(--rule); padding:9px 0; }
+  summary { cursor:pointer; list-style:none; display:flex; justify-content:space-between; align-items:baseline; gap:10px; }
+  summary::-webkit-details-marker { display:none; }
+  summary::after { content:"+"; color:var(--blush-ink); font-family:system-ui,sans-serif; }
+  details[open] summary::after { content:"–"; }
+  .ref { font:600 11px/1.3 system-ui,sans-serif; letter-spacing:.06em; color:var(--muted); }
+  pre { font:12.5px/1.45 ui-monospace,Consolas,monospace; background:var(--blush); padding:14px; overflow-x:auto; margin:0; }
+  .flag { font:600 10px/1 system-ui,sans-serif; letter-spacing:.1em; color:var(--blush-ink); border:1px solid var(--blush-ink); padding:2px 5px; vertical-align:2px; }
+  footer { color:var(--muted); font-size:13px; font-family:system-ui,sans-serif; padding-top:24px; border-top:1px dotted var(--rule); }
+  @media (max-width:640px) { .grid { grid-template-columns:1fr; } h1 { font-size:36px; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">Spec · approved · companion to spec.md</div>
+  <h1>Cuenta</h1>
+  <p class="lede">The blueprint: one app, one database, one email service, and one invoice layout used three ways.</p>
+
+  <section>
+    <h2>How it works, in plain language</h2>
+    <p>Cuenta is one <b>Next.js</b> app on <b>Vercel</b>. Everything Eileen records lives in one <b>Postgres database on Neon</b>. When she taps Save, Create invoice or Mark paid, the page calls one of the app's own <b>API routes</b>, which checks her PIN session, writes to the database, and logs one line. Every invoice is a <b>snapshot</b>, so nothing that changes later can rewrite it.</p>
+    <p>One invoice layout does three jobs: the screen, Print, and the PDF. For the PDF, the server opens a hidden print page in a <b>headless Chrome</b> with a 60-second pass for that one invoice, and saves it. <b>Resend</b> emails the PDF. All dates are worked out in <b>Pacific time</b> by one helper.</p>
+  </section>
+
+  <section>
+    <h2>Architecture</h2>
+    <p class="muted" style="font-size:15px">Step through the judge path to see which pieces each step touches.</p>
+    <svg id="arch" viewBox="0 0 860 380" role="img" aria-label="Architecture: browser screens call API routes behind the PIN check; API routes read and write Neon Postgres; the PDF renderer runs headless Chrome against the token-gated print route; the email route sends the PDF through Resend; logs go to Vercel function logs.">
+      <defs>
+        <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--ink)"/></marker>
+        <marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--blush-ink)"/></marker>
+      </defs>
+      <text x="100" y="20" text-anchor="middle" class="small">BROWSER (PHONE / LAPTOP)</text>
+      <text x="430" y="20" text-anchor="middle" class="small">VERCEL · NEXT.JS</text>
+      <text x="760" y="20" text-anchor="middle" class="small">SERVICES</text>
+
+      <g data-k="pin"><rect class="box" x="20" y="34" width="160" height="36"/><text x="100" y="57" text-anchor="middle" font-size="14">PIN</text></g>
+      <g data-k="count"><rect class="box" x="20" y="80" width="160" height="36"/><text x="100" y="103" text-anchor="middle" font-size="14">Count</text></g>
+      <g data-k="deliver"><rect class="box" x="20" y="126" width="160" height="36"/><text x="100" y="149" text-anchor="middle" font-size="14">Deliver / Edit</text></g>
+      <g data-k="invoice"><rect class="box hot" x="20" y="172" width="160" height="36"/><text x="100" y="195" text-anchor="middle" font-size="14">Invoice + Print</text></g>
+      <g data-k="ledger"><rect class="box" x="20" y="218" width="160" height="36"/><text x="100" y="241" text-anchor="middle" font-size="14">Ledger</text></g>
+
+      <g data-k="proxy"><rect class="box" x="240" y="34" width="70" height="220"/><text x="275" y="140" text-anchor="middle" font-size="13" transform="rotate(-90 275 140)">PIN check · proxy.ts</text></g>
+
+      <g data-k="api"><rect class="box" x="350" y="34" width="190" height="220"/>
+        <text x="445" y="56" text-anchor="middle" font-size="14">API routes</text>
+        <text x="445" y="78" text-anchor="middle" class="small">/api/session</text>
+        <text x="445" y="96" text-anchor="middle" class="small">/api/counts</text>
+        <text x="445" y="114" text-anchor="middle" class="small">/api/invoices · [id]</text>
+        <text x="445" y="132" text-anchor="middle" class="small">…/void · …/payment</text>
+        <text x="445" y="150" text-anchor="middle" class="small">…/pdf · …/email</text>
+        <text x="445" y="236" text-anchor="middle" class="small">with-route → log.ts</text></g>
+
+      <g data-k="pdf"><rect class="box hot" x="350" y="280" width="190" height="44"/><text x="445" y="300" text-anchor="middle" font-size="14">PDF renderer</text><text x="445" y="316" text-anchor="middle" class="small">puppeteer-core + Chromium</text></g>
+      <g data-k="print"><rect class="box hot" x="200" y="280" width="120" height="44"/><text x="260" y="300" text-anchor="middle" font-size="13">/print/invoice/[id]</text><text x="260" y="316" text-anchor="middle" class="small">?t= 60s token</text></g>
+
+      <g data-k="db"><rect class="ext" x="680" y="60" width="160" height="56"/><text x="760" y="86" text-anchor="middle" font-size="14">Neon Postgres</text><text x="760" y="104" text-anchor="middle" class="small">6 tables · snapshots</text></g>
+      <g data-k="resend"><rect class="ext" x="680" y="150" width="160" height="56"/><text x="760" y="176" text-anchor="middle" font-size="14">Resend</text><text x="760" y="194" text-anchor="middle" class="small">invoices@lacondesa…</text></g>
+      <g data-k="logs"><rect class="ext" x="680" y="240" width="160" height="44"/><text x="760" y="267" text-anchor="middle" font-size="14">Vercel logs</text></g>
+      <g data-k="health"><rect class="box" x="580" y="320" width="100" height="36"/><text x="630" y="343" text-anchor="middle" font-size="13">/health</text></g>
+
+      <path class="arrow" d="M180,140 L236,140"/>
+      <path class="arrow" d="M310,140 L346,140"/>
+      <path class="arrow" d="M540,90 L676,88"/>
+      <path class="arrow" d="M540,170 L676,178"/>
+      <path class="arrow" d="M540,236 L676,260"/>
+      <path class="arrow" d="M445,254 L445,276"/>
+      <path class="tok" d="M350,302 L324,302"/>
+      <text x="337" y="296" text-anchor="middle" class="small" style="fill:var(--blush-ink)">loads</text>
+      <path class="arrow" d="M630,320 L700,120"/>
+      <text x="430" y="372" text-anchor="middle" class="small">The print route skips the PIN check · Eileen's Print button prints the Invoice screen directly</text>
+    </svg>
+
+    <div class="steps" role="group" aria-label="Journey steps">
+      <button data-s="0" aria-pressed="true">1 · PIN</button>
+      <button data-s="1" aria-pressed="false">2 · Count</button>
+      <button data-s="2" aria-pressed="false">3 · Deliver</button>
+      <button data-s="3" aria-pressed="false">4 · Print / PDF</button>
+      <button data-s="4" aria-pressed="false">5 · Email</button>
+      <button data-s="5" aria-pressed="false">6 · Ledger</button>
+    </div>
+    <div class="panel" id="stepbody" aria-live="polite"></div>
+  </section>
+
+  <section>
+    <h2>Stack</h2>
+    <div class="scroll"><table>
+      <tr><th>Piece</th><th>Choice</th><th>Whose call</th></tr>
+      <tr><td>Framework · hosting</td><td>Next.js (App Router, TS) on Vercel</td><td>Learner (brief)</td></tr>
+      <tr><td>Database</td><td>Neon Postgres via <code>@neondatabase/serverless</code></td><td>Learner (brief)</td></tr>
+      <tr><td>Data access</td><td>Drizzle ORM + drizzle-kit</td><td>Accepted</td></tr>
+      <tr><td>PDF</td><td>puppeteer-core + serverless Chromium · fallback: a hosted renderer of the same URL</td><td>Learner</td></tr>
+      <tr><td>Email</td><td>Resend Node SDK</td><td>Learner (brief)</td></tr>
+      <tr><td>Fonts</td><td><code>next/font/google</code>: Bodoni Moda, EB Garamond, Space Grotesk, Limelight</td><td>Derived from the PRD</td></tr>
+      <tr><td>Styling</td><td>CSS Modules + <code>tokens.css</code> + <code>print.css</code></td><td>Accepted</td></tr>
+      <tr><td>Tests</td><td>Vitest (helpers) · Playwright (judge path)</td><td>Accepted</td></tr>
+    </table></div>
+    <p class="muted" style="font-size:14px">Not looked up, verify early: current package versions, <code>middleware.ts</code> vs <code>proxy.ts</code>, Vercel Hobby size and duration limits (Spike 1), and Hobby commercial-use terms (Block 8).</p>
+  </section>
+
+  <section>
+    <h2>Components</h2>
+    <div class="tabs steps" role="tablist">
+      <button role="tab" data-c="pin">PIN Gate</button><button role="tab" data-c="count">Count</button><button role="tab" data-c="deliver">Deliver</button><button role="tab" data-c="doc">Invoice Document</button><button role="tab" data-c="print">Print Route</button><button role="tab" data-c="pdf">PDF Renderer</button><button role="tab" data-c="email">Email Sender</button><button role="tab" data-c="ledger">Ledger</button><button role="tab" data-c="ops">Logging &amp; Health</button><button role="tab" data-c="helpers">Dates &amp; Money</button>
+    </div>
+    <div class="panel" id="c-pin" role="tabpanel"><h3>PIN Gate</h3><p class="ref">prd.md › PIN Gate</p><ul><li><code>POST /api/session</code> compares to <code>APP_PIN</code> in constant time and sets the <code>cuenta_session</code> cookie (HMAC-signed exp, httpOnly, Secure, Lax, 30 days).</li><li><code>proxy.ts</code> guards everything except <code>/pin</code>, <code>/api/session</code>, <code>/print/*</code>, <code>/health</code> and static assets. Pages redirect to the PIN; the API returns 401.</li></ul><p class="ref">app/pin/page.tsx · app/api/session/route.ts · lib/session.ts · proxy.ts</p></div>
+    <div class="panel" id="c-count" role="tabpanel" hidden><h3>Count Screen</h3><p class="ref">prd.md › Count</p><ul><li>Steppers start blank. <code>POST /api/counts</code> sends only the entered rows. <code>counts</code> rows are only ever added, so untouched products keep their old count.</li><li>The last cafe is kept in the <code>cuenta_last_count_cafe</code> cookie. A shared dirty flag drives the prompt on cafe switch and on nav.</li></ul><p class="ref">count/page.tsx · CountForm.tsx · Stepper.tsx · queries/counts.ts</p></div>
+    <div class="panel" id="c-deliver" role="tabpanel" hidden><h3>Deliver (New and Edit)</h3><p class="ref">prd.md › Deliver (New Delivery and Edit)</p><ul><li>One <code>DeliveryForm</code> for both. Each line: an editable unit price, blank qty, line total, grey count. Special order lines included.</li><li>A <code>numberTouched</code> flag stops the suggestion following the date or cafe. A duplicate returns <code>409 {usedOn, cafeName}</code>.</li><li>Edit loads the <b>saved copy</b>, never the current products. Changing the cafe on Edit happens only if it comes free; otherwise the picker is locked.</li></ul><p class="ref">deliver/page.tsx · invoices/[id]/edit/page.tsx · DeliveryForm.tsx · LineRow.tsx · api/invoices</p></div>
+    <div class="panel" id="c-doc" role="tabpanel" hidden><h3>Invoice Document: the kernel</h3><p class="ref">prd.md › Invoice · Look and Feel</p><ul><li>A pure component that renders a saved invoice as the Canva form. Used <b>only</b> by the Invoice screen and the print route.</li><li>Its CSS module plus <code>print.css</code> are the only invoice-shaped styles in the codebase. Lines with qty 0 don't exist; the logo renders when set.</li><li>Type: Limelight INVOICE · Times-first body · PNG wordmark, footer title and headers from <code>public/invoice/</code>.</li><li>Footer identity from <code>BUSINESS_*</code> env vars: placeholders in the repo, real values only in production.</li><li><code>MAX_LINES_ONE_PAGE</code> (measured in Block 3). Above it: “Too many lines for one page”, and PDF/email return 422. It never overflows silently.</li></ul></div>
+    <div class="panel" id="c-print" role="tabpanel" hidden><h3>Print Route</h3><p class="ref">prd.md › Email Invoice · Invoice</p><ul><li><code>/print/invoice/[id]?t=</code>: the token is an HMAC(id, exp) with <code>PRINT_TOKEN_SECRET</code>, valid 60 s and scoped to one invoice.</li><li>A bad, expired or wrong-invoice token returns <b>404</b>. It never reads the PIN cookie, never logs the token, and sends noindex.</li><li>Used only by the renderer. Eileen's Print button calls <code>window.print()</code> on the Invoice screen.</li></ul></div>
+    <div class="panel" id="c-pdf" role="tabpanel" hidden><h3>PDF Renderer</h3><p class="ref">Spike 1 · learner-written pass criteria</p><div class="grid"><div class="card"><div class="label" style="margin-top:0">Flow</div><ul><li>Mint a token, launch Chromium, <code>goto</code> the print URL with <code>networkidle0</code>, wait for <code>document.fonts.ready</code>, then <code>pdf({format:'Letter'})</code>.</li><li>Used by <code>…/pdf</code> (Download) and <code>…/email</code>. <code>maxDuration</code> set explicitly.</li></ul></div><div class="card hot"><div class="label" style="margin-top:0">Pass / fallback</div><ul><li>Release within the last 6 months; fits Hobby's size limit.</li><li>Under 10 s cold, under 3 s warm. Limelight and the PNGs render correctly.</li><li>If it fails after 60 min: a hosted renderer on the <b>same</b> URL. Never a second layout.</li></ul></div></div></div>
+    <div class="panel" id="c-email" role="tabpanel" hidden><h3>Email Sender</h3><p class="ref">prd.md › Email Invoice</p><ul><li><code>POST …/email {to}</code>: build the template, render the PDF, then <code>resend.emails.send({from, to, replyTo, subject, text, attachments})</code>.</li><li>Success: <code>email_sent_at</code> + message ID, and the failure flag clears. Any failure: <code>email_last_failed_at</code> + 502, and the sheet stays open with Retry.</li><li>Status line: “Sent Oct 18 9:14am” · “Sent … · resend failed” · “Not sent” (only if no send ever succeeded). The stamp never lies.</li><li>The template lives in <code>lib/email/invoice-email.ts</code> until Handoff.</li></ul></div>
+    <div class="panel" id="c-ledger" role="tabpanel" hidden><h3>Ledger</h3><p class="ref">prd.md › Ledger</p><ul><li><code>queries/ledger.ts</code> returns totalCents (summed from the lines), dueOn (+30), overdueDays (vs <code>todayPacific()</code>) and the status.</li><li><code>ledger-stats.ts</code>: Open, Outstanding, This month, excluding void. Filtered with <code>?cafe=</code>.</li><li><code>POST/DELETE …/payment</code>; <code>POST …/void</code>.</li></ul></div>
+    <div class="panel" id="c-ops" role="tabpanel" hidden><h3>Logging &amp; Health</h3><p class="ref">prd.md › Operational Requirements</p><ul><li><code>with-route.ts</code> wraps every API handler and logs one JSON line: {ts, route, outcome, ms, invoiceNumber?, cafe?, messageId?, error?}.</li><li>Never logged: emails, addresses, phones, bodies, the PIN, tokens, env values.</li><li><code>/health</code> runs <code>select 1</code> and returns the version. The client fetch wrapper shows one-line errors and logs them to the console.</li></ul></div>
+    <div class="panel" id="c-helpers" role="tabpanel" hidden><h3>Dates &amp; Money</h3><ul><li><code>TZ='America/Los_Angeles'</code>. <code>todayPacific()</code> is the only source of "today". Nothing reads the browser's clock for a date.</li><li><b>Block 1 check:</b> an invoice created at 5:30 pm Pacific gets today's date and today's number.</li><li>Integer cents everywhere. <code>suggestNumber(1, '2026-10-17')</code> returns <code>110172026</code>.</li></ul></div>
+  </section>
+
+  <section>
+    <h2>Data model</h2>
+    <div class="grid">
+      <div class="card"><div class="label" style="margin-top:0">Reference (seeded)</div><ul><li><b>customers</b>: code (unique), name, phone, address_lines, billing_email?, logo_path? (mock: a generated placeholder)</li><li><b>products</b>: <b>slug</b> (unique, stable), name, price_cents, active. Open-ended count; Block 1 sixth-product check.</li><li><b>standing_items</b>: customer, product, position</li></ul></div>
+      <div class="card"><div class="label" style="margin-top:0">Records</div><ul><li><b>counts</b>: rows only added: customer, product, qty, counted_on (date)</li><li><b>invoices</b>: number (unique text), invoice_date, <b>cafe snapshot</b>, voided_at, paid_on, paid_reference, email_sent_at, email_message_id, email_last_failed_at</li><li><b>invoice_lines</b>: product_id? (null = special order), description, unit_price_cents, qty ≥ 1, position</li></ul></div>
+    </div>
+    <p class="muted" style="font-size:15px">Due date and totals are calculated, never stored. Blank standing rows are never saved, so an invoice holds only what was delivered.</p>
+  </section>
+
+  <section>
+    <h2>File structure</h2>
+    <details><summary><span>Show the annotated tree (every file starts with <code>// Job:</code>)</span></summary>
+<pre>app/
+  pin/page.tsx · (app)/layout.tsx · (app)/page.tsx → /count
+  (app)/count · deliver · invoices/[id] · invoices/[id]/edit · ledger · customers
+  print/invoice/[id]/page.tsx       token-gated, no chrome
+  health/route.ts
+  api/session · counts · invoices · invoices/[id]/{route, void, payment, pdf, email, email-preview}
+proxy.ts                            PIN check
+components/
+  nav/BottomNav · count/{CountForm, Stepper} · deliver/{DeliveryForm, LineRow}
+  invoice/{InvoiceDocument(+.module.css), InvoiceActions, EmailSheet}
+  ledger/{LedgerRow, StatRow, PaymentSheet} · ui/{Button, Sheet, Confirm, CafePicker, QuietMessage}
+lib/
+  dates · money · invoice-number · invoice-capacity · email-status · business · session · print-token · log · ledger-stats
+  api/{with-route, client} · pdf/{browser, render-invoice-pdf} · email/{invoice-email, send}
+  queries/{customers, products, counts, invoices, ledger}
+db/
+  client.ts · schema/{customers, products, standing-items, counts, invoices, invoice-lines} · migrations/
+seed/{mock-data, seed}.ts
+styles/{tokens, globals, print}.css
+public/{invoice/ (Canva PNGs), logos/placeholder.png}
+tests/{unit/, e2e/judge-path.spec.ts}
+.env.example · drizzle.config.ts · next.config.ts · README.md</pre>
+    </details>
+  </section>
+
+  <section>
+    <h2>Failure modes</h2>
+    <div class="scroll"><table>
+      <tr><th>Breaks</th><th>She sees</th></tr>
+      <tr><td>Chromium too big or slow on Vercel</td><td>Spike 1 decides → hosted renderer. PDF/Email show a one-line failure; <b>Print always works.</b></td></tr>
+      <tr><td>Resend fails</td><td>The invoice is already saved · "Couldn't send…" + Retry · "Not sent" · never "Sent".</td></tr>
+      <tr><td>Neon cold start or outage</td><td>A one-line error, never blank · <code>/health</code> tells them apart · warm it before the demo.</td></tr>
+      <tr><td>Duplicate number race</td><td>The unique index → "Already used on…".</td></tr>
+      <tr><td>Late-evening date</td><td>Prevented by <code>todayPacific()</code>; Block 1 check.</td></tr>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Where the 20% leaked, this time</h2>
+    <div class="grid">
+      <div class="card"><div class="label" style="margin-top:0">Caught in the PRD (the what)</div><ul><li>Blank vs pre-filled steppers</li><li>Delivered-only invoice lines</li><li>The cafe logo on the form</li><li>The invoice-number scheme · Alma</li></ul></div>
+      <div class="card hot"><div class="label" style="margin-top:0">Caught in the spec (the how)</div><ul><li>The UTC clock shifting dates and numbers</li><li>The PDF renderer blocked by the PIN</li><li>Linked prices rewriting past invoices</li></ul></div>
+    </div>
+    <p style="font-size:15px">In <code>5-build</code>, every PASS/FAIL check cites a PRD heading <i>and</i> a spec heading, so "checking against the plan" has two exact addresses.</p>
+  </section>
+
+  <section>
+    <h2>Public-repo decisions</h2>
+    <div class="grid">
+      <div class="card"><div class="label" style="margin-top:0">Never in git</div><ul><li>The real Corazon logo (production seed at Handoff)</li><li>Eileen's real footer details (production env only)</li><li><code>design/canva-invoice-reference.png</code> (gitignored, local only)</li></ul></div>
+      <div class="card hot"><div class="label" style="margin-top:0">Checked, not assumed</div><ul><li>The Block 6 mock-data audit verifies all three, plus mock-only customer data</li><li>The Stitch PNGs are fine: their content is invented</li></ul></div>
+    </div>
+    <p class="muted" style="font-size:15px">Carried from the PRD: cafe switch on Edit is in only if it comes free.</p>
+  </section>
+
+  <footer>spec.md is the source of truth; this page is a companion for review.</footer>
+</main>
+<script>
+  const steps = [
+    {k:["pin","proxy","api"], t:"<b>PIN.</b> The PIN goes to <code>POST /api/session</code>, which compares it to <code>APP_PIN</code> and sets a signed 30-day cookie. <code>proxy.ts</code> checks that cookie on every later request."},
+    {k:["count","proxy","api","db","logs"], t:"<b>Count.</b> The page reads cafes, standing products and the latest count per product. Save sends <code>POST /api/counts</code> with only the entered rows, and the server adds one row each, dated <code>todayPacific()</code>."},
+    {k:["deliver","proxy","api","db","logs"], t:"<b>Deliver.</b> The standing list loads with prices and grey counts (display only). Date = <code>todayPacific()</code>, number = <code>suggestNumber(code, date)</code>. Create sends <code>POST /api/invoices</code>, which checks uniqueness and saves the snapshot of lines and cafe details in one transaction."},
+    {k:["invoice","api","pdf","print","db"], t:"<b>Print / PDF.</b> Print calls <code>window.print()</code> with print CSS on the Invoice screen. Download PDF sends <code>GET …/pdf</code>: the PIN check passes, a 60 s token is minted, headless Chrome opens <code>/print/invoice/[id]?t=…</code>, and a Letter PDF is saved."},
+    {k:["invoice","api","pdf","print","resend","db","logs"], t:"<b>Email.</b> Send sends <code>POST …/email {to}</code>: build the template, render the same PDF, call Resend. On success it records the send time and message ID; any failure records a failed attempt and returns 502. An earlier success keeps “Sent [time]” plus “resend failed”; “Not sent” appears only if nothing ever succeeded. Either way, one log line, which is the on-camera proof."},
+    {k:["ledger","api","db","logs"], t:"<b>Ledger.</b> Rows have totals summed from the lines, due date = date + 30, overdue vs <code>todayPacific()</code>. The three stats exclude void. Mark paid / unpaid use <code>POST/DELETE …/payment</code>."}
+  ];
+  const body = document.getElementById("stepbody");
+  function step(i){
+    document.querySelectorAll(".steps button[data-s]").forEach(b=>b.setAttribute("aria-pressed", b.dataset.s==i?"true":"false"));
+    document.querySelectorAll("#arch g[data-k]").forEach(g=>g.classList.toggle("hl", steps[i].k.includes(g.dataset.k)));
+    body.innerHTML = steps[i].t;
+  }
+  document.querySelectorAll(".steps button[data-s]").forEach(b=>b.addEventListener("click",()=>step(+b.dataset.s)));
+  step(0);
+  const tabs = document.querySelectorAll("button[data-c]");
+  function tab(c){ tabs.forEach(b=>b.setAttribute("aria-selected", b.dataset.c===c?"true":"false")); document.querySelectorAll("[id^='c-']").forEach(p=>p.hidden = p.id!=="c-"+c); }
+  tabs.forEach(b=>b.addEventListener("click",()=>tab(b.dataset.c)));
+  tab("pin");
+</script>
+</body>
+</html>

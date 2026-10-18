@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cuenta Scope</title>
+<style>
+  :root {
+    --paper: #ffffff;
+    --ink: #1a1a1a;
+    --muted: #6b6461;
+    --blush: #f6dfd8;
+    --blush-ink: #a8574a;
+    --rule: #bfb6b2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #1c1a19; --ink: #f1ece9; --muted: #a9a19d;
+      --blush: #3a2a26; --blush-ink: #f0a99a; --rule: #5a524f;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #1c1a19; --ink: #f1ece9; --muted: #a9a19d;
+    --blush: #3a2a26; --blush-ink: #f0a99a; --rule: #5a524f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font: 17px/1.55 Georgia, "Times New Roman", serif;
+  }
+  main { max-width: 780px; margin: 0 auto; padding: 40px 16px 80px; }
+  .eyebrow { font: 600 12px/1 system-ui, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--blush-ink); }
+  h1 { font-size: 44px; margin: 8px 0 4px; font-weight: 400; }
+  h2 { font-size: 22px; font-weight: 400; margin: 0 0 10px; }
+  .lede { color: var(--muted); font-style: italic; margin: 0 0 8px; }
+  section { padding: 26px 0; border-top: 1px dotted var(--rule); }
+  .kernel { background: var(--blush); padding: 18px 20px; border-radius: 4px; }
+  .kernel p { margin: 0; }
+  .pill { display: inline-block; font: 600 11px/1 system-ui, sans-serif; letter-spacing: .06em; padding: 4px 8px; border: 1px solid var(--rule); border-radius: 99px; color: var(--muted); margin-right: 6px; }
+  ul { padding-left: 20px; margin: 6px 0; }
+  li { margin: 4px 0; }
+  svg { width: 100%; height: auto; display: block; }
+  svg text { font-family: Georgia, serif; fill: var(--ink); }
+  svg .small { font-size: 11px; fill: var(--muted); font-family: system-ui, sans-serif; }
+  svg .box { fill: var(--paper); stroke: var(--ink); stroke-width: 1.2; }
+  svg .hot { fill: var(--blush); stroke: var(--blush-ink); }
+  svg .arrow { stroke: var(--ink); stroke-width: 1.2; fill: none; marker-end: url(#ah); }
+  svg .feed { stroke: var(--blush-ink); stroke-dasharray: 4 3; stroke-width: 1.4; fill: none; marker-end: url(#ah2); }
+  .steps { display: flex; gap: 6px; flex-wrap: wrap; margin: 12px 0; }
+  .steps button {
+    font: 600 13px/1 system-ui, sans-serif; padding: 9px 12px; border: 1px solid var(--rule);
+    background: var(--paper); color: var(--ink); border-radius: 4px; cursor: pointer;
+  }
+  .steps button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .stepbody { border: 1px dotted var(--rule); padding: 14px 16px; border-radius: 4px; min-height: 92px; }
+  .finish { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .finish div { border: 1px solid var(--rule); padding: 14px 16px; border-radius: 4px; }
+  .finish div:first-child { border-color: var(--blush-ink); }
+  .finish h3 { margin: 0 0 6px; font-size: 15px; font-family: system-ui, sans-serif; letter-spacing: .04em; }
+  details { border-bottom: 1px dotted var(--rule); padding: 10px 0; }
+  summary { cursor: pointer; font-size: 19px; list-style: none; display: flex; justify-content: space-between; align-items: baseline; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; color: var(--blush-ink); font-family: system-ui, sans-serif; }
+  details[open] summary::after { content: "–"; }
+  .count { font: 600 12px/1 system-ui, sans-serif; color: var(--muted); margin-left: 8px; }
+  .why { color: var(--muted); }
+  footer { color: var(--muted); font-size: 13px; font-family: system-ui, sans-serif; padding-top: 24px; border-top: 1px dotted var(--rule); }
+  @media (max-width: 600px) { .finish { grid-template-columns: 1fr; } h1 { font-size: 36px; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">Scope · approved · companion to scope.md</div>
+  <h1>Cuenta</h1>
+  <p class="lede">An invoicing and shelf-count app for La Condesa Baking Company: Eileen's paper invoice, come to life.</p>
+
+  <section>
+    <h2>The kernel</h2>
+    <div class="kernel">
+      <p>She builds each delivery from the cafe's standing list, with her latest shelf count beside each line as a greyed reference. The invoice it prints in the kitchen is <em>indistinguishable</em> from the Canva form she hands out today. It isn't generic invoicing software: it digitizes one baker's existing route and paperwork exactly as she already does them.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>The core loop</h2>
+    <svg viewBox="0 0 760 300" role="img" aria-label="Core loop: Count at the cafe on a phone feeds Deliver in the kitchen on a laptop, which creates an invoice that is printed and emailed, which appears on the Ledger. The count also tells her what to bake next time.">
+      <defs>
+        <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor" style="fill:var(--ink)"/></marker>
+        <marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--blush-ink)"/></marker>
+      </defs>
+      <!-- places -->
+      <text x="95" y="24" text-anchor="middle" class="small">AT THE CAFE · PHONE</text>
+      <text x="380" y="24" text-anchor="middle" class="small">IN THE KITCHEN · LAPTOP</text>
+      <text x="665" y="24" text-anchor="middle" class="small">ANYWHERE · PHONE</text>
+
+      <rect class="box" x="20" y="44" width="150" height="76" rx="4"/>
+      <text x="95" y="76" text-anchor="middle" font-size="18">Count</text>
+      <text x="95" y="98" text-anchor="middle" class="small">last count in grey + date</text>
+
+      <rect class="box hot" x="230" y="44" width="150" height="76" rx="4"/>
+      <text x="305" y="76" text-anchor="middle" font-size="18">Deliver</text>
+      <text x="305" y="98" text-anchor="middle" class="small">standing list · live totals</text>
+
+      <rect class="box hot" x="420" y="44" width="150" height="76" rx="4"/>
+      <text x="495" y="76" text-anchor="middle" font-size="18">Invoice</text>
+      <text x="495" y="98" text-anchor="middle" class="small">matches the Canva form</text>
+
+      <rect class="box" x="600" y="44" width="140" height="76" rx="4"/>
+      <text x="670" y="76" text-anchor="middle" font-size="18">Ledger</text>
+      <text x="670" y="98" text-anchor="middle" class="small">unpaid · due in 30 days</text>
+
+      <path class="arrow" d="M380,82 L416,82"/>
+      <path class="arrow" d="M570,82 L596,82"/>
+
+      <!-- count is reference only for deliver -->
+      <path class="feed" d="M170,70 C195,70 205,70 226,70"/>
+      <text x="198" y="62" text-anchor="middle" class="small" style="fill:var(--blush-ink)">glance only</text>
+      <text x="198" y="140" text-anchor="middle" class="small" style="fill:var(--blush-ink)">never pre-fills</text>
+
+      <!-- outputs -->
+      <rect class="box" x="400" y="170" width="90" height="44" rx="4"/>
+      <text x="445" y="197" text-anchor="middle" font-size="14">Print</text>
+      <rect class="box" x="500" y="170" width="90" height="44" rx="4"/>
+      <text x="545" y="197" text-anchor="middle" font-size="14">Email PDF</text>
+      <path class="arrow" d="M480,120 L450,166"/>
+      <path class="arrow" d="M510,120 L540,166"/>
+      <text x="495" y="238" text-anchor="middle" class="small">kitchen printer · real Resend send, "Sent" stamped</text>
+
+      <!-- return loop -->
+      <path class="arrow" d="M670,120 C670,280 95,280 95,124"/>
+      <text x="380" y="292" text-anchor="middle" class="small">next delivery day: the count tells her what to bake and bring</text>
+    </svg>
+  </section>
+
+  <section>
+    <h2>Who it's for</h2>
+    <p><strong>Eileen</strong>, owner of La Condesa Baking Company in Santa Barbara, delivering to four cafes:</p>
+    <p>
+      <span class="pill">Corazon Cocina · Public Market</span>
+      <span class="pill">Little Heart Cafecito</span>
+      <span class="pill">Corazon Cocina SUR · Carpinteria</span>
+      <span class="pill">Alma</span>
+    </p>
+    <p class="why">Today she counts shelves by hand, fills in quantities and totals on pre-printed Canva forms, does the math by hand, and tracks who owes her (Net 30, ACH) in her head. Those last three are what she most wants to stop doing.</p>
+  </section>
+
+  <section>
+    <h2>What "working" looks like</h2>
+    <div class="finish">
+      <div>
+        <h3>HACKATHON DONE · Oct 26</h3>
+        A judge can follow the four-step path on the deployed URL with mock data, under three minutes, and every step works.
+      </div>
+      <div>
+        <h3>PROJECT DONE · after submission</h3>
+        Eileen completes one real delivery without the learner: count on her phone, invoice printed in the kitchen, one emailed to the cafe, ledger updated.
+      </div>
+    </div>
+    <div class="kernel" style="margin-top:18px">
+      <p><strong>Two separate jobs.</strong> Count is for Eileen's planning only. Deliver and Invoice record what she actually dropped off, with quantities she types in herself. The invoice never reads from a count, and a count never changes because of an invoice. The shelf count beside each Deliver line is greyed reference and never pre-fills the quantity.</p>
+    </div>
+    <p class="small" style="margin-top:18px;font-family:system-ui,sans-serif;font-size:13px;color:var(--muted)">Step through the judge path (also the demo video script):</p>
+    <div class="steps" role="group" aria-label="Judge path steps">
+      <button data-s="0" aria-pressed="true">1 · Count</button>
+      <button data-s="1" aria-pressed="false">2 · Deliver</button>
+      <button data-s="2" aria-pressed="false">3 · Invoice</button>
+      <button data-s="3" aria-pressed="false">4 · Ledger</button>
+    </div>
+    <div class="stepbody" id="stepbody" aria-live="polite">Open the Count screen and pick Corazon Cocina. The last count shows in grey with its date under each product. Enter two numbers and save.</div>
+    <p style="margin-top:16px"><strong>The "oh, that's cool" moment:</strong> the printed invoice looks exactly like the paper one, and the email really arrives.</p>
+  </section>
+
+  <section>
+    <h2>The boundary</h2>
+    <details open>
+      <summary><span>Now · in the proof of concept <span class="count">7</span></span></summary>
+      <ul>
+        <li>A single PIN gate</li>
+        <li>Products and Customers, each cafe with a standing product list; mock seed data only in the repo</li>
+        <li>Count per cafe, with last-count pre-fill and its date</li>
+        <li>Delivery: totals in integer cents, invoice numbers as text (location code + MMDDYYYY, suggested, overwritable, unique), edit and void (never delete), quantities typed in by Eileen. The shelf count beside each line is greyed reference only and never pre-fills; the invoice never reads from a count, and a count never changes because of an invoice.</li>
+        <li>Invoice template matched to the Canva form; print CSS fitting one letter page; PDF</li>
+        <li>Real Resend email with the PDF attached, from invoices@lacondesabakingcompany.com, Reply-To her Gmail. The domain is verified in Block 4, an existing SPF record is merged, not replaced, and the test send goes to the learner's inbox.</li>
+        <li>Ledger: paid or unpaid with the paid date and an optional ACH reference, Net 30 due dates, overdue, month totals, filter by cafe. Plus a mobile pass, error and empty states, a mock-data audit, and a Vercel deploy.</li>
+      </ul>
+    </details>
+    <details>
+      <summary><span>Later <span class="count">6</span></span></summary>
+      <ul>
+        <li><strong>Block 8, Handoff:</strong> seed real data from a gitignored file, set the production PIN, add the URL to her home screen, and have Eileen run the path herself as the acceptance test</li>
+        <li>Stripe or other payments</li>
+        <li>Multi-user login</li>
+        <li>Low-stock alerts</li>
+        <li>Bake list</li>
+        <li>Per-cafe logo upload</li>
+      </ul>
+    </details>
+    <details>
+      <summary><span>Explicitly cut <span class="count">5</span></span></summary>
+      <ul>
+        <li><strong>Ingredient tracking and recipe costing</strong> <span class="why">: a different product. Cuenta is about the route and the paperwork.</span></li>
+        <li><strong>Accounting and tax</strong> <span class="why">: the Ledger only tracks who owes what.</span></li>
+        <li><strong>Model-generated prices, totals, dates, invoice numbers or email text</strong> <span class="why">: deterministic app. The AI is in how it's built.</span></li>
+        <li><strong>Inventory decrement on delivery</strong> <span class="why">: counts are observed at the cafe, not calculated.</span></li>
+        <li><strong>Real customer data in the repo</strong> <span class="why">: mock only. Real data arrives at Handoff.</span></li>
+      </ul>
+    </details>
+  </section>
+
+  <section>
+    <h2>Look &amp; feel</h2>
+    <p>Her paper invoice come to life: white paper, black ink, one warm blush tint, dotted hairline rules, serif text. Four bottom tabs: <em>Count, Deliver, Ledger, Customers</em>. Count and Ledger are phone screens; Deliver and Invoice are laptop screens. The Stitch mockups of all five screens come in at the PRD step.</p>
+  </section>
+
+  <footer>scope.md is the source of truth; this page is a companion for review.</footer>
+</main>
+<script>
+  const steps = [
+    "Open the Count screen and pick Corazon Cocina. The last count shows in grey with its date under each product. Enter two numbers and save.",
+    "Tap New delivery and pick Corazon Cocina. The standing product list appears with prices and the latest shelf count beside each line. Enter quantities; totals compute live. Tap Create invoice.",
+    "The invoice matches her Canva form, with its invoice number (location code + date) and today's date. Print opens the browser dialog. Email invoice, confirm, and “Sent” is stamped on it, with a real send on camera.",
+    "Open the Ledger. The new invoice shows as unpaid, due in 30 days, and the month total updates."
+  ];
+  const body = document.getElementById("stepbody");
+  document.querySelectorAll(".steps button").forEach(b => b.addEventListener("click", () => {
+    document.querySelectorAll(".steps button").forEach(x => x.setAttribute("aria-pressed", "false"));
+    b.setAttribute("aria-pressed", "true");
+    body.textContent = steps[+b.dataset.s];
+  }));
+</script>
+</body>
+</html>

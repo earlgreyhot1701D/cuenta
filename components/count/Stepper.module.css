@@ -1,0 +1,36 @@
+.stepper {
+  display: grid;
+  grid-template-columns: var(--touch) 3.25rem var(--touch);
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.step,
+.value {
+  height: var(--touch);
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  text-align: center;
+}
+
+.step {
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.step:active {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.value {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  width: 100%;
+  outline: none;
+}
+
+.value:focus {
+  border-width: 2px;
+}

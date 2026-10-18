@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cuenta PRD</title>
+<style>
+  :root {
+    --paper: #ffffff; --ink: #1a1a1a; --muted: #6b6461;
+    --blush: #efe6e1; --blush-ink: #a8574a; --rule: #bfb6b2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #1c1a19; --ink: #f1ece9; --muted: #a9a19d;
+      --blush: #3a2a26; --blush-ink: #f0a99a; --rule: #5a524f;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #1c1a19; --ink: #f1ece9; --muted: #a9a19d;
+    --blush: #3a2a26; --blush-ink: #f0a99a; --rule: #5a524f;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 17px/1.55 Georgia, "Times New Roman", serif; }
+  main { max-width: 860px; margin: 0 auto; padding: 40px 16px 80px; }
+  .eyebrow, .label { font: 600 12px/1.2 system-ui, sans-serif; letter-spacing: .14em; text-transform: uppercase; }
+  .eyebrow { color: var(--blush-ink); }
+  .label { color: var(--muted); margin: 18px 0 6px; }
+  h1 { font-size: 44px; margin: 8px 0 4px; font-weight: 400; }
+  h2 { font-size: 22px; font-weight: 400; margin: 0 0 10px; }
+  h3 { font-size: 20px; font-weight: 400; margin: 0 0 4px; }
+  .lede { color: var(--muted); font-style: italic; margin: 0; }
+  section { padding: 26px 0; border-top: 1px dotted var(--rule); }
+  ul { padding-left: 20px; margin: 6px 0; } li { margin: 4px 0; }
+  .muted { color: var(--muted); }
+  table { border-collapse: collapse; width: 100%; font-size: 15px; }
+  th { font: 600 11px/1 system-ui, sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); text-align: left; padding: 6px 8px 8px 0; border-bottom: 1px dotted var(--ink); }
+  td { padding: 7px 8px 7px 0; border-bottom: 1px dotted var(--rule); vertical-align: top; }
+  svg { width: 100%; height: auto; display: block; }
+  svg text { font-family: Georgia, serif; fill: var(--ink); }
+  svg .small { font-size: 11px; fill: var(--muted); font-family: system-ui, sans-serif; }
+  svg .box { fill: var(--paper); stroke: var(--ink); stroke-width: 1.2; }
+  svg .hot { fill: var(--blush); stroke: var(--blush-ink); }
+  svg .arrow { stroke: var(--ink); stroke-width: 1.2; fill: none; marker-end: url(#ah); }
+  svg .ref { stroke: var(--blush-ink); stroke-dasharray: 4 3; stroke-width: 1.3; fill: none; }
+  svg g.node { cursor: pointer; }
+  svg g.node:focus { outline: none; }
+  svg g.node.active rect { stroke-width: 2.4; }
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 16px 0 12px; }
+  .tabs button { font: 600 13px/1 system-ui, sans-serif; padding: 9px 12px; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); border-radius: 0; cursor: pointer; }
+  .tabs button[aria-selected="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .panel { border: 1px dotted var(--rule); padding: 18px 20px; }
+  .panel[hidden] { display: none; }
+  .meta { font: 600 11px/1 system-ui, sans-serif; letter-spacing: .1em; color: var(--muted); text-transform: uppercase; margin-bottom: 10px; }
+  .grew { background: var(--blush); padding: 12px 14px; margin: 0 0 14px; font-size: 15px; }
+  .grew b { font-family: system-ui, sans-serif; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--blush-ink); display: block; margin-bottom: 4px; }
+  details { border-top: 1px dotted var(--rule); padding: 8px 0; }
+  summary { cursor: pointer; list-style: none; font: 600 12px/1.4 system-ui, sans-serif; letter-spacing: .1em; text-transform: uppercase; display: flex; justify-content: space-between; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; color: var(--blush-ink); }
+  details[open] summary::after { content: "–"; }
+  .check li { list-style: none; margin-left: -20px; padding-left: 24px; position: relative; }
+  .check li::before { content: ""; position: absolute; left: 0; top: 6px; width: 12px; height: 12px; border: 1px solid var(--ink); }
+  code { font-family: ui-monospace, Consolas, monospace; font-size: 14px; background: var(--blush); padding: 1px 4px; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .card { border: 1px solid var(--rule); padding: 14px 16px; }
+  .card.hot { border-color: var(--blush-ink); }
+  .assume { font: 600 10px/1 system-ui, sans-serif; letter-spacing: .1em; color: var(--blush-ink); border: 1px solid var(--blush-ink); padding: 2px 5px; margin-left: 6px; vertical-align: 2px; }
+  footer { color: var(--muted); font-size: 13px; font-family: system-ui, sans-serif; padding-top: 24px; border-top: 1px dotted var(--rule); }
+  @media (max-width: 640px) { .cols { grid-template-columns: 1fr; } h1 { font-size: 36px; } table { font-size: 14px; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">PRD · approved · companion to prd.md</div>
+  <h1>Cuenta</h1>
+  <p class="lede">Her paper invoice, come to life: every screen, behavior, state and check.</p>
+
+  <section>
+    <h2>The journey</h2>
+    <p class="muted" style="font-size:15px">Click a screen in the diagram, or use the tabs below, to see its behavior, states and checks.</p>
+    <svg viewBox="0 0 820 250" role="img" aria-label="Journey: PIN leads to Count on the phone. Separately, Deliver on the laptop creates an Invoice, which is printed and emailed, and appears on the Ledger. Count is shown on Deliver as grey reference only.">
+      <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--ink)"/></marker></defs>
+      <text x="80" y="22" text-anchor="middle" class="small">FIRST OPEN</text>
+      <text x="245" y="22" text-anchor="middle" class="small">PHONE · CAFE</text>
+      <text x="490" y="22" text-anchor="middle" class="small">LAPTOP · KITCHEN</text>
+      <text x="735" y="22" text-anchor="middle" class="small">PHONE</text>
+
+      <g class="node" data-p="pin" tabindex="0"><rect class="box" x="20" y="40" width="120" height="64"/><text x="80" y="70" text-anchor="middle" font-size="17">PIN</text><text x="80" y="90" text-anchor="middle" class="small">30-day device</text></g>
+      <g class="node" data-p="count" tabindex="0"><rect class="box" x="180" y="40" width="130" height="64"/><text x="245" y="70" text-anchor="middle" font-size="17">Count</text><text x="245" y="90" text-anchor="middle" class="small">blank steppers</text></g>
+      <g class="node" data-p="deliver" tabindex="0"><rect class="box hot" x="360" y="40" width="120" height="64"/><text x="420" y="70" text-anchor="middle" font-size="17">Deliver</text><text x="420" y="90" text-anchor="middle" class="small">qty typed in</text></g>
+      <g class="node" data-p="invoice" tabindex="0"><rect class="box hot" x="510" y="40" width="130" height="64"/><text x="575" y="70" text-anchor="middle" font-size="17">Invoice</text><text x="575" y="90" text-anchor="middle" class="small">the Canva form</text></g>
+      <g class="node" data-p="ledger" tabindex="0"><rect class="box" x="680" y="40" width="120" height="64"/><text x="740" y="70" text-anchor="middle" font-size="17">Ledger</text><text x="740" y="90" text-anchor="middle" class="small">Net 30 · paid</text></g>
+      <g class="node" data-p="email" tabindex="0"><rect class="box" x="540" y="160" width="110" height="46"/><text x="595" y="188" text-anchor="middle" font-size="15">Email sheet</text></g>
+      <g class="node" data-p="customers" tabindex="0"><rect class="box" x="180" y="160" width="130" height="46"/><text x="245" y="182" text-anchor="middle" font-size="15">Customers</text><text x="245" y="198" text-anchor="middle" class="small">read-only</text></g>
+
+      <path class="arrow" d="M140,72 L176,72"/>
+      <path class="ref" d="M310,60 L356,60"/>
+      <text x="333" y="52" text-anchor="middle" class="small" style="fill:var(--blush-ink)">grey ref</text>
+      <path class="arrow" d="M480,72 L506,72"/>
+      <path class="arrow" d="M640,72 L676,72"/>
+      <path class="arrow" d="M590,104 L594,156"/>
+      <path class="arrow" d="M650,183 C700,183 740,150 740,108"/>
+      <text x="712" y="200" class="small">"Sent" + envelope</text>
+      <path class="arrow" d="M700,104 C680,135 520,135 480,108"/>
+      <text x="590" y="146" text-anchor="middle" class="small">Edit (reuses Deliver)</text>
+      <text x="420" y="236" text-anchor="middle" class="small">Count never feeds an invoice · an invoice never changes a count</text>
+    </svg>
+
+    <div class="tabs" role="tablist" aria-label="Screens">
+      <button role="tab" data-p="pin">PIN</button>
+      <button role="tab" data-p="count">Count</button>
+      <button role="tab" data-p="deliver">Deliver</button>
+      <button role="tab" data-p="invoice">Invoice</button>
+      <button role="tab" data-p="email">Email</button>
+      <button role="tab" data-p="ledger">Ledger</button>
+      <button role="tab" data-p="customers">Customers</button>
+    </div>
+
+    <div class="panel" id="p-pin" role="tabpanel">
+      <div class="meta">Both devices · first open or after 30 days</div>
+      <h3>PIN Gate</h3>
+      <ul><li>The La Condesa wordmark, one four-digit field, one button.</li><li>Wrong: "That's not it." in serif under the field. No lockout.</li><li>Right: remembered on that device for 30 days, then lands on Count.</li></ul>
+      <details><summary>Checks</summary><ul class="check"><li>A wrong PIN shows "That's not it." and stays on the PIN screen.</li><li>Reopening on the same device within 30 days goes straight to Count.</li><li>No screen or data request works without a valid PIN session.</li></ul></details>
+    </div>
+
+    <div class="panel" id="p-count" role="tabpanel" hidden>
+      <div class="meta">Phone · at the cafe · landing screen</div>
+      <h3>Count</h3>
+      <div class="grew"><b>Scope said</b>"Pick the cafe, see the last count in grey, update it, save." Now we know: steppers start blank, and only the rows she enters are saved. Nothing is silently rewritten.</div>
+      <ul><li>Cafe picker, preselected to the last cafe she counted. One cafe at a time.</li><li>Rows: product name, stepper (− number +), and in grey under the name "last counted Oct 9: 3".</li><li>Save is pinned to the bottom. After saving, the grey lines update to today, the steppers clear, and "Saved" shows for 2 seconds.</li></ul>
+      <details><summary>States</summary><ul><li>All rows blank: Save is disabled.</li><li>Unsaved entries and she switches cafe: a one-time prompt.</li><li>Unsaved entries and she leaves via the nav: the same prompt</li><li>Never counted: "not counted yet"</li></ul></details>
+      <details><summary>Checks</summary><ul class="check"><li>Corazon Cocina shows its standing products with blank steppers and grey last counts.</li><li>Entering two numbers and saving updates only those two grey lines; the other rows keep their old dates.</li><li>Save is disabled when every row is blank.</li><li>Switching cafes with unsaved entries prompts once.</li><li>Saving a count changes no invoice, and creating an invoice changes no count.</li></ul></details>
+    </div>
+
+    <div class="panel" id="p-deliver" role="tabpanel" hidden>
+      <div class="meta">Laptop · kitchen · new delivery and edit</div>
+      <h3>Deliver</h3>
+      <div class="grew"><b>Scope said</b>"Sequential invoice numbers." Now we know it's Eileen's own scheme: location code + MMDDYYYY, stored as text, suggested, overwritable and unique.</div>
+      <ul><li>Cafe picker · Date (the invoice date and delivery date, default today) · Invoice # (pre-filled suggestion).</li><li>Each standing product: name, price, a blank qty field, a live line total, and the grey shelf count (reference only, never pre-fills).</li><li>A running total in integer cents. Create invoice is disabled until some qty is above 0.</li></ul>
+      <div class="label">Invoice number</div>
+      <table><tr><th>Code</th><th>Account</th><th>Oct 17, 2026</th></tr>
+        <tr><td>1</td><td>Corazon Cocina (SB)</td><td><code>110172026</code></td></tr>
+        <tr><td>2</td><td>Little Heart Cafecito</td><td><code>210172026</code></td></tr>
+        <tr><td>3</td><td>Alma</td><td><code>310172026</code></td></tr>
+        <tr><td>4</td><td>Corazon SUR (Carpinteria)</td><td><code>410172026</code></td></tr></table>
+      <ul><li>The suggestion follows the date and cafe until she types her own number; then it's left alone.</li><li>A duplicate shows "Already used on Oct 3 for Corazon SB" and won't save.</li><li>A same-day repeat gets a suffix she types herself (<code>110172026-2</code>). The app never invents one.</li></ul>
+      <details><summary>Prices, special orders &amp; snapshots</summary><ul><li>The unit price on each line is editable, pre-filled from the product or the saved copy. It changes only that invoice.</li><li>"+ Add special order" adds a line with a description, price and qty. It's not linked to a product, prints like any line, and never joins the standing list or Count. The description is required, the price is 0 or more, and the qty is at least 1.</li><li>Every invoice saves a copy of its lines and the cafe details. Past invoices never change when prices change.</li></ul></details>
+      <details><summary>Edit</summary><ul><li>The same screen, loaded with an existing invoice: quantities, add or remove lines, date, number. Totals recompute.</li><li>Changing the cafe is in only if it comes free; otherwise she voids and recreates.</li></ul></details>
+      <details><summary>Checks</summary><ul class="check"><li>Corazon Cocina loads its standing list with prices and grey counts; every qty is blank.</li><li>Line and invoice totals update immediately and are correct to the cent.</li><li>Corazon SB on Oct 17, 2026 suggests <code>110172026</code>, which changes with the date or cafe until she types over it.</li><li>A duplicate number blocks the save with "Already used on [date] for [cafe]".</li><li>Create invoice is disabled with no quantities.</li><li>Editing one quantity updates the total on the Invoice screen and in the Ledger.</li></ul></details>
+    </div>
+
+    <div class="panel" id="p-invoice" role="tabpanel" hidden>
+      <div class="meta">Laptop · the kernel</div>
+      <h3>Invoice</h3>
+      <div class="grew"><b>Scope said</b>"Matched to her Canva form." Now we know: only the delivered lines print, the Corazon heart logo prints when the cafe has one, and nothing is ever deleted (void instead).</div>
+      <ul><li>The Canva form: wordmark, INVOICE, "Invoice for:" block with the logo, Invoice # and Date, DESCRIPTION / QTY / PRICE / TOTAL, a dotted rule, INVOICE TOTAL $, the blush contact block, "Order received by:", and the Net 30 line.</li><li><b>Type:</b> INVOICE in Limelight · body text in a Times-first serif stack · the wordmark, footer title and column headers are Canva PNGs (DK Otago's license forbids web use, so the font never enters the repo; the images go in <code>design/</code> before Block 3).</li><li>A grey status line: "Sent Oct 18 9:14am" · "Not sent" · or nothing.</li><li>Actions: Print (browser dialog, one Letter page, no app chrome) · Download PDF (the same file the email attaches) · Email invoice (becomes Resend) · Edit · Void (one confirm, "Void" stamp, number retired).</li></ul>
+      <details><summary>Checks</summary><ul class="check"><li>The printout laid next to the Canva reference matches its layout, fonts, header, footer and Net 30 line, with only the delivered lines.</li><li>Corazon invoices show the heart; Little Heart and Alma leave that space empty.</li><li>It fits one Letter page with no nav or buttons.</li><li>Download PDF saves <code>Invoice-[number].pdf</code>, identical to the email attachment.</li><li>Void asks once, stamps "Void", and the number stays taken.</li></ul></details>
+    </div>
+
+    <div class="panel" id="p-email" role="tabpanel" hidden>
+      <div class="meta">Sheet over the Invoice screen</div>
+      <h3>Email Invoice</h3>
+      <div class="cols">
+        <div class="card"><div class="label" style="margin-top:0">The confirm sheet</div><ul><li><b>To:</b> the billing email, editable for this send only</li><li><b>Subject:</b> "La Condesa Baking Company Invoice 110172026", fixed</li><li><b>Body:</b> the fixed template with cafe, total and due date, shown in full</li><li>"Invoice-110172026.pdf attached"</li><li>Cancel · Send (one tap)</li></ul></div>
+        <div class="card hot"><div class="label" style="margin-top:0">Outcomes</div><ul><li><b>Success:</b> the sheet closes, "Sent [date time]" stamps on, the button becomes Resend, and the Ledger row gets an envelope.</li><li><b>Failure:</b> "Couldn't send. The invoice is saved. Try again or print it." plus Retry. The invoice shows "Not sent". Never a false "Sent".</li><li><b>No email on file:</b> "No email on file for Little Heart", and Send is disabled.</li></ul></div>
+      </div>
+      <p class="muted" style="font-size:15px;margin-top:12px">From invoices@lacondesabakingcompany.com · Reply-To her Gmail · the invoice saves before sending · Resend keeps the same number and subject.</p>
+      <details><summary>Checks</summary><ul class="check"><li>On camera, a real email with the PDF arrives in the learner's inbox, and the logged message ID matches it.</li><li>No email on file blocks Send until one is typed.</li><li>A forced failure shows the failure line and "Not sent", never "Sent".</li></ul></details>
+    </div>
+
+    <div class="panel" id="p-ledger" role="tabpanel" hidden>
+      <div class="meta">Phone · who owes what</div>
+      <h3>Ledger</h3>
+      <div class="cols">
+        <div><div class="label" style="margin-top:0">Stat row</div><ul><li><b>Open:</b> the count of unpaid, non-void invoices</li><li><b>Outstanding:</b> the sum of unpaid, non-void invoices</li><li><b>This month:</b> non-void invoices dated this month, paid or not</li></ul>
+          <div class="label">Filters</div><p style="margin:0">All + one chip per cafe · newest first</p></div>
+        <div><div class="label" style="margin-top:0">Row states</div>
+          <table><tr><th>State</th><th>Looks like</th></tr>
+          <tr><td>Unpaid</td><td>number · cafe · date · due · total · <b>Unpaid</b> button</td></tr>
+          <tr><td>Overdue</td><td>due date in blush + "overdue 9 days" + blush left rule</td></tr>
+          <tr><td>Paid</td><td>muted · "Paid Oct 20" + reference · out of Open/Outstanding</td></tr>
+          <tr><td>Void</td><td>greyed · "Void" · out of all stats · can't be paid</td></tr>
+          <tr><td>Emailed</td><td>a small envelope mark</td></tr></table></div>
+      </div>
+      <details><summary>Mark paid and undo</summary><ul><li>Tap Unpaid: a sheet with the paid date (default today), an optional reference, and Mark paid.</li><li>Tap "Paid Oct 20": the same sheet with Mark unpaid and one confirm. She can flip it any number of times.</li></ul></details>
+      <details><summary>States</summary><ul><li>Empty, or a filter with no matches: "No invoices yet."; stats read 0 / $0.00 / $0.00</li></ul></details>
+      <details><summary>Checks</summary><ul class="check"><li>The judge invoice appears at the top as Unpaid, due 30 days later, with all three stats updated.</li><li>Mark paid mutes the row and updates Open and Outstanding but not This month.</li><li>Mark unpaid restores it.</li><li>An invoice dated more than 30 days ago that's unpaid shows the overdue treatment.</li><li>Void counts in no stat.</li><li>The Corazon SB chip filters correctly.</li></ul></details>
+    </div>
+
+    <div class="panel" id="p-customers" role="tabpanel" hidden>
+      <div class="meta">Both · read-only until Handoff</div>
+      <h3>Customers</h3>
+      <ul><li>Each cafe: name, location code, phone, address, billing email, Net 30, logo if any, and its standing list with prices.</li><li>No editing: changes are seed-file edits until Block 8.</li></ul>
+      <div class="label">Seeded products</div>
+      <table><tr><th>Product</th><th>Price</th></tr><tr><td>Strawberry Tres Leches Cake</td><td>$4.75</td></tr><tr><td>Coconut Tres Leches Cake</td><td>$4.75</td></tr><tr><td>Coconut Rice Pudding</td><td>$3.75</td></tr><tr><td>Pixie Tangerine/Orange Flan</td><td>$4.00</td></tr><tr><td>Mexican Wedding Cookies</td><td>$3.50</td></tr></table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Operational requirements</h2>
+    <div class="cols">
+      <div class="card"><div class="label" style="margin-top:0">Logging, from block 1</div><ul><li>One JSON line per server event: time, route, outcome, duration, plus the message ID or error for sends.</li><li>Never logs emails, addresses, phones, invoice bodies, the PIN or env vars. Only the invoice number and cafe name.</li><li>The host's function logs are the viewer.</li></ul></div>
+      <div class="card"><div class="label" style="margin-top:0">Health and client</div><ul><li><code>/health</code>: database status and app version (cold start vs outage).</li><li>Every request failure shows a one-line message, never a blank screen, and logs to the console with the route name.</li></ul></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Boundary</h2>
+    <details open><summary>Building now</summary><ul><li>The PIN gate · Count · Deliver with Edit · the Invoice with seeded logos, Print, Download PDF and Void · Email with success, failure and Resend · the Ledger with stats, overdue and paid/undo · read-only Customers · logging and /health · mock seed data · deploy</li></ul></details>
+    <details><summary>Deferred to Handoff (Block 8)</summary><ul><li>Editing Products, Customers and standing lists in the app: seed edits cover it for now.</li><li>The email template editor: one code file for now.</li><li>The full printed/emailed history line, and the "(revised)" / "Edited after sending" wording.</li><li>Changing the cafe on Edit, unless it comes free.</li><li>Real data, the production PIN, and Eileen's acceptance run.</li></ul></details>
+    <details><summary>Later</summary><ul><li>Stripe · multi-user · low-stock alerts · a bake list · logo upload · PIN lockout</li></ul></details>
+    <details><summary>Never</summary><ul><li>Ingredients or recipe costing · accounting or tax · model-generated prices, totals, dates, numbers or email text · inventory decrement · real data in the repo · hard delete · app-invented number suffixes</li></ul></details>
+  </section>
+
+  <section>
+    <h2>Build rules for spec &amp; build</h2>
+    <p>One file, one responsibility, and no god files. Every code file starts with a one-sentence <code>Job:</code> comment; if it needs a second sentence, the file gets split. Flag any code file over about 200 lines at each checkpoint.</p>
+  </section>
+
+  <section>
+    <h2>Open questions</h2>
+    <ul>
+      <li><b>Cafe switch on Edit.</b> In if free; otherwise void and recreate. Decided during the build.</li>
+    </ul>
+  </section>
+
+  <footer>prd.md is the source of truth; this page is a companion for review.</footer>
+</main>
+<script>
+  const ids = ["pin","count","deliver","invoice","email","ledger","customers"];
+  function show(p) {
+    ids.forEach(id => { document.getElementById("p-" + id).hidden = id !== p; });
+    document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.p === p ? "true" : "false"));
+    document.querySelectorAll("g.node").forEach(g => g.classList.toggle("active", g.dataset.p === p));
+  }
+  document.querySelectorAll(".tabs button, g.node").forEach(el => {
+    el.addEventListener("click", () => show(el.dataset.p));
+    el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); show(el.dataset.p); } });
+  });
+  show("count");
+</script>
+</body>
+</html>

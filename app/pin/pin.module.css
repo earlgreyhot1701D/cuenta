@@ -1,0 +1,26 @@
+.page {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3rem;
+  padding: var(--gutter);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 260px;
+  text-align: center;
+}
+
+.pin {
+  text-align: center;
+  font-size: 32px;
+  letter-spacing: 0.6em;
+  padding-left: 0.6em;
+}
