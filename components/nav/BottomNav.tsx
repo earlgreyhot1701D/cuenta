@@ -15,7 +15,7 @@ const TABS = [
 export function BottomNav() {
   const pathname = usePathname();
   return (
-    <nav className={styles.nav} aria-label="Main">
+    <nav className={styles.nav} aria-label="Main" data-print-hide>
       {TABS.map((tab) => {
         const active = pathname.startsWith(tab.href);
         return (

@@ -1,7 +1,9 @@
-// Job: show one saved invoice snapshot (plain list until slice 3 brings the Canva layout).
+// Job: show one invoice as Eileen's Canva form, with its actions.
 import { notFound } from "next/navigation";
-import { formatShort } from "@/lib/dates";
-import { formatUSD, lineTotal, sumCents } from "@/lib/money";
+import { InvoiceActions } from "@/components/invoice/InvoiceActions";
+import { InvoiceDocument } from "@/components/invoice/InvoiceDocument";
+import { getBusiness } from "@/lib/business";
+import { fitsOnePage } from "@/lib/invoice-capacity";
 import { getInvoice } from "@/lib/queries/invoices";
 import styles from "./invoice.module.css";
 
@@ -11,27 +13,18 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
   const found = await getInvoice((await params).id);
   if (!found) notFound();
   const { invoice, lines } = found;
-  const total = sumCents(lines.map((l) => lineTotal(l.unitPriceCents, l.quantity)));
 
   return (
-    <article className={styles.invoice}>
-      <h1>Invoice {invoice.number}</h1>
-      <p className="quiet">
-        {invoice.cafeName} · {formatShort(invoice.invoiceDate)}
-      </p>
-      <ul className={styles.lines}>
-        {lines.map((l) => (
-          <li key={l.id} className={styles.line}>
-            <span>{l.description}</span>
-            <span>{l.quantity}</span>
-            <span>{formatUSD(l.unitPriceCents)}</span>
-            <span>{formatUSD(lineTotal(l.unitPriceCents, l.quantity))}</span>
-          </li>
-        ))}
-      </ul>
-      <p className={styles.total}>
-        <span className="label">Invoice total</span> <strong>{formatUSD(total)}</strong>
-      </p>
-    </article>
+    <>
+      <div data-print-hide>
+        <h1>Invoice {invoice.number}</h1>
+        <p className="quiet">{invoice.cafeName}</p>
+        {!fitsOnePage(lines.length) && <p className="quiet">Too many lines for one page</p>}
+      </div>
+      <InvoiceActions />
+      <div className={styles.frame} data-invoice-frame>
+        <InvoiceDocument invoice={{ ...invoice, lines }} business={getBusiness()} />
+      </div>
+    </>
   );
 }

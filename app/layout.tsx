@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next";
 import { Bodoni_Moda, EB_Garamond, Space_Grotesk } from "next/font/google";
 import "@/styles/tokens.css";
 import "@/styles/globals.css";
+import "@/styles/print.css";
 
 const bodoni = Bodoni_Moda({ subsets: ["latin"], variable: "--font-bodoni", display: "swap" });
 const garamond = EB_Garamond({ subsets: ["latin"], variable: "--font-garamond", display: "swap" });

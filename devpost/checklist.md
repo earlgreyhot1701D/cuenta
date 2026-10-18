@@ -36,7 +36,7 @@ Slice numbers are this checklist's own. Where the plan names a Block, the slice 
   Learner check: On your laptop, open Deliver, pick Corazon Cocina, check the grey shelf counts match what you saved in slice 1 and that no quantity is pre-filled, type quantities, watch the totals, then Create invoice. Try reusing the same number and see it refused.
   Commit: `Add Deliver screen and invoice snapshots`
 
-- [ ] **3. The invoice looks exactly like Eileen's Canva form and prints on one Letter page**
+- [x] **3. The invoice looks exactly like Eileen's Canva form and prints on one Letter page**
   Becomes usable: The Invoice screen shows her Canva form, filled in with the wordmark, Limelight INVOICE, the cafe block (the placeholder logo for the Corazon cafes, an empty space for the others), the number and date, only the delivered lines, the INVOICE TOTAL, and the blush footer with the `BUSINESS_*` placeholders and the Net 30 line. Print opens the browser dialog and prints one Letter page with no app chrome.
   Why now: This is the second half of the kernel and the "oh, that's cool" moment. Fidelity is where your 20% usually leaks, so it gets your eyes before the PDF and email copy this layout.
   PRD ref: `prd.md > Invoice`, `prd.md > Look and Feel` (the printed invoice, Invoice Typography)
@@ -125,3 +125,6 @@ Activity mode:
 - Unrelated to the mockups: `.gitignore` keeps `!.env.example` after the Vercel CLI's `.env*` rule, so the placeholder file stays committable.
 - Past counts added to slice 8: Eileen keeps a paper book of old counts and will ask on day one. It's a read-only list under Count, with PRD, spec and scope updated. This was a learner-directed scope addition, small and off the judge path.
 - Local dev moved to a Neon `dev` branch; production stays on `main`. Slice 2 testing showed local and production shared one database, so test invoices landed in production. The $97 test invoice stays in production on purpose, to be voided on real data in slice 7's learner check (Void is built in slice 7).
+- The footer chef line now comes from a new `BUSINESS_CHEF_LINE` env var. The spec says footer identity comes from env, never from source code, and the chef line had no variable. The placeholder is in the repo and the mock deploy; Eileen's real line goes in production at Handoff.
+- The Canva PNGs were trimmed to their visible ink before use, and each is placed at the learner's PDF-point coordinates. The exports carried transparent padding (`footer-title.png` was about half padding), so pixel sizes didn't match the PDF boxes. The invoice is laid out in PDF points scaled from the page width, so screen, print and PDF share one coordinate system.
+- `MAX_LINES_ONE_PAGE` was measured at 8: the form's 36pt spacing holds up to 5 lines, then tightens evenly to a 22pt minimum. A 9-line invoice shows "Too many lines for one page". The printed page box is 10.95in, so sub-pixel rounding never adds a blank second page.

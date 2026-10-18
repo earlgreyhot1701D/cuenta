@@ -1,0 +1,42 @@
+/* Job: print exactly one Letter page holding only the invoice document. */
+@page {
+  size: Letter;
+  margin: 0;
+}
+
+@media print {
+  html,
+  body {
+    background: #ffffff;
+    margin: 0;
+    padding: 0;
+  }
+
+  [data-print-hide] {
+    display: none !important;
+  }
+
+  [data-print-main] {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: none !important;
+  }
+
+  [data-invoice-frame] {
+    width: 8.5in !important;
+    max-width: none !important;
+    border: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /* A hair under 11in so rounding never spills a blank second page; the form ends well above it. */
+  [data-invoice-page] {
+    width: 8.5in;
+    height: 10.95in;
+    aspect-ratio: auto;
+    break-inside: avoid;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

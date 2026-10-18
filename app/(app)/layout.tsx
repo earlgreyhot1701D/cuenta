@@ -6,10 +6,10 @@ import styles from "./app.module.css";
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <header className={styles.header}>
+      <header className={styles.header} data-print-hide>
         <Wordmark />
       </header>
-      <main className={styles.main}>{children}</main>
+      <main className={styles.main} data-print-main>{children}</main>
       <BottomNav />
     </>
   );
