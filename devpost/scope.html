@@ -77,13 +77,13 @@
   <section>
     <h2>The kernel</h2>
     <div class="kernel">
-      <p>She builds each delivery from the cafe's standing list, with her latest shelf count beside each line as a greyed reference. The invoice it prints in the kitchen is <em>indistinguishable</em> from the Canva form she hands out today. It isn't generic invoicing software: it digitizes one baker's existing route and paperwork exactly as she already does them.</p>
+      <p>She builds a delivery from her menu (one product list and one set of prices for every cafe), with that cafe's latest shelf count beside each line as a greyed reference. The invoice it prints in the kitchen is <em>indistinguishable</em> from the Canva form she hands out today. It isn't generic invoicing software: it digitizes one baker's existing route and paperwork exactly as she already does them.</p>
     </div>
   </section>
 
   <section>
     <h2>The core loop</h2>
-    <svg viewBox="0 0 760 300" role="img" aria-label="Core loop: Count at the cafe on a phone feeds Deliver in the kitchen on a laptop, which creates an invoice that is printed and emailed, which appears on the Ledger. The count also tells her what to bake next time.">
+    <svg viewBox="0 0 760 300" role="img" aria-label="Core loop: Count at the cafe on a phone sits beside Deliver in the kitchen on a laptop as a glance-only reference that never pre-fills it; Deliver creates an invoice that is printed and emailed, which appears on the Ledger. The count also tells her what to bake next time.">
       <defs>
         <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor" style="fill:var(--ink)"/></marker>
         <marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--blush-ink)"/></marker>
@@ -99,7 +99,7 @@
 
       <rect class="box hot" x="230" y="44" width="150" height="76" rx="4"/>
       <text x="305" y="76" text-anchor="middle" font-size="18">Deliver</text>
-      <text x="305" y="98" text-anchor="middle" class="small">standing list · live totals</text>
+      <text x="305" y="98" text-anchor="middle" class="small">the menu · live totals</text>
 
       <rect class="box hot" x="420" y="44" width="150" height="76" rx="4"/>
       <text x="495" y="76" text-anchor="middle" font-size="18">Invoice</text>
@@ -134,14 +134,14 @@
 
   <section>
     <h2>Who it's for</h2>
-    <p><strong>Eileen</strong>, owner of La Condesa Baking Company in Santa Barbara, delivering to four cafes:</p>
+    <p><strong>Eileen</strong>, owner of La Condesa Baking Company, a wholesale bakery in Santa Barbara, delivering to four cafes:</p>
     <p>
       <span class="pill">Corazon Cocina · Public Market</span>
       <span class="pill">Little Heart Cafecito</span>
       <span class="pill">Corazon Cocina SUR · Carpinteria</span>
       <span class="pill">Alma</span>
     </p>
-    <p class="why">Today she counts shelves by hand, fills in quantities and totals on pre-printed Canva forms, does the math by hand, and tracks who owes her (Net 30, ACH) in her head. Those last three are what she most wants to stop doing.</p>
+    <p class="why">Today she counts shelves by hand, fills in quantities and totals on a blank Canva form she pre-prints per cafe, does the math by hand, and tracks who owes her (Net 30, ACH) in her head. Those last three are what she most wants to stop doing.</p>
   </section>
 
   <section>
@@ -176,18 +176,18 @@
       <summary><span>Now · in the proof of concept <span class="count">7</span></span></summary>
       <ul>
         <li>A single six-digit PIN gate with attempt limiting: 5 wrong tries per IP, or 20 overall, in 15 minutes lock it for 15 minutes</li>
-        <li>Products and Customers, each cafe with a standing product list, a location code, and an optional seeded logo; mock seed data only in the repo; the Customers tab is read-only for the hackathon</li>
+        <li>Products (one menu with one set of prices, shared by every cafe) and Customers, each cafe with a location code and an optional seeded logo; mock seed data only in the repo; the Customers tab is read-only for the hackathon</li>
         <li>Count per cafe, with the last count and its date shown in grey beside blank steppers, plus a read-only Past counts list</li>
         <li>Delivery: totals in integer cents, invoice numbers as text (location code + MMDDYYYY, suggested, overwritable, unique), edit and void (never delete), quantities typed in by Eileen. The shelf count beside each line is greyed reference only and never pre-fills; the invoice never reads from a count, and a count never changes because of an invoice.</li>
         <li>Invoice template matched to the Canva form, including the cafe's logo when it has one; print CSS fitting one letter page; PDF</li>
-        <li>Real Resend email with the PDF attached, from invoices@lacondesabakingcompany.com, Reply-To her Gmail. The domain isn't a gate on the email build: until it verifies, sends go from Resend's onboarding sender to the learner's inbox. Switching to the real From and Reply-To is an env change in the build's final polish slice (checklist slice 8, before submission; not Block 8 Handoff). DNS records go in at her registrar, an existing SPF record is merged, not replaced, and the test send goes to the learner's inbox.</li>
+        <li>Real Resend email with the PDF attached, from invoices@lacondesabakingcompany.com, Reply-To her Gmail. The domain isn't a gate on the email build: until it verifies, sends go from Resend's onboarding sender. Switching to the real From and Reply-To is an env change in the build's final polish slice (checklist slice 8, before submission; not Block 8 Handoff). DNS records go in at her registrar, an existing SPF record is merged, not replaced, and mock cafes bill to Resend's test inbox, delivered@resend.dev, so no personal address is ever on screen.</li>
         <li>Ledger: paid or unpaid with the paid date and an optional ACH reference, Net 30 due dates, overdue, month totals, filter by cafe. Plus a mobile pass, error and empty states, a mock-data audit, and a Vercel deploy.</li>
       </ul>
     </details>
     <details>
-      <summary><span>Later <span class="count">9</span></span></summary>
+      <summary><span>Later <span class="count">10</span></span></summary>
       <ul>
-        <li><strong>Block 8, Handoff:</strong> seed real data from a gitignored file, set the production PIN, add the URL to her home screen, have Eileen run the path herself as the acceptance test, plus in-app editing of Products, Customers and standing lists, the email-template editor, and the full printed/emailed history line</li>
+        <li><strong>Block 8, Handoff</strong> (after the video and the tagged submission), in the same production deployment and database: back up the mock data with a Neon branch snapshot, seed her real data from the gitignored <code>private/</code> file, rotate <code>APP_PIN</code>, then hand her the URL (on her phone's home screen). Eileen runs the path herself as the acceptance test. The full order is in <code>checklist.md &gt; Block 8: Handoff</code>. Also later: in-app editing of Products and Customers, the email-template editor, and the full printed/emailed history line</li>
         <li>Stripe or other payments</li>
         <li>Multi-user login</li>
         <li>Low-stock alerts</li>
@@ -195,29 +195,31 @@
         <li>Ledger export to Excel, respecting the cafe filter and a date range</li>
         <li>Accounts receivable aging report (current, 1–30, 31–60, 61–90, over 90 days; per cafe and total; PDF or Excel)</li>
         <li>Overdue reminders: a daily job finds unpaid, past-due invoices and emails Eileen one list with a single signed link to send the reminders (ask-first; fully automatic per cafe is a later toggle)</li>
-        <li>Per-cafe logo upload (seeded logos are in now)</li>
+        <li>Per-cafe logo <em>upload</em> (seeded logos are in now)</li>
+        <li>A separate demo deployment with mock data, only when a second customer wants a look. Until then, Handoff turns the one production deployment into Eileen's.</li>
       </ul>
     </details>
     <details>
       <summary><span>Explicitly cut <span class="count">5</span></span></summary>
       <ul>
         <li><strong>Ingredient tracking and recipe costing</strong> <span class="why">: a different product. Cuenta is about the route and the paperwork.</span></li>
-        <li><strong>Accounting and tax</strong> <span class="why">: the Ledger only tracks who owes what.</span></li>
+        <li><strong>Accounting and tax</strong> <span class="why">: out of scope. The Ledger only tracks who owes what.</span></li>
         <li><strong>Model-generated prices, totals, dates, invoice numbers or email text</strong> <span class="why">: deterministic app. The AI is in how it's built.</span></li>
         <li><strong>Inventory decrement on delivery</strong> <span class="why">: counts are observed at the cafe, not calculated.</span></li>
-        <li><strong>Real customer data in the repo</strong> <span class="why">: mock only. Real data arrives at Handoff.</span></li>
+        <li><strong>Real customer data in the repo</strong> <span class="why">: mock data only. Real data goes in at Handoff from a gitignored file.</span></li>
       </ul>
     </details>
   </section>
 
   <section>
     <h2>Look &amp; feel</h2>
-    <p>Her paper invoice come to life: white paper, black ink, one warm blush tint, dotted hairline rules, serif text. Four bottom tabs: <em>Count, Deliver, Ledger, Customers</em>. Every page has a small "?" that opens a plain-words How it works page. No icon appears without words she can read, and the send button says Send email or Send again, never "Resend". She is never on a page with no way back: the Invoice screen keeps the tabs and a "Back to Ledger" link, sheets close with Cancel or the phone's back button, and Download PDF never navigates the tab away. Count and Ledger are phone screens; Deliver and Invoice are laptop screens. The Stitch mockups of all five screens come in at the PRD step; Eileen's Canva invoice form is the fidelity reference.</p>
+    <p>Her paper invoice come to life: white paper, black ink, one warm blush tint, dotted hairline rules, serif text. Four bottom tabs: <em>Count, Deliver, Ledger, Customers</em>. Every page has a small "?" that opens a plain-words How it works page. No icon appears without words she can read, and the send button says Send email or Send again, never "Resend". She is never on a page with no way back: the Invoice screen keeps the tabs and a "Back to Ledger" link, sheets close with Cancel or the phone's back button, and Download PDF never navigates the tab away. Count and Ledger are phone screens, used standing in a cafe; Deliver and Invoice are laptop screens, used in the kitchen. The printed invoice matches her existing Canva form exactly. The Stitch mockups of all five screens come in at the PRD step; Eileen's Canva invoice form is the fidelity reference.</p>
   </section>
 
   <section>
     <h2>Changes since approval</h2>
     <ul>
+      <li><strong>During 5-build</strong> <span class="why">(plan error caught in the learner's hands-on testing):</span> products are one menu shared by every cafe, not a separate list per cafe. Eileen has one menu and the same prices for all four accounts. Every per-cafe list in the plan became "the menu".</li>
       <li><strong>During 5-build</strong> <span class="why">(learner-directed):</span> a How it works page behind a "?" on every page, the "no icon without words" rule, and Send email / Send again replacing "Resend". Excel export and an aging report were added to Later.</li>
       <li><strong>During 5-build</strong> <span class="why">(learner-directed):</span> the PIN gate hardened to six digits with attempt limiting, because four digits with no lockout was 10,000 guesses with no brake on a public URL. Navigation rules pinned for the phone. Overdue reminders added to Later.</li>
       <li><strong>During 5-build</strong> <span class="why">(learner-directed):</span> a read-only Past counts list on Count, since Eileen looks back through a paper book of counts today and will ask for it on day one. Built in the final polish slice, not Handoff.</li>
@@ -231,7 +233,7 @@
 <script>
   const steps = [
     "Open the Count screen and pick Corazon Cocina. The last count shows in grey with its date under each product. Enter two numbers and save.",
-    "Tap New delivery and pick Corazon Cocina. The standing product list appears with prices and the latest shelf count beside each line. Enter quantities; totals compute live. Tap Create invoice.",
+    "Tap New delivery and pick Corazon Cocina. The menu shows prices and the latest shelf count beside each line. Enter quantities; totals compute live. Tap Create invoice.",
     "The invoice matches her Canva form, with its invoice number (location code + date) and today's date. Print opens the browser dialog. Send email, check the Email pop-up, tap Send email, and “Last sent” shows on it, with a real send on camera.",
     "Open the Ledger. The new invoice shows as unpaid, due in 30 days, and the month total updates."
   ];

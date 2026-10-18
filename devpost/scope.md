@@ -77,8 +77,8 @@ She comes back every delivery day. The count tells her what to bake and bring ne
 - **Invoice:** template matched to the Canva form, including the cafe's logo when it has one; print CSS fitting one letter page; PDF.
 - **Email:** real send via Resend with the PDF attached.
   - From invoices@lacondesabakingcompany.com, Reply-To Eileen's Gmail.
-  - The domain isn't a gate on the email build. Until it verifies, sends go from Resend's onboarding sender to the learner's inbox. Switching to the real From and Reply-To is an env change in the build's final polish slice (checklist slice 8, before submission; not Block 8 Handoff). DNS records go in at her registrar, and an existing SPF record gets merged, not replaced.
-  - The test send goes to the learner's inbox.
+  - The domain isn't a gate on the email build. Until it verifies, sends go from Resend's onboarding sender. Switching to the real From and Reply-To is an env change in the build's final polish slice (checklist slice 8, before submission; not Block 8 Handoff). DNS records go in at her registrar, and an existing SPF record gets merged, not replaced.
+  - Mock cafes bill to Resend's test inbox, `delivered@resend.dev`, so test and on-camera sends really go through and no personal address is ever on screen.
 - **Ledger:**
   - paid or unpaid, with the paid date and an optional ACH reference
   - due dates (Net 30) and overdue

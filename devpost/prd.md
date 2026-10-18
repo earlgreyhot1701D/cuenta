@@ -383,7 +383,7 @@ To Block 8, Handoff:
 - **In-app editing of Products and Customers:** an admin UI the judge path doesn't need. Seed edits cover it for now.
 - **Email template editor:** the template lives in one code file for now.
 - **Full history line** (the "Printed · Emailed" log) and **"Edited after sending" / "(revised)" wording:** a second send is just Send again for now.
-- **Changing the cafe on an existing invoice,** unless it comes free: void and recreate covers it.
+- **Changing the cafe on an existing invoice:** not built (decided in slice 7). Void and recreate covers it.
 - **Real data seeding, the production PIN, and Eileen's own acceptance run:** the project finish line. It happens in the same production deployment and database, after the video and the tagged submission, in the order in `checklist.md > Block 8: Handoff`.
 
 ## Possible Later Enhancements

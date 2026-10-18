@@ -210,4 +210,9 @@ A separate demo deployment is a Later item, only when a second customer wants a 
   - Scope, PRD, spec and Handoff step 5 now say "the menu".
   - Shelf counts stay per cafe; special order lines are unchanged.
   - Checked on `dev`: all four cafes show the same 5 products in order on Count, Deliver and Edit. Little Heart can count and invoice the flan, which wasn't on its old list. A product not on the menu is refused.
+- **One-menu fix shipped to production** (Oct 18). A Neon snapshot branch of `main`, `pre-one-menu-2026-10-18`, was taken first. Then commit `0158483`, migration `0002_one_menu` on production (menu order: Strawberry Tres Leches 0, Coconut Tres Leches 1, Coconut Rice Pudding 2, Pixie Tangerine/Orange Flan 3, Mexican Wedding Cookies 4; `standing_items` gone), and a production deploy (`/health` reports `0158483`). The agent ran `vercel deploy --prod` twice by mistake, rerunning it to read cut-off output. That made two identical production deploys of the same commit against a one-deploy approval; the learner was told.
+- **Review pages synced to the .md files** for the public repo: `scope.html`, `prd.html` and `spec.html` now match on the one menu, Customers showing the menu once, crossed-out void rows, the locked cafe on Edit, void invoices that can't be edited or emailed, special orders, Past counts, `delivered@resend.dev` on camera, no `SEED_BILLING_EMAIL`, the Handoff order and the demo-deployment Later item. The sync found two contradictions inside the .md files, now fixed:
+  - `scope.md` still said test sends go to the learner's inbox.
+  - `prd.md`'s Deferred list still said the cafe change was in "unless it comes free".
+  - All three pages render at 390px and 1280px with no script errors and no horizontal scroll, and the diff adds no personal data.
 
