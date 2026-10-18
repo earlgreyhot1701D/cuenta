@@ -100,11 +100,11 @@ Slice numbers are this checklist's own. Where the plan names a Block, the slice 
 
 - [x] Early usable behavior explored: after slice 1 (Count on your phone against the Stitch mockup, so app-style drift is caught before four more screens copy it) — Done: Eileen ran it on her own phone (wrong and right PIN, Corazon counts, cafe-switch prompt, side by side with the mockup). No changes.
 - [x] Kernel fidelity explored: after slice 3 (printed invoice against the Canva reference; this feedback shapes the PDF and the email) — Done: the overlay check against the Canva reference passed, and the learner approved going on. The learner then printed a real invoice on Oct 18 and confirmed it looks good, which closes this box. Date format `10/17/2026` accepted for now.
-- [ ] Final kick-the-tires exploration and feedback completed
+- [x] Final kick-the-tires exploration and feedback completed — Done (Oct 18): the learner's timed hands-on run found two issues, both fixed and shipped (Send/Print working states, one menu for every cafe). The final review on production found core services working as tested, with nothing to change before the demo. More feedback is expected from real daily use; that isn't a demo requirement.
 
 ## Final Review
 
-- [ ] Final review complete — feedback resolved and learner confirms ready to ship
+- [x] Final review complete — feedback resolved and learner confirms ready to ship — Done (Oct 18): both findings fixed, verified on production and committed; the learner reported nothing to change before the demo.
 
 ## Code Tour and App Map
 
@@ -129,6 +129,7 @@ Not a slice. It starts only after the demo video is recorded and the submission 
 - [ ] 5. Seed Eileen's real menu (one product list and one set of prices, shared by every cafe), her cafes and the real Corazon logo into production from the gitignored `private/` file. Set the real `BUSINESS_*` footer values and `EMAIL_REPLY_TO` in Vercel, then redeploy.
 - [ ] 6. Rotate `APP_PIN` in Vercel to a new six-digit PIN that only Eileen knows, then redeploy. A new PIN alone leaves every existing 30-day session signed in (the demo browser, any judge's device), so rotate `SESSION_SECRET` in the same step; that signs everyone out.
 - [ ] 7. Hand her the URL. Add it to her phone's home screen, and have her run Count, Deliver, Invoice and Ledger herself as the acceptance test.
+- [ ] 8. After Eileen's first week of real deliveries, collect her feedback and triage it as MUST / STUB / NEVER before building anything.
 
 A separate demo deployment is a Later item, only when a second customer wants a look (`scope.md > Later`).
 
@@ -219,4 +220,5 @@ A separate demo deployment is a Later item, only when a second customer wants a 
 - **Slice 8 ticked with the sender switch still open.** Production still sends from Resend's onboarding sender, because the domain hasn't verified yet. The switch is two env values (`EMAIL_FROM=invoices@lacondesabakingcompany.com`, `EMAIL_REPLY_TO`) and a redeploy, with no code change. It's carried to before submission; if the domain isn't verified by then, the video uses the onboarding sender. Today's judge-path runs also left Corazon Cocina's Oct 18 counts in production's Past counts.
 - **Physical print check passed (learner, Oct 18):** the learner printed a real invoice and confirmed it looks good, closing the slice 3 kernel-fidelity checkpoint. Together with the earlier on-screen overlay against the Canva reference, the printed form is confirmed. The report didn't say which printer it came from or whether it was laid on the paper form, so neither is recorded. The date format stays `10/17/2026`.
 - **GitHub is at `f5cfecd`** (pushed by the learner), the slice 8 close.
+- **Final kick-the-tires review passed (learner, Oct 18):** core services work as tested, and there's nothing to change before the demo. Feedback from Eileen's real daily use goes through Handoff step 8 (first week, triaged MUST / STUB / NEVER before anything is built).
 
