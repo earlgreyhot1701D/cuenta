@@ -73,6 +73,11 @@ a {
   border: 1px solid var(--ink);
   background: var(--paper);
   color: var(--ink);
+  /* So a link styled as a button (Edit) looks and sizes like one. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
 }
 
 .btn:hover:not(:disabled) {

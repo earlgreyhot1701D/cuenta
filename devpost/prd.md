@@ -195,7 +195,8 @@ Source: `scope.md > The Core Loop`, `scope.md > The POC Boundary`.
 **Edit (from an existing invoice):**
 - The same screen, loaded with the invoice's data.
 - She can change quantities, add or remove lines, the date and the number. Totals recompute. Saving returns to the Invoice screen.
-- **Changing the cafe** on an existing invoice is in only if the build gets it at no extra cost. Otherwise she voids the invoice and creates a new one. See Open Questions.
+- **Changing the cafe** isn't offered on Edit (decided in slice 7). The cafe shows as text with "To bill a different cafe, void this invoice and create a new one."
+- **A void invoice** can't be edited or emailed. Print and Download PDF still work, so she keeps the record.
 
 **Checks:**
 - [ ] Picking Corazon Cocina loads its standing list with prices and grey shelf counts; every quantity is blank.
@@ -413,4 +414,4 @@ To Block 8, Handoff:
 - **App-generated invoice-number suffixes.**
 
 ## Open Questions
-- **Cafe switch on Edit.** In if free, otherwise void and recreate. *Decided during the build.*
+- **Cafe switch on Edit.** *Decided in slice 7: not included.* The cafe is locked on Edit; to bill a different cafe, she voids the invoice and creates a new one.

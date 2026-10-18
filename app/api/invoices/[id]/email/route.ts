@@ -21,6 +21,7 @@ export const POST = withRoute<{ params: Promise<{ id: string }> }>(
     const { invoice, lines } = found;
     logCtx.invoiceNumber = invoice.number;
     logCtx.cafe = invoice.cafeName;
+    if (invoice.voidedAt) throw new HttpError(409, "A void invoice can't be emailed.");
 
     // The recipient is used for this send only; it never changes the customer record and is never logged.
     const body = await req.json().catch(() => ({}));

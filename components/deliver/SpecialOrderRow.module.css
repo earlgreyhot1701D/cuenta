@@ -1,0 +1,18 @@
+/* The special order line borrows LineRow's grid; only the description field and Remove are its own. */
+.description {
+  width: 100%;
+  font-size: 19px;
+  min-height: var(--touch);
+}
+
+.remove {
+  align-self: flex-start;
+  min-height: 2.25rem;
+  background: none;
+  border: none;
+  padding: 0.25rem 0;
+  font-size: 10px;
+  color: var(--ink-muted);
+  text-decoration: underline;
+  cursor: pointer;
+}

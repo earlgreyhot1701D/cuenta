@@ -1,11 +1,11 @@
 // Job: create an invoice snapshot from a delivery.
 import { NextResponse } from "next/server";
+import { duplicateNumberError } from "@/lib/api/duplicate-number";
 import { HttpError, withRoute } from "@/lib/api/with-route";
-import { formatShort } from "@/lib/dates";
 import { parseDelivery } from "@/lib/invoice-input";
 import { getCustomer } from "@/lib/queries/customers";
 import { standingProducts } from "@/lib/queries/products";
-import { DuplicateNumberError, createInvoice } from "@/lib/queries/invoices";
+import { createInvoice } from "@/lib/queries/invoices";
 
 export const POST = withRoute("POST /api/invoices", async (req, _ctx, logCtx) => {
   const body = await req.json().catch(() => ({}));
@@ -21,13 +21,6 @@ export const POST = withRoute("POST /api/invoices", async (req, _ctx, logCtx) =>
     const id = await createInvoice({ customer, ...parsed.value });
     return NextResponse.json({ id }, { status: 201 });
   } catch (err) {
-    if (err instanceof DuplicateNumberError) {
-      const usedOn = formatShort(err.existing.invoiceDate);
-      throw new HttpError(409, `Already used on ${usedOn} for ${err.existing.cafeName}`, {
-        usedOn,
-        cafeName: err.existing.cafeName,
-      });
-    }
-    throw err;
+    throw duplicateNumberError(err);
   }
 });

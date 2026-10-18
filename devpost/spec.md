@@ -217,7 +217,8 @@ Carried forward from `prd.md > Look and Feel` and `design/DESIGN.md`.
   - **Duplicate number:** the server returns `409 {usedOn, cafeName}`, and the form shows "Already used on Oct 3 for Corazon SB"
   - **Create invoice:** disabled until at least one line has a quantity above 0
 - **Edit loads the saved copy** (prices and descriptions) and never the current products.
-- **Cafe switch on Edit:** included only if the form handles it without a separate path. Otherwise the cafe picker is locked on Edit (`prd.md > Open Questions`).
+- **Cafe switch on Edit:** locked (decided in slice 7). Switching would re-snapshot the cafe's details and reload its prices mid-edit, which is a separate path. `PUT` answers 400 if `customerId` differs.
+- **Split (slice 7):** `useDeliveryLines.ts` holds line state, prices, special orders and totals; `SpecialOrderRow.tsx` sits next to `LineRow.tsx`; `DeliveryForm` keeps the header, the mode (new or edit) and submit.
 - PRD ref: `prd.md > Deliver (New Delivery and Edit)`.
 
 ### Invoice Document
@@ -626,4 +627,4 @@ cuenta/
 - **How we'll check it in `5-build`:** each block's PASS/FAIL check cites both the PRD heading and the spec heading it implements, so "checking against the plan" means checking against these two addresses.
 
 **Carried from the PRD:**
-- **Cafe switch on Edit:** included only if `DeliveryForm` handles it without a separate path; otherwise the picker is locked on Edit. Decided during the build.
+- **Cafe switch on Edit:** locked on Edit; void and recreate instead. Decided in slice 7.

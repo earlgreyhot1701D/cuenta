@@ -169,3 +169,8 @@ Activity mode:
 - **Rule for the whole app: no icon without words.**
 - **Later stubs added:** Excel export of the Ledger, and an accounts receivable aging report.
 - **Slice 5 closed** by the learner's own send. Invoice `110172026-2` was emailed from production at Oct 17, 9:40pm Pacific (message ID `01a14d4f-a2b4-7e13-b9ac-8fd4fa65a417`) and arrived in the Resend account owner's inbox. The learner confirmed the Email pop-up fixes: To filled in, the two-line preview, and the buttons visible.
+- **Cafe switching on Edit is locked** (`prd.md > Open Questions`, decided in slice 7). It wasn't free: switching would re-snapshot the cafe's details and reload another cafe's prices in the middle of an edit. Edit shows the cafe as text with "To bill a different cafe, void this invoice and create a new one", and `PUT` refuses a different `customerId` with a 400.
+- **Edit shows the whole standing list,** not just the saved lines. Saved lines keep their saved name and price. Standing products that weren't delivered show today's price with a blank quantity, so she can add them. A saved product that has since left the standing list stays on the form. Special orders follow the standing lines and print in the order added.
+- **A void invoice can't be edited or emailed** (409 from `PUT` and the email route). Its screen keeps Print and Download PDF for her records and hides Send, Edit and Void. The PRD didn't say; this is the agent's call, flagged at the slice 7 checkpoint.
+- **The VOID stamp is see-through and sits below the lines,** so the prices underneath stay readable on screen, in print and in the PDF.
+- **`.btn` now styles links too** (`display: inline-flex`), so Edit, a link to the Edit page, looks and sizes like the other buttons.

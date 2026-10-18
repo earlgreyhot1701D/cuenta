@@ -29,7 +29,7 @@ export default async function DeliverPage() {
   return (
     <>
       <h1>New Delivery</h1>
-      <DeliveryForm cafes={cafes} defaultDate={todayPacific()} />
+      <DeliveryForm cafes={cafes} mode={{ kind: "new", defaultDate: todayPacific() }} />
     </>
   );
 }

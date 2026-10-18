@@ -16,6 +16,7 @@ export type InvoiceSnapshot = {
   cafePhone: string;
   cafeAddressLines: string[];
   cafeLogoPath: string | null;
+  voidedAt?: Date | null;
   lines: { id: string; description: string; unitPriceCents: number; quantity: number }[];
 };
 
@@ -101,6 +102,12 @@ export function InvoiceDocument({ invoice, business }: { invoice: InvoiceSnapsho
       <div className={`${styles.abs} ${styles.received}`} style={{ left: pt(313), top: pt(655) }}>
         Order received by: <span className={styles.blank} />
       </div>
+
+      {invoice.voidedAt && (
+        <div className={`${styles.abs} ${styles.voidStamp}`} style={{ left: pt(306), top: pt(430) }} aria-label="Void">
+          VOID
+        </div>
+      )}
 
       <div className={`${styles.abs} ${styles.terms}`} style={{ left: 0, width: "100%", top: pt(723) }}>
         <div>Payment Terms: Net 30 - Due in full within 30 days of invoice date,</div>

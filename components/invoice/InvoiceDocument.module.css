@@ -134,3 +134,16 @@
 .thanks {
   font-style: italic;
 }
+
+/* A voided invoice stays readable under a rubber-stamp "VOID", on screen, in print and in the PDF. */
+.voidStamp {
+  transform: translate(-50%, -50%) rotate(-18deg);
+  padding: calc(var(--pt) * 6) calc(var(--pt) * 18);
+  border: calc(var(--pt) * 4) solid #a3342b;
+  color: #a3342b;
+  font-size: calc(var(--pt) * 64);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  opacity: 0.6;
+  mix-blend-mode: multiply;
+}

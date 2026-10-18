@@ -1,5 +1,5 @@
 // Job: read and write invoice snapshots and their lines.
-import { asc, eq } from "drizzle-orm";
+import { and, asc, eq, isNull } from "drizzle-orm";
 import { db, schema } from "@/db/client";
 import type { Customer } from "./customers";
 
@@ -53,12 +53,45 @@ export async function createInvoice(input: {
       return invoice.id;
     });
   } catch (err) {
-    if (isUniqueViolation(err)) {
-      const existing = await findByNumber(number);
-      if (existing) throw new DuplicateNumberError(existing);
-    }
-    throw err;
+    return rethrowDuplicate(err, number);
   }
+}
+
+/** Turns a unique-index violation on the number into a DuplicateNumberError; rethrows anything else. */
+async function rethrowDuplicate(err: unknown, number: string): Promise<never> {
+  if (isUniqueViolation(err)) {
+    const existing = await findByNumber(number);
+    if (existing) throw new DuplicateNumberError(existing);
+  }
+  throw err;
+}
+
+/** Edit: replaces the date, number and lines. The cafe snapshot and email/payment fields stay as they were. */
+export async function updateInvoice(
+  id: string,
+  input: { invoiceDate: string; number: string; lines: NewLine[] },
+): Promise<void> {
+  const { invoiceDate, number, lines } = input;
+  try {
+    await db.transaction(async (tx) => {
+      await tx
+        .update(schema.invoices)
+        .set({ invoiceDate, number, updatedAt: new Date() })
+        .where(eq(schema.invoices.id, id));
+      await tx.delete(schema.invoiceLines).where(eq(schema.invoiceLines.invoiceId, id));
+      await tx.insert(schema.invoiceLines).values(lines.map((line, position) => ({ ...line, invoiceId: id, position })));
+    });
+  } catch (err) {
+    return rethrowDuplicate(err, number);
+  }
+}
+
+/** Void: stamps voided_at once. The row and its number stay, so the number is never reused. */
+export async function voidInvoice(id: string): Promise<void> {
+  await db
+    .update(schema.invoices)
+    .set({ voidedAt: new Date(), updatedAt: new Date() })
+    .where(and(eq(schema.invoices.id, id), isNull(schema.invoices.voidedAt)));
 }
 
 export async function getInvoice(id: string): Promise<{ invoice: Invoice; lines: InvoiceLine[] } | undefined> {

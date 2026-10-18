@@ -1,97 +1,67 @@
-// Job: build an invoice's header and lines for one cafe, with live totals, then create it.
+// Job: the delivery header (cafe, date, number), new-or-edit mode, and saving it as an invoice.
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { LineRow } from "./LineRow";
+import { SpecialOrderRow } from "./SpecialOrderRow";
+import { useDeliveryLines, type DeliveryCafe, type SavedLines } from "./useDeliveryLines";
 import { CafePicker } from "@/components/ui/CafePicker";
 import { Confirm } from "@/components/ui/Confirm";
 import { api } from "@/lib/api/client";
 import { suggestNumber } from "@/lib/invoice-number";
-import { formatUSD, lineTotal, parseUSD, sumCents } from "@/lib/money";
+import { formatUSD } from "@/lib/money";
 import styles from "./DeliveryForm.module.css";
 
-export type DeliveryLine = {
-  productId: string;
-  name: string;
-  priceCents: number;
-  shelf: { quantity: number; countedOn: string } | null;
-};
+export type { DeliveryCafe, DeliveryLine } from "./useDeliveryLines";
 
-export type DeliveryCafe = { id: string; code: number; name: string; lines: DeliveryLine[] };
+export type DeliveryMode =
+  | { kind: "new"; defaultDate: string }
+  | { kind: "edit"; invoiceId: string; number: string; invoiceDate: string; saved: SavedLines };
 
-type LineState = { price: string; quantity: string };
-
-function freshLines(cafe: DeliveryCafe | undefined): Record<string, LineState> {
-  // Quantities always start blank; the shelf count is reference only and never pre-fills them.
-  return Object.fromEntries(
-    (cafe?.lines ?? []).map((l) => [l.productId, { price: (l.priceCents / 100).toFixed(2), quantity: "" }]),
-  );
-}
-
-export function DeliveryForm({ cafes, defaultDate }: { cafes: DeliveryCafe[]; defaultDate: string }) {
+export function DeliveryForm({ cafes, mode }: { cafes: DeliveryCafe[]; mode: DeliveryMode }) {
+  const editing = mode.kind === "edit";
   const router = useRouter();
-  const [cafeId, setCafeId] = useState<string | undefined>();
-  const [date, setDate] = useState(defaultDate);
-  const [typedNumber, setTypedNumber] = useState("");
-  const [numberTouched, setNumberTouched] = useState(false);
-  const [lines, setLines] = useState<Record<string, LineState>>({});
+  // Edit locks the cafe: to bill a different cafe, she voids this invoice and creates a new one.
+  const [cafeId, setCafeId] = useState<string | undefined>(editing ? cafes[0]?.id : undefined);
+  const [date, setDate] = useState(editing ? mode.invoiceDate : mode.defaultDate);
+  const [typedNumber, setTypedNumber] = useState(editing ? mode.number : "");
+  const [numberTouched, setNumberTouched] = useState(editing);
   const [numberMessage, setNumberMessage] = useState("");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const [pendingCafe, setPendingCafe] = useState<string | null>(null);
 
   const cafe = cafes.find((c) => c.id === cafeId);
+  const lines = useDeliveryLines(cafe, editing ? mode.saved : undefined);
   const suggestion = cafe && date ? suggestNumber(cafe.code, date) : "";
   const number = numberTouched ? typedNumber : suggestion;
-
-  const rows = (cafe?.lines ?? []).map((line) => {
-    const state = lines[line.productId] ?? { price: "", quantity: "" };
-    const priceCents = parseUSD(state.price);
-    const quantity = state.quantity === "" ? 0 : Number(state.quantity);
-    const total = priceCents !== null && quantity > 0 ? lineTotal(priceCents, quantity) : null;
-    return { line, state, priceCents, quantity, total };
-  });
-  const delivered = rows.filter((r) => r.quantity > 0);
-  const invoiceTotal = sumCents(delivered.map((r) => r.total ?? 0));
-  const anyPriceInvalid = delivered.some((r) => r.priceCents === null);
-  const canCreate = !!cafe && !!date && number.trim() !== "" && delivered.length > 0 && !anyPriceInvalid && !busy;
+  const canSave = !!cafe && !!date && number.trim() !== "" && lines.hasLines && !lines.problem && !busy;
 
   function chooseCafe(id: string) {
     setCafeId(id);
-    setLines(freshLines(cafes.find((c) => c.id === id)));
+    lines.reset(cafes.find((c) => c.id === id));
     setNumberMessage("");
     setMessage("");
   }
 
-  function setLine(productId: string, patch: Partial<LineState>) {
-    setLines((prev) => ({ ...prev, [productId]: { ...prev[productId], ...patch } }));
-  }
-
-  async function create() {
+  async function save() {
     if (!cafe) return;
     setBusy(true);
     setMessage("");
     setNumberMessage("");
-    const result = await api<{ id: string }>("/api/invoices", {
-      method: "POST",
-      body: {
-        customerId: cafe.id,
-        invoiceDate: date,
-        number: number.trim(),
-        lines: delivered.map((r) => ({
-          productId: r.line.productId,
-          unitPriceCents: r.priceCents,
-          quantity: r.quantity,
-        })),
-      },
-    });
+    const body = { customerId: cafe.id, invoiceDate: date, number: number.trim(), lines: lines.payload() };
+    const result = editing
+      ? await api<{ id: string }>(`/api/invoices/${mode.invoiceId}`, { method: "PUT", body })
+      : await api<{ id: string }>("/api/invoices", { method: "POST", body });
     if (result.ok) {
       router.push(`/invoices/${result.data.id}`);
+      router.refresh();
       return;
     }
     setBusy(false);
-    if (result.status === 409) setNumberMessage(result.message);
+    if (result.status === 409 && result.data?.usedOn) setNumberMessage(result.message);
     else setMessage(result.message);
   }
 
@@ -99,11 +69,18 @@ export function DeliveryForm({ cafes, defaultDate }: { cafes: DeliveryCafe[]; de
     <div className={styles.form}>
       <section className={styles.section}>
         <p className="label muted">Cafe</p>
-        <CafePicker
-          cafes={cafes}
-          selectedId={cafeId}
-          onSelect={(id) => (delivered.length > 0 ? setPendingCafe(id) : chooseCafe(id))}
-        />
+        {editing ? (
+          <>
+            <p className={styles.lockedCafe}>{cafe?.name}</p>
+            <p className="quiet">To bill a different cafe, void this invoice and create a new one.</p>
+          </>
+        ) : (
+          <CafePicker
+            cafes={cafes}
+            selectedId={cafeId}
+            onSelect={(id) => (lines.hasLines ? setPendingCafe(id) : chooseCafe(id))}
+          />
+        )}
       </section>
 
       <section className={styles.header}>
@@ -140,7 +117,7 @@ export function DeliveryForm({ cafes, defaultDate }: { cafes: DeliveryCafe[]; de
             <span>Total</span>
           </div>
           <ul className={styles.lines}>
-            {rows.map(({ line, state, priceCents, total, quantity }) => (
+            {lines.rows.map(({ line, state, priceCents, total, quantity }) => (
               <LineRow
                 key={line.productId}
                 name={line.name}
@@ -149,25 +126,49 @@ export function DeliveryForm({ cafes, defaultDate }: { cafes: DeliveryCafe[]; de
                 quantity={state.quantity}
                 totalCents={total}
                 priceInvalid={priceCents === null && (quantity > 0 || state.price !== "")}
-                onPrice={(price) => setLine(line.productId, { price })}
-                onQuantity={(q) => setLine(line.productId, { quantity: q })}
+                onPrice={(price) => lines.setLine(line.productId, { price })}
+                onQuantity={(q) => lines.setLine(line.productId, { quantity: q })}
+              />
+            ))}
+            {lines.specialRows.map(({ state, priceCents, quantity, total, descriptionMissing }) => (
+              <SpecialOrderRow
+                key={state.key}
+                description={state.description}
+                price={state.price}
+                quantity={state.quantity}
+                totalCents={total}
+                descriptionInvalid={descriptionMissing && state.price !== ""}
+                priceInvalid={priceCents === null && (state.price !== "" || !descriptionMissing)}
+                quantityInvalid={quantity < 1 && !descriptionMissing}
+                onDescription={(description) => lines.setSpecial(state.key, { description })}
+                onPrice={(price) => lines.setSpecial(state.key, { price })}
+                onQuantity={(q) => lines.setSpecial(state.key, { quantity: q })}
+                onRemove={() => lines.removeSpecial(state.key)}
               />
             ))}
           </ul>
+          <button type="button" className={`label ${styles.addSpecial}`} onClick={lines.addSpecial}>
+            + Add special order
+          </button>
           <div className={styles.totalRow}>
             <span className="label">Invoice total</span>
-            <span className={styles.total}>{formatUSD(invoiceTotal)}</span>
+            <span className={styles.total}>{formatUSD(lines.total)}</span>
           </div>
         </>
       )}
 
       <div className={styles.actions}>
         <p className="quiet" role="status">
-          {message || (anyPriceInvalid ? "Check the prices on the lines you're delivering." : "")}
+          {message || lines.problem}
         </p>
-        <button className="btn btn-primary" type="button" disabled={!canCreate} onClick={create}>
-          Create invoice
+        <button className="btn btn-primary" type="button" disabled={!canSave} onClick={save}>
+          {editing ? (busy ? "Saving…" : "Save changes") : "Create invoice"}
         </button>
+        {editing && (
+          <Link className="label" href={`/invoices/${mode.invoiceId}`}>
+            Cancel
+          </Link>
+        )}
       </div>
 
       {pendingCafe && (
