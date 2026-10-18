@@ -43,7 +43,7 @@ Count and Deliver never feed each other (`scope.md > The Core Loop`).
 
 ## Screens and Layout
 
-**How it works** (added in `5-build`): a small "?" in the top corner of every page, the PIN screen included, opens a plain-words page. It has one short section each for Count, Deliver, Invoice page, Email pop-up and Ledger: what the screen is for and what each button does, using the buttons' exact names.
+**How it works** (added in `5-build`): a small "?" in the top corner of every page, the PIN screen included, opens a plain-words page. It has one short section each for Count, Deliver, Invoice page, Email pop-up, Ledger and Customers: what the screen is for and what each button does, using the buttons' exact names.
 
 | Screen | Primary device | Reached from |
 |---|---|---|

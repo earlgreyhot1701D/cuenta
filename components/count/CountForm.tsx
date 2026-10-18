@@ -1,9 +1,11 @@
 // Job: the Count screen's cafe picker, steppers and Save for one cafe.
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Stepper } from "./Stepper";
+import { setUnsaved } from "@/components/nav/unsaved";
 import { CafePicker, type CafeOption } from "@/components/ui/CafePicker";
 import { Confirm } from "@/components/ui/Confirm";
 import { api } from "@/lib/api/client";
@@ -29,17 +31,25 @@ export function CountForm({
   const [values, setValues] = useState<Record<string, string>>({});
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
-  const [pendingCafe, setPendingCafe] = useState<string | null>(null);
+  // Where she asked to go while entries were unsaved: another cafe, or Past counts.
+  const [pendingHref, setPendingHref] = useState<string | null>(null);
 
   const entries = rows
     .filter((r) => (values[r.productId] ?? "") !== "")
     .map((r) => ({ productId: r.productId, quantity: Number(values[r.productId]) }));
   const dirty = entries.length > 0;
   const cafeName = cafes.find((c) => c.id === cafeId)?.name ?? "";
+  const discardQuestion = `Discard the unsaved counts for ${cafeName}?`;
 
-  function switchCafe(id: string) {
-    if (dirty) setPendingCafe(id);
-    else router.push(`/count?cafe=${id}`);
+  // The bottom nav reads this before leaving the screen.
+  useEffect(() => {
+    setUnsaved(dirty ? discardQuestion : null);
+    return () => setUnsaved(null);
+  }, [dirty, discardQuestion]);
+
+  function leaveTo(href: string) {
+    if (dirty) setPendingHref(href);
+    else router.push(href);
   }
 
   async function save() {
@@ -61,7 +71,17 @@ export function CountForm({
     <>
       <section className={styles.picker}>
         <p className="label muted">Cafe</p>
-        <CafePicker cafes={cafes} selectedId={cafeId} onSelect={switchCafe} />
+        <CafePicker cafes={cafes} selectedId={cafeId} onSelect={(id) => leaveTo(`/count?cafe=${id}`)} />
+        <Link
+          href={`/count/past?cafe=${cafeId}`}
+          className={`label ${styles.pastLink}`}
+          onClick={(e) => {
+            e.preventDefault();
+            leaveTo(`/count/past?cafe=${cafeId}`);
+          }}
+        >
+          Past counts
+        </Link>
       </section>
 
       <div className={`label ${styles.columns}`}>
@@ -98,16 +118,17 @@ export function CountForm({
         </button>
       </div>
 
-      {pendingCafe && (
+      {pendingHref && (
         <Confirm
-          message={`Discard the unsaved counts for ${cafeName}?`}
+          message={discardQuestion}
           confirmLabel="Discard"
-          onCancel={() => setPendingCafe(null)}
+          onCancel={() => setPendingHref(null)}
           onConfirm={() => {
-            const id = pendingCafe;
-            setPendingCafe(null);
+            const href = pendingHref;
+            setPendingHref(null);
             setValues({});
-            router.push(`/count?cafe=${id}`);
+            setUnsaved(null);
+            router.push(href);
           }}
         />
       )}

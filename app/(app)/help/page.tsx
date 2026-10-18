@@ -13,6 +13,8 @@ const SECTIONS = [
       ["− and +", "Change a number, or type it. Every box starts empty, and − on an empty box records 0."],
       ["The grey line", "\"last counted Oct 9: 3\" is what you saved last time, for reference."],
       ["Save count", "Saves only the rows you filled in, dated today. Rows you left empty keep their old count."],
+      ["Past counts", "Every earlier count for this cafe, newest day first. It's read-only, like your paper book."],
+      ["Leaving with numbers typed", "Picking another cafe or tapping the menu at the bottom asks before your unsaved numbers are thrown away."],
     ],
   },
   {
@@ -24,6 +26,7 @@ const SECTIONS = [
       ["Date", "The delivery date. It's today unless you change it."],
       ["Invoice #", "Filled in for you: the cafe's number and the date. Type over it if you need to, such as adding -2 for a second delivery the same day."],
       ["Price and Qty", "Type how many you delivered. You can change a price for this invoice only; it never changes the product."],
+      ["+ Add special order", "Adds a line that isn't one of your usual products, such as a birthday cake. Type what it is, the price and how many. It prints like any other line and never becomes a product. Remove takes it off."],
       ["Create invoice", "Saves the invoice and opens the Invoice page. It stays grey until at least one quantity is filled in."],
     ],
   },
@@ -36,6 +39,8 @@ const SECTIONS = [
       ["Print", "Opens your printer's window. It prints one page, exactly like the paper form. Cancel leaves you here."],
       ["Download PDF", "Saves the same PDF the email sends, for your records. This page stays open."],
       ["Send email", "Opens the Email pop-up. After a send, it reads Send again, and a grey line says \"Last sent Oct 17, 8:12pm\"."],
+      ["Edit", "Opens the invoice to change quantities, prices, special orders, the date or the number. It shows the prices saved on the invoice, not today's. Save changes updates the invoice and the Ledger. To bill a different cafe, void it and make a new one."],
+      ["Void", "Asks once, then stamps the invoice VOID. It stays in the Ledger, crossed out, and counts in no total. Its number stays taken. A void invoice can still be printed or downloaded, but not edited or emailed."],
     ],
   },
   {
@@ -62,6 +67,15 @@ const SECTIONS = [
       ["Emailed Oct 17 / Not sent", "Whether the invoice was emailed. Point at it on a laptop to see the exact time."],
       ["overdue 9 days", "Shown in rose, with a thin line on the left, once an unpaid invoice is past its 30 days."],
       ["Tap a row", "Opens that invoice."],
+      ["Crossed out with Void", "A voided invoice. It's kept for your records and left out of the numbers above."],
+    ],
+  },
+  {
+    id: "customers",
+    title: "Customers",
+    what: "Each cafe's details and usual products with prices. Read-only for now.",
+    items: [
+      ["The cafe cards", "Phone, address, billing email (the one the Email pop-up fills in), Net 30 terms, and the cafe's usual products and prices."],
     ],
   },
 ];

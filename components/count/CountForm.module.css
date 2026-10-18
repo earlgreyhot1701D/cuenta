@@ -72,3 +72,11 @@
     padding-inline: var(--gutter);
   }
 }
+
+.pastLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch);
+  margin-top: 0.25rem;
+  color: var(--ink);
+}

@@ -1,0 +1,120 @@
+.list {
+  list-style: none;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.card {
+  border: 1px solid var(--ink);
+  padding: 1.25rem;
+  min-width: 0;
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: var(--hairline);
+}
+
+.code {
+  margin: 0 0 0.25rem;
+  font-size: 11px;
+}
+
+.name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 28px;
+  line-height: 1.1;
+}
+
+.logo {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.details {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  background: var(--blush);
+}
+
+.details > div {
+  display: grid;
+  grid-template-columns: 7.5rem 1fr;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  border-bottom: var(--hairline);
+}
+
+.details > div:last-child {
+  border-bottom: none;
+}
+
+.details dt {
+  font-size: 11px;
+  padding-top: 0.2rem;
+}
+
+.details dd {
+  margin: 0;
+  font-size: 18px;
+  min-width: 0;
+}
+
+.line {
+  display: block;
+}
+
+.email {
+  overflow-wrap: anywhere;
+}
+
+.listTitle {
+  margin: 1.25rem 0 0.25rem;
+}
+
+.products {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 18px;
+}
+
+.products th {
+  text-align: left;
+  font-weight: 600;
+  font-size: 11px;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--ink);
+}
+
+.products td {
+  padding: 0.6rem 0;
+  border-bottom: var(--hairline);
+}
+
+.products th:last-child,
+.products td:last-child {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 900px) {
+  .list {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 420px) {
+  .details > div {
+    grid-template-columns: 1fr;
+    gap: 0.15rem;
+  }
+}

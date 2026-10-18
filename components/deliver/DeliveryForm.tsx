@@ -3,10 +3,11 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LineRow } from "./LineRow";
 import { SpecialOrderRow } from "./SpecialOrderRow";
 import { useDeliveryLines, type DeliveryCafe, type SavedLines } from "./useDeliveryLines";
+import { setUnsaved } from "@/components/nav/unsaved";
 import { CafePicker } from "@/components/ui/CafePicker";
 import { Confirm } from "@/components/ui/Confirm";
 import { api } from "@/lib/api/client";
@@ -38,6 +39,13 @@ export function DeliveryForm({ cafes, mode }: { cafes: DeliveryCafe[]; mode: Del
   const suggestion = cafe && date ? suggestNumber(cafe.code, date) : "";
   const number = numberTouched ? typedNumber : suggestion;
   const canSave = !!cafe && !!date && number.trim() !== "" && lines.hasLines && !lines.problem && !busy;
+
+  // A new delivery with lines entered asks before the bottom nav leaves it.
+  const unsaved = !editing && lines.hasLines && !busy;
+  useEffect(() => {
+    setUnsaved(unsaved ? "Discard this delivery? The quantities you entered will be lost." : null);
+    return () => setUnsaved(null);
+  }, [unsaved]);
 
   function chooseCafe(id: string) {
     setCafeId(id);

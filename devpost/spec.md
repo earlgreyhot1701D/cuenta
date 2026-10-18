@@ -468,10 +468,13 @@ cuenta/
 ├── proxy.ts                            # Job: require a PIN session (middleware.ts if the Next.js version expects it)
 ├── components/
 │   ├── nav/BottomNav.tsx               # Job: the four-tab nav with the unsaved-changes guard
+│   ├── nav/unsaved.ts                  # Job: the shared "unsaved entries" flag a form raises and the nav checks
 │   ├── count/CountForm.tsx             # Job: steppers and Save for one cafe
 │   ├── count/Stepper.tsx               # Job: − / number / + input
 │   ├── deliver/DeliveryForm.tsx        # Job: build or edit an invoice's lines and header
 │   ├── deliver/LineRow.tsx             # Job: one editable invoice line
+│   ├── deliver/SpecialOrderRow.tsx     # Job: one free-text special order line
+│   ├── deliver/useDeliveryLines.ts     # Job: line state, per-line prices, special orders and totals
 │   ├── invoice/InvoiceDocument.tsx     # Job: render the Canva-matched invoice from a snapshot
 │   ├── invoice/InvoiceDocument.module.css
 │   ├── invoice/InvoiceActions.tsx      # Job: Print, PDF, Email, Edit, Void buttons
@@ -497,6 +500,7 @@ cuenta/
 │   ├── ledger-stats.ts                 # Job: compute Open, Outstanding, This month
 │   ├── api/with-route.ts               # Job: time, log and error-wrap an API handler
 │   ├── api/client.ts                   # Job: client fetch wrapper with one-line errors
+│   ├── api/duplicate-number.ts         # Job: turn a duplicate number into the 409 "Already used on…" answer
 │   ├── pdf/browser.ts                  # Job: launch serverless Chromium
 │   ├── pdf/render-invoice-pdf.ts       # Job: turn the print route into a Letter PDF buffer
 │   ├── email/invoice-email.ts          # Job: the invoice email template (edit copy here until Handoff)
@@ -520,7 +524,9 @@ cuenta/
 │   └── logos/placeholder.png           # generated neutral logo for mock data (real logo never in git)
 ├── tests/
 │   ├── unit/                           # Vitest: dates, money, invoice-number, ledger-stats, print-token
-│   └── e2e/judge-path.spec.ts          # Playwright: the four-step judge path
+│   └── e2e/judge-path.spec.ts          # Playwright: the four-step judge path (playwright.config.ts at the root)
+├── scripts/
+│   └── audit-mock-data.mjs             # Job: fail if a tracked file carries real customer or business data
 ├── design/                             # Stitch references; canva-invoice-reference.png is gitignored (local only)
 ├── devpost/                            # Devpost learning workspace
 ├── .env.example
