@@ -15,6 +15,13 @@
       "when": 1792292642254,
       "tag": "0001_pin_attempts",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792343328298,
+      "tag": "0002_one_menu",
+      "breakpoints": true
     }
   ]
 }

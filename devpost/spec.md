@@ -40,12 +40,12 @@ PRD ref: `prd.md > The Core Journey`.
    - The server compares it to `APP_PIN` and sets a signed, httpOnly cookie that's valid for 30 days.
    - From then on, the PIN check (`proxy.ts`) lets her through to every page and API route.
 2. **Count.**
-   - The Count page reads the cafe list, that cafe's standing products, and the latest count per product from the database.
+   - The Count page reads the cafe list, the menu (every active product), and that cafe's latest count per product from the database.
    - She enters numbers and taps Save, which sends `POST /api/counts` with only the entered rows.
    - The server adds one count record per row, dated today in Pacific time.
    - The page refreshes its grey "last counted" lines.
 3. **Deliver.**
-   - The page loads the cafe's standing list, with prices from `products` and the grey latest counts. Counts are shown only and never copied into quantities.
+   - The page loads the menu, with prices from `products`, and the chosen cafe's grey latest counts. Counts are shown only and never copied into quantities.
    - The date defaults to `todayPacific()`, and the number defaults to `suggestNumber(code, date)`.
    - She types quantities, and totals calculate in cents in the browser.
    - Create invoice sends `POST /api/invoices` with the cafe, date, number and lines.
@@ -198,13 +198,13 @@ Carried forward from `prd.md > Look and Feel` and `design/DESIGN.md`.
   - `POST /api/counts {customerId, entries:[{productId, quantity}]}` saves only the entered rows
   - after saving, it refreshes the page data, clears the steppers, and shows "Saved" for 2 seconds
 - **Unsaved-changes prompt:** shown when switching cafes, and when leaving by the bottom nav. The nav checks a shared "dirty" flag.
-- **Past counts:** a "Past counts" link under the picker opens `app/(app)/count/past/page.tsx?cafe=`. It reads every count row for that cafe through `lib/queries/counts.ts`, groups them by `counted_on` (newest first, then by standing-list position), and renders them read-only. Added in `5-build`, built in slice 8.
+- **Past counts:** a "Past counts" link under the picker opens `app/(app)/count/past/page.tsx?cafe=`. It reads every count row for that cafe through `lib/queries/counts.ts`, groups them by `counted_on` (newest first, then by menu order), and renders them read-only. Added in `5-build`, built in slice 8.
 - PRD ref: `prd.md > Count`.
 
 ### Deliver Screen (New and Edit)
 - **What it does:** `app/(app)/deliver/page.tsx` for a new delivery, and `app/(app)/invoices/[id]/edit/page.tsx` for Edit. Both render the client component `DeliveryForm`, so there's one form for both.
 - **Lines:**
-  - one per standing product, with name, editable unit price, blank quantity, line total and grey latest count
+  - one per menu product (the same for every cafe), with name, editable unit price, blank quantity, line total and grey latest count
   - special order lines with a description, unit price and quantity
 - **Calculations:**
   - totals use `lib/money.ts`
@@ -300,7 +300,7 @@ Carried forward from `prd.md > Look and Feel` and `design/DESIGN.md`.
 - PRD ref: `prd.md > Ledger`.
 
 ### Customers Screen
-- **What it does:** `app/(app)/customers/page.tsx` shows each cafe's details, logo and standing list with prices, read-only.
+- **What it does:** `app/(app)/customers/page.tsx` shows the menu once at the top (every product and price, shared by every cafe), then each cafe's details and logo, read-only.
 - PRD ref: `prd.md > Customers (read-only)`.
 
 ### Logging and Health
@@ -349,21 +349,18 @@ Postgres on Neon, defined in Drizzle, with one schema file per table in `db/sche
 | `name` | text | |
 | `price_cents` | int | |
 | `active` | bool | |
+| `sort` | int | menu order (added in `5-build`) |
+
+**One menu for every cafe** (corrected in `5-build`): every active product, in `sort` order, is on every cafe's Count and Deliver, at the one price. `lib/queries/products.ts` has `listProducts()`. There's no per-cafe product list.
 
 **Products are open-ended:**
-- **Referenced by slug, never by position.** The seed and standing lists use slugs; foreign keys use the ID.
-- **Adding a product is one seed entry** plus its standing-list memberships.
+- **Referenced by slug, never by position.** The seed uses slugs; foreign keys use the ID.
+- **Adding a product is one seed entry.**
 - **No screen, query or test hardcodes the product count.**
 - **Count and Deliver scroll** for any number of rows.
 - **Block 1 check:** add a sixth product to the seed, reseed, and it appears on Count, Deliver and Customers with no code change.
 
-**`standing_items`**: each cafe's standing list.
-
-| Column | Type | Notes |
-|---|---|---|
-| `customer_id` | fk | primary key with `product_id` |
-| `product_id` | fk | |
-| `position` | int | |
+**`standing_items`** (removed in `5-build`, migration `0002_one_menu`): it gave each cafe its own product list, which was a plan error. Its order became `products.sort`.
 
 **`counts`**: one row per counted product, never updated.
 
@@ -418,7 +415,7 @@ Due date and total are **calculated, not stored**: the due date is `invoice_date
 | `quantity` | int | ≥ 1 |
 | `position` | int | |
 
-Only lines with a quantity of at least 1 are saved. Blank standing rows aren't stored, so an invoice holds only what was delivered.
+Only lines with a quantity of at least 1 are saved. Blank menu rows aren't stored, so an invoice holds only what was delivered.
 
 **Where each piece of data lives, how it changes, and what happens when she comes back:**
 
@@ -429,7 +426,7 @@ Only lines with a quantity of at least 1 are saved. Blank standing rows aren't s
 | Unsaved stepper and form entries | browser memory only | typing | Lost when she leaves, after the prompt |
 | Counts | `counts` | Count Save (adds rows) | Newest per product shown in grey |
 | Invoices and lines | `invoices`, `invoice_lines` | Create, Edit, Void, Payment, Email | Exactly as saved |
-| Products, cafes, standing lists | seed tables | seed script only (Handoff adds screens) | Unchanged |
+| Products (the menu), cafes | seed tables | seed script only (Handoff adds screens) | Unchanged |
 
 **Number uniqueness** is enforced by the unique index. The API catches the conflict and looks up the existing invoice to build the "Already used on [date] for [cafe]" message.
 
@@ -510,7 +507,7 @@ cuenta/
 ├── db/
 │   ├── client.ts                       # Job: create the Drizzle client for Neon
 │   ├── schema/                         # Job (each): one table definition
-│   │   ├── customers.ts  products.ts  standing-items.ts  counts.ts  invoices.ts  invoice-lines.ts  pin-attempts.ts
+│   │   ├── customers.ts  products.ts  counts.ts  invoices.ts  invoice-lines.ts  pin-attempts.ts
 │   └── migrations/                     # generated by drizzle-kit
 ├── seed/
 │   ├── mock-data.ts                    # Job: mock cafes, real products and prices, fake contacts
@@ -576,7 +573,7 @@ cuenta/
 
 ## What Was Simplified and Why
 - **One PIN in an env var and a signed cookie** instead of accounts. Eileen is the only user; multi-user login is Later.
-- **Seeded products, cafes and standing lists, with a read-only Customers screen,** instead of admin screens. It keeps admin UI off the judge path. Block 8 adds editing.
+- **Seeded products (one menu) and cafes, with a read-only Customers screen,** instead of admin screens. It keeps admin UI off the judge path. Block 8 adds editing.
 - **The email template lives in code** (`lib/email/invoice-email.ts`) instead of an editor. Same reason; Block 8.
 - **Due date and totals are calculated, not stored.** One source of truth and nothing to get out of sync. The cost is a sum per Ledger row, which is trivial at this size.
 - **The email status keeps only the latest success and the latest failure** instead of a full send history. The history line was deferred to Block 8 in the PRD.

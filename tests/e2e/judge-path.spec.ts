@@ -76,12 +76,13 @@ test("judge path: Count → Deliver → Invoice (Print, Email) → Ledger, under
     await step("3. Invoice: Print and Email", async () => {
       await expect(page.getByRole("heading", { name: `Invoice ${number}` })).toBeVisible();
       await page.getByRole("button", { name: "Print" }).click();
-      expect(await page.evaluate(() => (window as unknown as { printed: number }).printed)).toBe(1);
+      await expect.poll(() => page.evaluate(() => (window as unknown as { printed: number }).printed)).toBe(1);
 
       await page.getByRole("button", { name: /^Send (email|again)$/ }).click();
       await expect(page.getByLabel("To")).not.toHaveValue("");
       if (process.env.E2E_SEND === "1") {
         await page.getByRole("button", { name: /^Send (email|again)$/ }).last().click();
+        await expect(page.getByRole("button", { name: "Sending…" })).toBeDisabled();
         await expect(page.getByText(/Last sent/).first()).toBeVisible({ timeout: 30_000 });
       } else {
         await page.getByRole("button", { name: "Cancel" }).click();

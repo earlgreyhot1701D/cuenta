@@ -1,4 +1,4 @@
-// Job: validate a submitted delivery (date, number, standing and special order lines) before it becomes an invoice.
+// Job: validate a submitted delivery (date, number, menu and special order lines) before it becomes an invoice.
 import { isValidYmd } from "@/lib/dates";
 import type { NewLine } from "@/lib/queries/invoices";
 
@@ -19,7 +19,7 @@ const validQty = (v: unknown): v is number => Number.isInteger(v) && (v as numbe
 
 /**
  * Returns the clean input, or a one-line message saying what's wrong.
- * Standing lines with quantity 0 are dropped; a special order line (no productId) must be complete.
+ * Menu lines with quantity 0 are dropped; a special order line (no productId) must be complete.
  */
 export function parseDelivery(
   body: { invoiceDate?: unknown; number?: unknown; lines?: unknown },
@@ -48,7 +48,7 @@ export function parseDelivery(
     }
 
     const product = typeof line.productId === "string" ? byId.get(line.productId) : undefined;
-    if (!product) return { ok: false, message: "A line isn't on this cafe's list." };
+    if (!product) return { ok: false, message: "A line isn't on the menu." };
     if (!validPrice(price)) return { ok: false, message: `Check the price for ${product.name}.` };
     if (!validQty(qty)) return { ok: false, message: `Check the quantity for ${product.name}.` };
     if (qty >= 1) {

@@ -29,18 +29,17 @@ export async function insertCounts(
 export type PastCountDay = { countedOn: string; rows: { productId: string; name: string; quantity: number }[] };
 
 /**
- * Every day this cafe was counted, newest first. Within a day, rows follow the standing list
- * (products since taken off it go last); if a product was saved twice that day, the later save wins.
+ * Every day this cafe was counted, newest first. Within a day, rows follow the menu order;
+ * if a product was saved twice that day, the later save wins.
  */
 export async function pastCounts(customerId: string): Promise<PastCountDay[]> {
   const result = await db.execute<{ counted_on: string; product_id: string; name: string; quantity: number }>(sql`
     select counted_on, product_id, name, quantity from (
       select distinct on (c.counted_on, c.product_id)
         c.counted_on::text as counted_on, c.product_id, p.name, c.quantity,
-        coalesce(s.position, 1000000) as position
+        p.sort as position
       from counts c
       join products p on p.id = c.product_id
-      left join standing_items s on s.customer_id = c.customer_id and s.product_id = c.product_id
       where c.customer_id = ${customerId}
       order by c.counted_on, c.product_id, c.created_at desc
     ) latest

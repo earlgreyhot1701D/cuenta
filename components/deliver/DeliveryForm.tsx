@@ -115,7 +115,7 @@ export function DeliveryForm({ cafes, mode }: { cafes: DeliveryCafe[]; mode: Del
       </section>
 
       {!cafe ? (
-        <p className="quiet">Pick a cafe to see its standing list.</p>
+        <p className="quiet">Pick a cafe to see the menu.</p>
       ) : (
         <>
           <div className={`label ${styles.columns}`}>

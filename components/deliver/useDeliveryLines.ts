@@ -1,4 +1,4 @@
-// Job: hold a delivery's line state (standing quantities, per-line prices, special orders) and its totals.
+// Job: hold a delivery's line state (menu quantities, per-line prices, special orders) and its totals.
 "use client";
 
 import { useState } from "react";
@@ -81,7 +81,7 @@ export function useDeliveryLines(cafe: DeliveryCafe | undefined, saved?: SavedLi
     total,
     problem,
     hasLines,
-    /** Lines as the API takes them: standing lines first, then special orders in the order added. */
+    /** Lines as the API takes them: menu lines first, then special orders in the order added. */
     payload: () => [
       ...delivered.map((r) => ({ productId: r.line.productId, unitPriceCents: r.priceCents, quantity: r.quantity })),
       ...specialRows.map((r) => ({

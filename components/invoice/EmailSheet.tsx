@@ -93,16 +93,17 @@ function EmailBody({ invoiceId, draft, onClose, onSent }: Props) {
       <p className={styles.attachment}>{draft.attachmentName} attached</p>
 
       <div className={sheet.actions}>
-        {(message || sending || draft.lastSent) && (
+        {(message || draft.lastSent) && (
           <p className={`quiet ${sheet.actionsNote}`} role="status">
-            {sending ? "Sending…" : message || draft.lastSent}
+            {message || draft.lastSent}
           </p>
         )}
         <button className="btn" type="button" onClick={() => close(onClose)} disabled={sending}>
           Cancel
         </button>
-        <button className="btn btn-primary" type="button" onClick={send} disabled={!canSend}>
-          {failed ? "Try again" : draft.sendLabel}
+        {/* While it works, the button says so and can't be tapped again, so nothing is sent twice. */}
+        <button className="btn btn-primary" type="button" onClick={send} disabled={!canSend} aria-busy={sending}>
+          {sending ? "Sending…" : failed ? "Try again" : draft.sendLabel}
         </button>
       </div>
     </>

@@ -4,7 +4,7 @@ import { duplicateNumberError } from "@/lib/api/duplicate-number";
 import { HttpError, withRoute } from "@/lib/api/with-route";
 import { parseDelivery } from "@/lib/invoice-input";
 import { getCustomer } from "@/lib/queries/customers";
-import { standingProducts } from "@/lib/queries/products";
+import { listProducts } from "@/lib/queries/products";
 import { createInvoice } from "@/lib/queries/invoices";
 
 export const POST = withRoute("POST /api/invoices", async (req, _ctx, logCtx) => {
@@ -13,7 +13,7 @@ export const POST = withRoute("POST /api/invoices", async (req, _ctx, logCtx) =>
   if (!customer) throw new HttpError(400, "Pick a cafe.");
   logCtx.cafe = customer.name;
 
-  const parsed = parseDelivery(body, await standingProducts(customer.id));
+  const parsed = parseDelivery(body, await listProducts());
   if (!parsed.ok) throw new HttpError(400, parsed.message);
   logCtx.invoiceNumber = parsed.value.number;
 

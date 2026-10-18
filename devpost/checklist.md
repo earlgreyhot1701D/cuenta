@@ -125,9 +125,10 @@ Not a slice. It starts only after the demo video is recorded and the submission 
 - [ ] 1. Record the demo video on production with the mock data (`spec.md > Where It Runs and How Someone Tries It`, Demo video).
 - [ ] 2. Tag the submission commit (for example `git tag submission`) and push the tag, so the judged code stays findable after Handoff changes.
 - [ ] 3. Back up the mock data with a Neon branch snapshot of `main` (for example a branch named `mock-snapshot`), so the judged state can be brought back.
-- [ ] 4. Seed Eileen's real products, prices, cafes, standing lists and the real Corazon logo into production from the gitignored `private/` file. Set the real `BUSINESS_*` footer values and `EMAIL_REPLY_TO` in Vercel, then redeploy.
-- [ ] 5. Rotate `APP_PIN` in Vercel to a new six-digit PIN that only Eileen knows, then redeploy. A new PIN alone leaves every existing 30-day session signed in (the demo browser, any judge's device), so rotate `SESSION_SECRET` in the same step; that signs everyone out.
-- [ ] 6. Hand her the URL. Add it to her phone's home screen, and have her run Count, Deliver, Invoice and Ledger herself as the acceptance test.
+- [ ] 4. Clear all demo data (invoices, counts, test invoices) after the Neon snapshot, before seeding Eileen's real data.
+- [ ] 5. Seed Eileen's real menu (one product list and one set of prices, shared by every cafe), her cafes and the real Corazon logo into production from the gitignored `private/` file. Set the real `BUSINESS_*` footer values and `EMAIL_REPLY_TO` in Vercel, then redeploy.
+- [ ] 6. Rotate `APP_PIN` in Vercel to a new six-digit PIN that only Eileen knows, then redeploy. A new PIN alone leaves every existing 30-day session signed in (the demo browser, any judge's device), so rotate `SESSION_SECRET` in the same step; that signs everyone out.
+- [ ] 7. Hand her the URL. Add it to her phone's home screen, and have her run Count, Deliver, Invoice and Ledger herself as the acceptance test.
 
 A separate demo deployment is a Later item, only when a second customer wants a look (`scope.md > Later`).
 
@@ -200,4 +201,13 @@ A separate demo deployment is a Later item, only when a second customer wants a 
 - **Judge-path test passed on production** (Oct 18, `E2E_SEND=1`): 15.5s against the 3-minute limit. Count 1.0s, Deliver 3.7s, Invoice with Print and a real send to `delivered@resend.dev` 8.3s (mostly the PDF), Ledger mark paid 2.6s. "Last sent" appeared, so Resend accepted the send. The test invoice `E2E-1792341602421` was voided afterward. It left one production count for Corazon Cocina (Strawberry Tres Leches: 3, Oct 18). The test gained `E2E_MANUAL_PIN=1`, where the learner types the PIN in a visible browser so it's never stored or shared, and its timer now starts after the PIN, since the judge path is Count through Ledger.
 - **`110172026-2`'s saved email set to `delivered@resend.dev`** in production (learner-approved, the second hand fix to this mock invoice). No production invoice holds a personal address now.
 - **GitHub push checked** (private repo `earlgreyhot1701D/cuenta`): all 16 commits through `90019db` match local. No ignored or private file appears anywhere in its history, and none of 9 real values (the learner's address from `.env.local`, plus emails, phones and street addresses from the mockups) appears in any pushed commit.
+- **Send email and Print now say they're working** (learner finding from the hands-on timed run). Before, Send greyed out with a small "Sending…" note that was easy to miss, so it looked frozen for the 5–8 seconds the PDF and send take, and Print showed nothing while the browser opened its print window. Now Send reads **"Sending…"** and is disabled, along with Cancel, until it finishes, so nothing can be sent twice. Then the pop-up closes, or stays open with **Try again**. Print reads **"Opening print…"** and is disabled until the print window closes (`afterprint`), with a 10-second fallback so it can't stick. Download PDF already read "Making PDF…". How it works mentions both.
+- **One menu for every cafe: a plan error caught in hands-on testing.** Eileen has one menu with the same prices for all four accounts (interview answer 11), but scope, PRD and spec all planned "each cafe's standing list". Prices were already one per product; the lists weren't. A `standing_items` table gave Corazon Cocina 5 products, Corazon SUR 4, Little Heart Cafecito 3 and Alma 3. That drove Count, Deliver, Edit, Customers, Past counts' order, and what the counts and invoices APIs accepted. Fixed in full (learner decision, over a data-only patch):
+  - Migration `0002_one_menu` adds `products.sort`, fills it from the longest old list, then drops `standing_items`.
+  - `listProducts()` replaces `standingProducts(cafeId)` everywhere.
+  - Customers shows the menu once at the top.
+  - The seed lost its per-cafe lists.
+  - Scope, PRD, spec and Handoff step 5 now say "the menu".
+  - Shelf counts stay per cafe; special order lines are unchanged.
+  - Checked on `dev`: all four cafes show the same 5 products in order on Count, Deliver and Edit. Little Heart can count and invoice the flan, which wasn't on its old list. A product not on the menu is refused.
 

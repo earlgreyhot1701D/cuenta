@@ -1,19 +1,40 @@
-// Job: show each cafe's details, logo and standing list with prices, read-only.
+// Job: show the menu once (same for every cafe) and each cafe's details and logo, read-only.
 import { formatUSD } from "@/lib/money";
 import { listCustomers } from "@/lib/queries/customers";
-import { standingProducts } from "@/lib/queries/products";
+import { listProducts } from "@/lib/queries/products";
 import styles from "./customers.module.css";
 
 export const dynamic = "force-dynamic";
 
 export default async function CustomersPage() {
-  const customers = await listCustomers();
-  const cafes = await Promise.all(customers.map(async (c) => ({ ...c, products: await standingProducts(c.id) })));
+  const [cafes, menu] = await Promise.all([listCustomers(), listProducts()]);
 
   return (
     <>
       <h1>Customers</h1>
       <p className="quiet">Read-only. Changes go through the seed file for now.</p>
+
+      <section className={styles.menu}>
+        <h2 className={`label ${styles.menuTitle}`}>Menu</h2>
+        <p className="quiet">The same products and prices for every cafe.</p>
+        <table className={styles.products}>
+          <thead>
+            <tr>
+              <th className="label muted">Description</th>
+              <th className="label muted">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            {menu.map((p) => (
+              <tr key={p.productId}>
+                <td>{p.name}</td>
+                <td>{formatUSD(p.priceCents)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+
       {cafes.length === 0 && <p className="quiet">No cafes yet.</p>}
       <ul className={styles.list}>
         {cafes.map((cafe) => (
@@ -53,24 +74,6 @@ export default async function CustomersPage() {
                 <dd>Net 30</dd>
               </div>
             </dl>
-
-            <p className={`label ${styles.listTitle}`}>Standing list</p>
-            <table className={styles.products}>
-              <thead>
-                <tr>
-                  <th className="label muted">Description</th>
-                  <th className="label muted">Price</th>
-                </tr>
-              </thead>
-              <tbody>
-                {cafe.products.map((p) => (
-                  <tr key={p.productId}>
-                    <td>{p.name}</td>
-                    <td>{formatUSD(p.priceCents)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
           </li>
         ))}
       </ul>

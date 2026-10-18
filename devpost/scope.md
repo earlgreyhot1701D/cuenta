@@ -9,7 +9,7 @@ An invoicing and shelf-count app for La Condesa Baking Company: Eileen's paper i
 
 ## The Unique Kernel
 **Her paper invoice, come to life.**
-- She builds a delivery from each cafe's standing list, with her latest shelf count beside each line as a greyed reference.
+- She builds a delivery from her menu (one product list and one set of prices for every cafe), with that cafe's latest shelf count beside each line as a greyed reference.
 - The invoice it prints in the kitchen is *indistinguishable* from the Canva form she hands out today.
 
 It isn't generic invoicing software. It digitizes one baker's existing route and paperwork exactly as she already does them.
@@ -30,7 +30,7 @@ It isn't generic invoicing software. It digitizes one baker's existing route and
 
 ## The Core Loop
 1. **At a cafe (phone):** open Count, pick the cafe, see the last count in grey with its date, update it, save.
-2. **In the kitchen before leaving (laptop):** open Deliver, pick the cafe. Its standing product list appears with prices and the latest shelf count beside each line. She enters quantities, totals compute, and she creates the invoice, prints it and emails it to the cafe.
+2. **In the kitchen before leaving (laptop):** open Deliver, pick the cafe. Her menu appears with prices and the latest shelf count beside each line. She enters quantities, totals compute, and she creates the invoice, prints it and emails it to the cafe.
 3. **Later (phone):** open the Ledger to see who owes what, what's due, and what's overdue.
 
 She comes back every delivery day. The count tells her what to bake and bring next time.
@@ -55,7 +55,7 @@ She comes back every delivery day. The count tells her what to bake and bring ne
 ## What "Working" Looks Like
 **Hackathon done:** a judge can follow the four-step path on the deployed URL with mock data, under three minutes, and every step works.
 1. Count screen, pick Corazon Cocina. The last count shows in grey with its date under each product. Enter two numbers and save.
-2. New delivery for Corazon Cocina. The standing list shows prices and the latest shelf count beside each line. Enter quantities, totals compute live, create the invoice.
+2. New delivery for Corazon Cocina. The menu shows prices and the latest shelf count beside each line. Enter quantities, totals compute live, create the invoice.
 3. The invoice matches her Canva form, with its invoice number (location code + date) and today's date. Print opens the browser dialog. Send email, check the Email pop-up, tap Send email, and "Last sent" shows on it, with a real send on camera.
 4. On the Ledger, the new invoice shows as unpaid, due in 30 days, and the month total updates.
 
@@ -65,7 +65,7 @@ She comes back every delivery day. The count tells her what to bake and bring ne
 
 ## The POC Boundary
 - **Login:** a single six-digit PIN gate with attempt limiting (5 wrong tries per IP, or 20 overall, in 15 minutes lock it for 15 minutes).
-- **Data:** Products and Customers, each cafe with a standing product list, a location code, and an optional seeded logo. Mock seed data only in the repo. The Customers tab is read-only for the hackathon.
+- **Data:** Products (one menu with one set of prices, shared by every cafe) and Customers, each cafe with a location code and an optional seeded logo. Mock seed data only in the repo. The Customers tab is read-only for the hackathon.
 - **Count:** per cafe, with the last count and its date shown in grey beside blank steppers, plus a read-only Past counts list.
 - **Delivery:**
   - totals in integer cents
@@ -88,7 +88,7 @@ She comes back every delivery day. The count tells her what to bake and bring ne
 
 ## Later
 - **Block 8, Handoff (after the video and the tagged submission), in the same production deployment and database:** back up the mock data with a Neon branch snapshot, seed her real data from the gitignored `private/` file, rotate `APP_PIN`, then hand her the URL (on her phone's home screen). Eileen runs the path herself as the acceptance test. The full order is in `checklist.md > Block 8: Handoff`.
-  - in-app editing of Products, Customers and standing lists; the email-template editor; the full printed/emailed history line
+  - in-app editing of Products and Customers; the email-template editor; the full printed/emailed history line
 - Stripe or other payments
 - Multi-user login
 - Low-stock alerts
@@ -107,6 +107,7 @@ She comes back every delivery day. The count tells her what to bake and bring ne
 - **Real customer data in the repo:** mock data only. Real data goes in at Handoff from a gitignored file.
 
 ## Changes Since Approval
+- **During `5-build` (plan error caught in the learner's hands-on testing):** products are one menu shared by every cafe, not a standing list per cafe. Eileen has one menu and the same prices for all four accounts. Every "standing list" in the plan became "the menu".
 - **During `5-build` (learner-directed):** a How it works page behind a "?" on every page, the "no icon without words" rule, and Send email / Send again replacing "Resend". Excel export and an aging report were added to Later.
 - **During `5-build` (learner-directed):** the PIN gate hardened to six digits with attempt limiting, because four digits with no lockout was 10,000 guesses with no brake on a public URL. Navigation rules pinned for the phone. Overdue reminders added to Later.
 - **During `5-build` (learner-directed):** a read-only Past counts list on Count, since Eileen looks back through a paper book of counts today and will ask for it on day one. Built in the final polish slice, not Handoff.

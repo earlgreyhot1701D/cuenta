@@ -11,26 +11,20 @@ async function main() {
   // Loaded after dotenv so DATABASE_URL from .env.local is set before the client connects.
   const { mockCounts, mockCustomers, mockInvoices, mockProducts } = await import("./mock-data");
 
-  await db.execute(sql`truncate invoice_lines, invoices, counts, standing_items, products, customers`);
+  await db.execute(sql`truncate invoice_lines, invoices, counts, products, customers`);
 
-  const products = await db.insert(schema.products).values(mockProducts).returning();
+  const products = await db
+    .insert(schema.products)
+    .values(mockProducts.map((p, sort) => ({ ...p, sort })))
+    .returning();
   const productId = (slug: string) => {
     const p = products.find((x) => x.slug === slug);
     if (!p) throw new Error(`Unknown product slug: ${slug}`);
     return p.id;
   };
 
-  const customers = await db
-    .insert(schema.customers)
-    .values(mockCustomers.map(({ standing: _standing, ...c }) => c))
-    .returning();
+  const customers = await db.insert(schema.customers).values(mockCustomers).returning();
   const customerId = (code: number) => customers.find((c) => c.code === code)!.id;
-
-  await db.insert(schema.standingItems).values(
-    mockCustomers.flatMap((c) =>
-      c.standing.map((slug, position) => ({ customerId: customerId(c.code), productId: productId(slug), position })),
-    ),
-  );
 
   const today = todayPacific();
   await db.insert(schema.counts).values(

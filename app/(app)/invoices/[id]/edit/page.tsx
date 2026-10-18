@@ -5,7 +5,7 @@ import { DeliveryForm, type DeliveryLine } from "@/components/deliver/DeliveryFo
 import { getCustomer } from "@/lib/queries/customers";
 import { latestCounts } from "@/lib/queries/counts";
 import { getInvoice } from "@/lib/queries/invoices";
-import { standingProducts } from "@/lib/queries/products";
+import { listProducts } from "@/lib/queries/products";
 import styles from "../invoice.module.css";
 
 export const dynamic = "force-dynamic";
@@ -18,12 +18,12 @@ export default async function EditInvoicePage({ params }: { params: Promise<{ id
 
   const [customer, products, latest] = await Promise.all([
     getCustomer(invoice.customerId),
-    standingProducts(invoice.customerId),
+    listProducts(),
     latestCounts(invoice.customerId),
   ]);
   if (!customer) notFound();
 
-  // Saved lines keep their saved name and price; standing products not on the invoice use today's price.
+  // Saved lines keep their saved name and price; menu products not on the invoice use today's price.
   const saved = new Map(lines.filter((l) => l.productId).map((l) => [l.productId as string, l]));
   const shelf = (productId: string) => latest.get(productId) ?? null;
   const formLines: DeliveryLine[] = [
@@ -36,7 +36,7 @@ export default async function EditInvoicePage({ params }: { params: Promise<{ id
         shelf: shelf(p.productId),
       };
     }),
-    // Products saved on the invoice but since taken off the standing list stay editable.
+    // Products saved on the invoice but since taken off the menu stay editable.
     ...[...saved.values()]
       .filter((l) => !products.some((p) => p.productId === l.productId))
       .map((l) => ({

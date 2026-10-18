@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { EmailSheet, type EmailDraft } from "./EmailSheet";
 import { Confirm } from "@/components/ui/Confirm";
 import { api } from "@/lib/api/client";
@@ -26,6 +26,23 @@ export function InvoiceActions({
   const [message, setMessage] = useState("");
   const [emailOpen, setEmailOpen] = useState(false);
   const [voidOpen, setVoidOpen] = useState(false);
+  const [printing, setPrinting] = useState(false);
+
+  // The browser can take a few seconds to show its print window. "Opening print…" covers that wait
+  // and clears when the window closes (printed or cancelled), or after 10 seconds if it never says so.
+  useEffect(() => {
+    if (!printing) return;
+    const done = () => setPrinting(false);
+    window.addEventListener("afterprint", done);
+    const fallback = setTimeout(done, 10_000);
+    // Two frames so the new label is on screen before the browser takes over.
+    const frame = requestAnimationFrame(() => requestAnimationFrame(() => window.print()));
+    return () => {
+      window.removeEventListener("afterprint", done);
+      clearTimeout(fallback);
+      cancelAnimationFrame(frame);
+    };
+  }, [printing]);
 
   async function voidInvoice() {
     setMessage("");
@@ -63,8 +80,8 @@ export function InvoiceActions({
   return (
     <div data-print-hide>
       <div className={styles.actions}>
-        <button className="btn btn-primary" type="button" onClick={() => window.print()}>
-          Print
+        <button className="btn btn-primary" type="button" onClick={() => setPrinting(true)} disabled={printing} aria-busy={printing}>
+          {printing ? "Opening print…" : "Print"}
         </button>
         <button className="btn" type="button" onClick={downloadPdf} disabled={busy}>
           {busy ? "Making PDF…" : "Download PDF"}

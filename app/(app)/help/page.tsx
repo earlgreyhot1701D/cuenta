@@ -22,7 +22,7 @@ const SECTIONS = [
     title: "Deliver",
     what: "For building an invoice from what you dropped off at a cafe.",
     items: [
-      ["The cafe cards", "Pick the cafe. Its usual products appear, with prices and the latest shelf count in grey."],
+      ["The cafe cards", "Pick the cafe. Your menu appears, the same for every cafe, with prices and that cafe's latest shelf count in grey."],
       ["Date", "The delivery date. It's today unless you change it."],
       ["Invoice #", "Filled in for you: the cafe's number and the date. Type over it if you need to, such as adding -2 for a second delivery the same day."],
       ["Price and Qty", "Type how many you delivered. You can change a price for this invoice only; it never changes the product."],
@@ -36,7 +36,7 @@ const SECTIONS = [
     what: "Your paper invoice, filled in. Only the products you delivered are on it.",
     items: [
       ["← Back to Ledger", "Returns to the Ledger."],
-      ["Print", "Opens your printer's window. It prints one page, exactly like the paper form. Cancel leaves you here."],
+      ["Print", "Opens your printer's window; the button reads Opening print… while it comes up. It prints one page, exactly like the paper form. Cancel leaves you here."],
       ["Download PDF", "Saves the same PDF the email sends, for your records. This page stays open."],
       ["Send email", "Opens the Email pop-up. After a send, it reads Send again, and a grey line says \"Last sent Oct 17, 8:12pm\"."],
       ["Edit", "Opens the invoice to change quantities, prices, special orders, the date or the number. It shows the prices saved on the invoice, not today's. Save changes updates the invoice and the Ledger. To bill a different cafe, void it and make a new one."],
@@ -50,7 +50,7 @@ const SECTIONS = [
     items: [
       ["To", "Filled in from the cafe's saved email. Change it for this one send if needed; the saved email doesn't change. If it's empty, type an address. Send stays grey until there is one."],
       ["Show full email", "Shows the whole message. It's written for you: the cafe, the total and the due date."],
-      ["Send email (or Send again)", "Sends it with the PDF attached. The pop-up closes and the Invoice page shows when it was sent."],
+      ["Send email (or Send again)", "Sends it with the PDF attached. The button reads Sending… for the few seconds it takes; then the pop-up closes and the Invoice page shows when it was sent."],
       ["Try again", "Appears if a send failed. The invoice is already saved, so nothing is lost. You can also print it instead."],
       ["Cancel", "Closes the pop-up without sending. Your phone's back button does the same."],
     ],
@@ -73,9 +73,10 @@ const SECTIONS = [
   {
     id: "customers",
     title: "Customers",
-    what: "Each cafe's details and usual products with prices. Read-only for now.",
+    what: "Your menu, and each cafe's details. Read-only for now.",
     items: [
-      ["The cafe cards", "Phone, address, billing email (the one the Email pop-up fills in), Net 30 terms, and the cafe's usual products and prices."],
+      ["Menu", "Your products and prices, the same for every cafe."],
+      ["The cafe cards", "Phone, address, billing email (the one the Email pop-up fills in) and Net 30 terms."],
     ],
   },
 ];

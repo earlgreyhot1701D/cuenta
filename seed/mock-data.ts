@@ -1,4 +1,4 @@
-// Job: mock cafes with fake contacts, the real products and prices, and standing lists by slug.
+// Job: mock cafes with fake contacts, and the real products and prices: one menu, in menu order, for every cafe.
 
 export const mockProducts = [
   { slug: "strawberry-tres-leches", name: "Strawberry Tres Leches Cake", priceCents: 475 },
@@ -23,7 +23,6 @@ export const mockCustomers = [
     billingEmail: TEST_INBOX,
     logoPath: PLACEHOLDER_LOGO,
     sort: 1,
-    standing: ["strawberry-tres-leches", "coconut-tres-leches", "coconut-rice-pudding", "pixie-flan", "mexican-wedding-cookies"],
   },
   {
     code: 2,
@@ -33,7 +32,6 @@ export const mockCustomers = [
     billingEmail: TEST_INBOX,
     logoPath: null,
     sort: 2,
-    standing: ["mexican-wedding-cookies", "coconut-rice-pudding", "strawberry-tres-leches"],
   },
   {
     code: 3,
@@ -43,7 +41,6 @@ export const mockCustomers = [
     billingEmail: null,
     logoPath: null,
     sort: 3,
-    standing: ["strawberry-tres-leches", "coconut-tres-leches", "mexican-wedding-cookies"],
   },
   {
     code: 4,
@@ -53,7 +50,6 @@ export const mockCustomers = [
     billingEmail: TEST_INBOX,
     logoPath: PLACEHOLDER_LOGO,
     sort: 4,
-    standing: ["strawberry-tres-leches", "pixie-flan", "mexican-wedding-cookies", "coconut-tres-leches"],
   },
 ];
 

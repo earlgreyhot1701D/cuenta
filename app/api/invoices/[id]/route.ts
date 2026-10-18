@@ -4,7 +4,7 @@ import { duplicateNumberError } from "@/lib/api/duplicate-number";
 import { HttpError, withRoute } from "@/lib/api/with-route";
 import { parseDelivery, type BillableProduct } from "@/lib/invoice-input";
 import { getInvoice, updateInvoice } from "@/lib/queries/invoices";
-import { standingProducts } from "@/lib/queries/products";
+import { listProducts } from "@/lib/queries/products";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -21,7 +21,7 @@ export const PUT = withRoute<Ctx>("PUT /api/invoices/[id]", async (req, ctx, log
     throw new HttpError(400, "To bill a different cafe, void this invoice and create a new one.");
   }
 
-  // Lines already on the invoice keep their saved description; the rest of the standing list can be added.
+  // Lines already on the invoice keep their saved description; the rest of the menu can be added.
   const billable: BillableProduct[] = [];
   const seen = new Set<string>();
   for (const line of lines) {
@@ -30,7 +30,7 @@ export const PUT = withRoute<Ctx>("PUT /api/invoices/[id]", async (req, ctx, log
       seen.add(line.productId);
     }
   }
-  for (const p of await standingProducts(invoice.customerId)) {
+  for (const p of await listProducts()) {
     if (!seen.has(p.productId)) billable.push(p);
   }
 

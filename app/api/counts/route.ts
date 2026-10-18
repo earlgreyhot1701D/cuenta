@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { HttpError, withRoute } from "@/lib/api/with-route";
 import { todayPacific } from "@/lib/dates";
 import { getCustomer } from "@/lib/queries/customers";
-import { standingProducts } from "@/lib/queries/products";
+import { listProducts } from "@/lib/queries/products";
 import { insertCounts } from "@/lib/queries/counts";
 import { LAST_COUNT_CAFE_COOKIE } from "@/lib/last-count-cafe";
 
@@ -13,10 +13,10 @@ export const POST = withRoute("POST /api/counts", async (req, _ctx, logCtx) => {
   if (!customer) throw new HttpError(400, "Pick a cafe.");
   logCtx.cafe = customer.name;
 
-  const standing = new Set((await standingProducts(customer.id)).map((p) => p.productId));
+  const menu = new Set((await listProducts()).map((p) => p.productId));
   const entries: { productId: string; quantity: number }[] = Array.isArray(body.entries) ? body.entries : [];
   const valid = entries.every(
-    (e) => standing.has(e.productId) && Number.isInteger(e.quantity) && e.quantity >= 0,
+    (e) => menu.has(e.productId) && Number.isInteger(e.quantity) && e.quantity >= 0,
   );
   if (entries.length === 0 || !valid) throw new HttpError(400, "Those counts didn't look right.");
 

@@ -1,4 +1,4 @@
-// Job: define the products table.
+// Job: define the products table: one menu, the same products and prices for every cafe.
 import { boolean, integer, pgTable, text, uuid } from "drizzle-orm/pg-core";
 
 export const products = pgTable("products", {
@@ -7,4 +7,6 @@ export const products = pgTable("products", {
   name: text("name").notNull(),
   priceCents: integer("price_cents").notNull(),
   active: boolean("active").notNull().default(true),
+  /** Menu order on Count, Deliver, Customers and Past counts. */
+  sort: integer("sort").notNull().default(0),
 });

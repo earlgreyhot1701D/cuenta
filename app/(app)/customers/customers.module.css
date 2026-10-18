@@ -41,7 +41,7 @@
 }
 
 .details {
-  margin: 1rem 0;
+  margin: 1rem 0 0;
   padding: 0.75rem 1rem;
   background: var(--blush);
 }
@@ -77,8 +77,18 @@
   overflow-wrap: anywhere;
 }
 
-.listTitle {
-  margin: 1.25rem 0 0.25rem;
+.menu {
+  margin: 1.5rem 0 0;
+  max-width: 36rem;
+}
+
+.menuTitle {
+  margin: 0 0 0.25rem;
+  font-size: 12px;
+}
+
+.menu > p {
+  margin: 0 0 0.5rem;
 }
 
 .products {

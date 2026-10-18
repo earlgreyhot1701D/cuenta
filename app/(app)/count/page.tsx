@@ -1,10 +1,10 @@
-// Job: load the cafes, the chosen cafe's standing products and their latest counts for the Count screen.
+// Job: load the cafes, the menu and the chosen cafe's latest counts for the Count screen.
 import { cookies } from "next/headers";
 import { CountForm, type CountRow } from "@/components/count/CountForm";
 import { formatShort, todayPacific } from "@/lib/dates";
 import { LAST_COUNT_CAFE_COOKIE } from "@/lib/last-count-cafe";
 import { listCustomers } from "@/lib/queries/customers";
-import { standingProducts } from "@/lib/queries/products";
+import { listProducts } from "@/lib/queries/products";
 import { latestCounts } from "@/lib/queries/counts";
 
 export const dynamic = "force-dynamic";
@@ -18,7 +18,7 @@ export default async function CountPage({ searchParams }: { searchParams: Promis
 
   if (!cafe) return <p className="quiet">No cafes yet.</p>;
 
-  const [products, latest] = await Promise.all([standingProducts(cafe.id), latestCounts(cafe.id)]);
+  const [products, latest] = await Promise.all([listProducts(), latestCounts(cafe.id)]);
   const rows: CountRow[] = products.map((p) => ({
     productId: p.productId,
     name: p.name,

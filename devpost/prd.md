@@ -33,7 +33,7 @@ Source: `scope.md > The Core Loop`, `scope.md > What "Working" Looks Like`.
 
 1. **PIN (first open on a device).** The La Condesa wordmark, one six-digit field, one button. The right PIN is remembered on that device for 30 days. Later visits skip the PIN.
 2. **Count (phone, at a cafe).** Lands here after the PIN. She picks the cafe, taps or types counts for the products she's counting, and saves. Only the rows she entered get recorded.
-3. **Deliver (laptop, kitchen).** She picks the cafe. Its standing list appears with prices and the last shelf count in grey beside each line. She enters quantities and totals compute live. The date defaults to today and the invoice number is pre-filled. She taps Create invoice.
+3. **Deliver (laptop, kitchen).** She picks the cafe. Her menu appears with prices and that cafe's last shelf count in grey beside each line. She enters quantities and totals compute live. The date defaults to today and the invoice number is pre-filled. She taps Create invoice.
 4. **Invoice (laptop).** Her Canva form, rendered with only the lines she delivered. Print opens the browser print dialog. Send email opens the Email pop-up; she taps Send email, and "Last sent [date, time]" shows on the invoice.
 5. **Ledger (phone).** The new invoice shows Unpaid, due in 30 days, and the stat row updates. When the ACH lands she taps Unpaid, enters the paid date, and the row goes muted as Paid.
 
@@ -128,7 +128,7 @@ Source: `scope.md > The Core Loop`.
 
 **Layout:**
 - **Cafe picker:** the four cafes, preselected to the one she last counted.
-- **Rows:** that cafe's standing products. Each row shows the product name, a stepper (−, number, +), and a grey line under the name: "last counted Oct 9: 3".
+- **Rows:** every product on the menu (the same for every cafe). Each row shows the product name, a stepper (−, number, +), and a grey line under the name: "last counted Oct 9: 3".
 - **Save** is pinned to the bottom.
 
 **Behavior:**
@@ -145,7 +145,7 @@ Source: `scope.md > The Core Loop`.
 - A cafe never counted shows "No counts yet."
 
 **Checks:**
-- [ ] Picking Corazon Cocina shows its standing products with blank steppers and the grey last-count line.
+- [ ] Picking any cafe shows every menu product with blank steppers and that cafe's grey last-count line.
 - [ ] Entering two numbers and saving updates only those two grey lines to today; the other rows keep their old dates.
 - [ ] Save is disabled with every row blank.
 - [ ] Switching cafes with unsaved entries prompts once.
@@ -159,7 +159,7 @@ Source: `scope.md > The Core Loop`, `scope.md > The POC Boundary`.
 - **Cafe:** a picker.
 - **Date:** the invoice date, which is also the delivery date. Defaults to today and is editable.
 - **Invoice #:** a text field, pre-filled with a suggestion.
-- **Lines:** one per product on the cafe's standing list. Each shows the product name, the price, a blank quantity field, a live line total, and in grey the cafe's last shelf count for that product. The count is reference only and never pre-fills the quantity.
+- **Lines:** one per product on the menu, the same for every cafe. Each shows the product name, the price, a blank quantity field, a live line total, and in grey the cafe's last shelf count for that product. The count is reference only and never pre-fills the quantity.
 - **Running invoice total.**
 - **Create invoice** button.
 
@@ -177,10 +177,10 @@ Source: `scope.md > The Core Loop`, `scope.md > The POC Boundary`.
 - Changing it affects only that invoice and never touches the product record. It covers one-off prices and corrections.
 
 **Special order line:**
-- An "+ Add special order" link under the standing list adds a blank line with a free-text description, an editable unit price, and a quantity.
-- It isn't linked to any product. It prints like any other line, in the order added. It never creates a product, never joins the standing list, and never shows in Count.
+- An "+ Add special order" link under the menu lines adds a blank line with a free-text description, an editable unit price, and a quantity.
+- It isn't linked to any product. It prints like any other line, in the order added. It never creates a product, never joins the menu, and never shows in Count.
 - Validation: the description is required, the price is zero or more, and the quantity is at least 1.
-- Built in Block 4 if the standing-list lines are done; otherwise in Block 6. Either way, it ships before Handoff.
+- Built in Block 4 if the menu lines are done; otherwise in Block 6. Either way, it ships before Handoff.
 
 **Invoices are snapshots:**
 - Each line saves its own description, unit price and quantity at the moment the invoice is saved.
@@ -199,7 +199,7 @@ Source: `scope.md > The Core Loop`, `scope.md > The POC Boundary`.
 - **A void invoice** can't be edited or emailed. Print and Download PDF still work, so she keeps the record.
 
 **Checks:**
-- [ ] Picking Corazon Cocina loads its standing list with prices and grey shelf counts; every quantity is blank.
+- [ ] Picking Corazon Cocina loads the menu with prices and its grey shelf counts; every quantity is blank. Every cafe sees the same products and prices.
 - [ ] Typing quantities updates line totals and the invoice total immediately and correctly to the cent.
 - [ ] The suggested number for Corazon SB on Oct 17, 2026 is `110172026`. It changes when the date or cafe changes, until she types over it.
 - [ ] Entering a number already in use shows "Already used on [date] for [cafe]" and blocks the save.
@@ -212,7 +212,7 @@ Source: `scope.md > The Core Loop`, `scope.md > The POC Boundary`.
 Source: `scope.md > The Unique Kernel`.
 
 **What shows:**
-- Her Canva form (see Look and Feel), filled with the cafe's details and logo if any, the invoice number, the date, and **only the lines with a quantity**. Undelivered standing products don't appear at all, so there are no blank rows.
+- Her Canva form (see Look and Feel), filled with the cafe's details and logo if any, the invoice number, the date, and **only the lines with a quantity**. Undelivered menu products don't appear at all, so there are no blank rows.
 - **Status line in grey:** "Last sent Oct 17, 8:12pm", "Last sent Oct 17, 8:12pm · last try failed" after a failed later attempt, "Not sent" if no send ever succeeded, or nothing if it was never emailed.
 
 **Navigation (phone first, added in `5-build`):**
@@ -310,9 +310,10 @@ Source: `scope.md > The POC Boundary` (Ledger).
 
 ### Customers (read-only)
 Source: `scope.md > The POC Boundary` (Data).
-- Each cafe shows its name, location code, phone, address, billing email, terms (Net 30), logo if any, and its standing list with prices.
+- **Menu** at the top: every product and its price, shown once, because it's the same for every cafe.
+- Each cafe shows its name, location code, phone, address, billing email, terms (Net 30) and logo if any.
 - There's no editing in this version. Changes are edits to the seed file until Handoff.
-- [ ] All four cafes appear with their seeded details, logo where present, and their standing lists.
+- [ ] The menu appears once with every product and price, and all four cafes appear with their seeded details and logo where present.
 
 ## Operational Requirements
 These are requirements, not implementation. `4-spec` decides how to build them.
@@ -344,7 +345,7 @@ These are requirements, not implementation. `4-spec` decides how to build them.
 ## Product Decisions
 - **Count and invoice are separate jobs.** Count is for planning; the invoice records what she dropped off. The shelf count on Deliver is grey reference only.
 - **Steppers start blank and Save records only entered rows.** Nothing is silently rewritten.
-- **The invoice prints only the delivered lines,** not blank standing rows. The layout still matches her form exactly.
+- **The invoice prints only the delivered lines,** not blank menu rows. The layout still matches her form exactly.
 - **Seeded per-cafe logos are in, with no upload.** Eileen prints the Corazon heart today with Corazon's blessing.
 - **Invoice numbers are Eileen's scheme:** location code plus MMDDYYYY, as text, suggested and overwritable, unique, with a manual suffix for repeat deliveries. It's her existing numbering.
 - **Invoice date and delivery date are the same date.**
@@ -367,7 +368,7 @@ These are requirements, not implementation. `4-spec` decides how to build them.
 ## What We're Building
 - **PIN gate**
 - **Count,** with blank steppers, partial save, the grey last count, and a read-only Past counts list
-- **Deliver,** with the standing list, grey shelf counts, live totals in cents, the suggested and unique invoice number, and Edit
+- **Deliver,** with the menu, grey shelf counts, live totals in cents, the suggested and unique invoice number, and Edit
 - **Invoice,** matching the Canva form, with seeded logos, Print, Download PDF, Void, and the status line
 - **Email,** with the Email pop-up, a real send with the PDF, success and failure states, and Send again
 - **How it works** page behind a "?" on every page
@@ -379,7 +380,7 @@ These are requirements, not implementation. `4-spec` decides how to build them.
 
 ## Deferred From the POC
 To Block 8, Handoff:
-- **In-app editing of Products, Customers and standing lists:** an admin UI the judge path doesn't need. Seed edits cover it for now.
+- **In-app editing of Products and Customers:** an admin UI the judge path doesn't need. Seed edits cover it for now.
 - **Email template editor:** the template lives in one code file for now.
 - **Full history line** (the "Printed · Emailed" log) and **"Edited after sending" / "(revised)" wording:** a second send is just Send again for now.
 - **Changing the cafe on an existing invoice,** unless it comes free: void and recreate covers it.
