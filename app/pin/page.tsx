@@ -40,11 +40,11 @@ export default function PinPage() {
           inputMode="numeric"
           autoComplete="current-password"
           type="password"
-          maxLength={4}
-          pattern="\d{4}"
+          maxLength={6}
+          pattern="\d{6}"
           value={pin}
           onChange={(e) => {
-            setPin(e.target.value.replace(/\D/g, "").slice(0, 4));
+            setPin(e.target.value.replace(/\D/g, "").slice(0, 6));
             setMessage("");
           }}
           autoFocus
@@ -52,7 +52,7 @@ export default function PinPage() {
         <p className="quiet" role="status">
           {message}
         </p>
-        <button className="btn btn-primary" type="submit" disabled={pin.length !== 4 || busy}>
+        <button className="btn btn-primary" type="submit" disabled={pin.length !== 6 || busy}>
           Enter
         </button>
       </form>

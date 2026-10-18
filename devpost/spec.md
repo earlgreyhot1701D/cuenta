@@ -101,7 +101,7 @@ PRD ref: `prd.md > The Core Journey`.
 | Name | Purpose |
 |---|---|
 | `DATABASE_URL` | Neon connection string |
-| `APP_PIN` | the four-digit PIN |
+| `APP_PIN` | the six-digit PIN |
 | `SESSION_SECRET` | signs the 30-day PIN cookie |
 | `PRINT_TOKEN_SECRET` | signs the 60-second print tokens |
 | `RESEND_API_KEY` | Resend |
@@ -184,7 +184,9 @@ Carried forward from `prd.md > Look and Feel` and `design/DESIGN.md`.
 ### PIN Gate
 - **What it does:** shows the PIN screen at `app/pin/page.tsx`, and `POST /api/session` checks the PIN in constant time.
 - **On success:** sets the `cuenta_session` cookie, an HMAC-signed `{exp}` that's httpOnly, Secure, SameSite=Lax and lasts 30 days.
-- **On failure:** returns 401, and the page shows "That's not it." There's no lockout.
+- **On failure:** returns 401, and the page shows "That's not it."
+- **Attempt limiting (`lib/pin-limit.ts`, table `pin_attempts`):** every wrong PIN adds a `fail` row with the client IP. When an IP reaches 5 fails within 15 minutes, a `lock` row for that IP is added; at 20 fails from anywhere, a global `lock` row (IP null) is added. Any lock row younger than 15 minutes for the caller's IP, or a global one, makes `POST /api/session` return 429 "Too many tries. Wait 15 minutes." before the PIN is even compared. Attempts during a lock aren't counted, so they don't extend it. The IP comes from `x-forwarded-for`, which Vercel sets.
+- **Logging:** each failure logs `{route, outcome, ip, ts}`, never the digits.
 - **The PIN check (`proxy.ts`):** requires a valid session for everything except `/pin`, `/api/session`, `/print/*`, `/health` and static assets. Pages redirect to `/pin`; API routes return 401.
 - PRD ref: `prd.md > PIN Gate`.
 
@@ -385,6 +387,15 @@ The "last counted" line is the newest row per `(customer, product)`. Rows are on
 | `created_at`, `updated_at` | timestamptz | |
 
 Due date and total are **calculated, not stored**: the due date is `invoice_date + 30`, and the total is the sum of the lines.
+
+**`pin_attempts`**: wrong PINs and the lockouts they trigger (added in `5-build`).
+
+| Column | Type | Notes |
+|---|---|---|
+| `id` | uuid pk | |
+| `kind` | text | `fail` or `lock` |
+| `ip` | text | nullable; null on a global lock |
+| `at` | timestamptz | |
 
 **`invoice_lines`**: the lines on each invoice.
 

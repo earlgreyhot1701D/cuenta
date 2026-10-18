@@ -7,8 +7,9 @@ import { standingItems } from "./schema/standing-items";
 import { counts } from "./schema/counts";
 import { invoices } from "./schema/invoices";
 import { invoiceLines } from "./schema/invoice-lines";
+import { pinAttempts } from "./schema/pin-attempts";
 
-export const schema = { customers, products, standingItems, counts, invoices, invoiceLines };
+export const schema = { customers, products, standingItems, counts, invoices, invoiceLines, pinAttempts };
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 

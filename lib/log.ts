@@ -4,6 +4,7 @@ export type LogFields = {
   outcome: "ok" | "error" | "rejected";
   ms: number;
   status?: number;
+  ip?: string;
   invoiceNumber?: string;
   cafe?: string;
   messageId?: string;

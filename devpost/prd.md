@@ -31,7 +31,7 @@ Mock cafes in the repo use these products with fake contact details.
 ## The Core Journey
 Source: `scope.md > The Core Loop`, `scope.md > What "Working" Looks Like`.
 
-1. **PIN (first open on a device).** The La Condesa wordmark, one four-digit field, one button. The right PIN is remembered on that device for 30 days. Later visits skip the PIN.
+1. **PIN (first open on a device).** The La Condesa wordmark, one six-digit field, one button. The right PIN is remembered on that device for 30 days. Later visits skip the PIN.
 2. **Count (phone, at a cafe).** Lands here after the PIN. She picks the cafe, taps or types counts for the products she's counting, and saves. Only the rows she entered get recorded.
 3. **Deliver (laptop, kitchen).** She picks the cafe. Its standing list appears with prices and the last shelf count in grey beside each line. She enters quantities and totals compute live. The date defaults to today and the invoice number is pre-filled. She taps Create invoice.
 4. **Invoice (laptop).** Her Canva form, rendered with only the lines she delivered. Print opens the browser print dialog. Email invoice opens a confirm sheet; she taps Send, and "Sent [date time]" stamps on the invoice.
@@ -102,10 +102,18 @@ Source: `scope.md > Inspiration & Identity`, `design/DESIGN.md`.
 ## Features and Behavior
 
 ### PIN Gate
-- One four-digit field and one button under the wordmark.
-- **Wrong PIN:** a single serif line under the field reads "That's not it." There's no lockout in this version.
+- One six-digit field and one button under the wordmark. On a phone the field opens the numeric keypad.
+- **Wrong PIN:** a single serif line under the field reads "That's not it."
 - **Right PIN:** remembered on that device for 30 days, then she lands on Count.
+- **Attempt limiting** (added during `5-build`, learner-directed: four digits with no brake is 10,000 guesses on a public URL):
+  - 5 wrong attempts from one IP within 15 minutes lock that IP for 15 minutes.
+  - 20 wrong attempts from anywhere within 15 minutes lock the PIN screen for everyone for 15 minutes.
+  - While locked, every attempt (even the right PIN) is refused with "Too many tries. Wait 15 minutes." in the same quiet serif line.
+  - Every failed attempt is logged with its IP and time, never the digits tried.
 - [ ] A wrong PIN shows "That's not it." and stays on the PIN screen.
+- [ ] Six wrong attempts in a row: the sixth is refused with "Too many tries. Wait 15 minutes."
+- [ ] The right PIN during a lockout is still refused; after 15 minutes it works again.
+- [ ] The attempted PIN never appears in any log.
 - [ ] After the right PIN, reopening the app on the same device within 30 days goes straight to Count.
 - [ ] No screen or data request works without a valid PIN session.
 
@@ -364,7 +372,6 @@ To Block 8, Handoff:
 - **Low-stock alerts** from counts.
 - **A bake list** generated from counts.
 - **Logo upload** in Customers.
-- **A PIN lockout** after repeated wrong tries.
 
 ## Non-Goals
 - **Ingredient tracking or recipe costing:** a different product.

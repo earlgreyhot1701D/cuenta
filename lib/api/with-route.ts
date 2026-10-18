@@ -16,7 +16,7 @@ export class HttpError extends Error {
 }
 
 /** Handlers add safe fields (invoice number, cafe name, message id) to the log line here. */
-export type LogContext = Partial<Pick<LogFields, "invoiceNumber" | "cafe" | "messageId">>;
+export type LogContext = Partial<Pick<LogFields, "ip" | "invoiceNumber" | "cafe" | "messageId">>;
 
 type Handler<C> = (req: Request, ctx: C, logCtx: LogContext) => Promise<Response>;
 
