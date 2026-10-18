@@ -1,4 +1,5 @@
 // Job: show one invoice as Eileen's Canva form, with its actions.
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { InvoiceActions } from "@/components/invoice/InvoiceActions";
 import { InvoiceDocument } from "@/components/invoice/InvoiceDocument";
@@ -19,6 +20,9 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
   return (
     <>
       <div data-print-hide>
+        <Link href="/ledger" className={`label ${styles.back}`}>
+          ← Back to Ledger
+        </Link>
         <h1>Invoice {invoice.number}</h1>
         <p className="quiet">{invoice.cafeName}</p>
         {status && <p className="quiet">{status}</p>}

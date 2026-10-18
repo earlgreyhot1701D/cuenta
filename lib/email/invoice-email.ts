@@ -1,4 +1,5 @@
 // Job: the invoice email template (edit the copy here until Handoff).
+// Later (prd.md > Possible Later Enhancements > Overdue reminders): a reminder template reusing this PDF, not built yet.
 import { addDays, formatLong } from "@/lib/dates";
 import { formatUSD } from "@/lib/money";
 

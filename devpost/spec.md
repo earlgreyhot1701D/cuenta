@@ -88,7 +88,7 @@ PRD ref: `prd.md > The Core Journey`.
 ## Where It Runs and How Someone Tries It
 
 **Local:**
-- Node (the current LTS that Vercel supports) and a Neon database. A branch per environment is fine.
+- Node (the current LTS that Vercel supports) and a Neon database. Local dev uses the Neon `dev` branch; production uses `main` (set up in `5-build`, after test invoices landed in production). Schema changes are migrated to both.
 - `cp .env.example .env.local` and fill in the values.
 - `npm install`
 - `npm run db:migrate`
@@ -105,7 +105,7 @@ PRD ref: `prd.md > The Core Journey`.
 | `SESSION_SECRET` | signs the 30-day PIN cookie |
 | `PRINT_TOKEN_SECRET` | signs the 60-second print tokens |
 | `RESEND_API_KEY` | Resend |
-| `EMAIL_FROM` | `invoices@lacondesabakingcompany.com` |
+| `EMAIL_FROM` | `onboarding@resend.dev` (Resend's onboarding sender, which only delivers to the account owner) until the domain verifies; then `invoices@lacondesabakingcompany.com`. Never hardcoded |
 | `EMAIL_REPLY_TO` | Eileen's Gmail |
 | `SEED_BILLING_EMAIL` | seed only: the test inbox every mock cafe with an email bills to (Alma stays without one). Local only, never committed |
 | `APP_URL` | the app's own public URL, which headless Chrome loads |
@@ -157,7 +157,8 @@ Carried forward from `prd.md > Look and Feel` and `design/DESIGN.md`.
 **Invoice type** (`components/invoice/`):
 - **INVOICE:** Limelight.
 - **Body:** `"Times New Roman", Tinos, "TeX Gyre Termes", Times, serif`. Tinos (self-hosted with `next/font`) is metric-compatible with Times New Roman. Serverless Chromium has no system fonts, so the PDF renders in Tinos, and its lines break exactly where Eileen's Windows print does.
-- **Images, not text:** the wordmark, the footer block title, and the DESCRIPTION / QTY / PRICE / TOTAL headers are PNGs in `public/invoice/`, exported from Canva. DK Otago never enters the repo.
+- **Images, not text:** the wordmark, the footer block title, and the DESCRIPTION / QTY / PRICE / TOTAL headers are PNGs in `public/invoice/`, exported from Canva and trimmed to their ink. DK Otago never enters the repo.
+- **Layout unit:** every element sits at its PDF-point coordinates from Eileen's form (612 × 792 Letter), scaled from the page width (`--pt`), so screen, print and PDF share one coordinate system.
 - **Rule:** the invoice uses only its own fonts and never the app fonts.
 
 **Controls:**
@@ -230,7 +231,7 @@ Carried forward from `prd.md > Look and Feel` and `design/DESIGN.md`.
 - The logo renders when `cafeLogoPath` is set; otherwise its space stays empty.
 - **Footer:** the business identity comes from `lib/business.ts`, which reads the `BUSINESS_*` env vars and never source constants.
 - **One-page capacity:**
-  - `lib/invoice-capacity.ts` holds `MAX_LINES_ONE_PAGE`, measured in Block 3 against Letter.
+  - `lib/invoice-capacity.ts` holds `MAX_LINES_ONE_PAGE`, measured in Block 3 at **8**: the form's 36pt spacing for up to 5 lines, tightening evenly to 22pt.
   - Above it, the Invoice screen shows the quiet line "Too many lines for one page", and the PDF and email routes return 422 with that message.
   - It never silently overflows to a second page.
 - PRD ref: `prd.md > Invoice`, `prd.md > Look and Feel`.
@@ -244,6 +245,9 @@ Carried forward from `prd.md > Look and Feel` and `design/DESIGN.md`.
   - nothing when no send was ever attempted
   - The first email really reached the cafe, so the stamp never lies.
 - **Void:** one confirm, then `POST /api/invoices/[id]/void`.
+- **Navigation:** the bottom nav stays; a "← Back to Ledger" link sits at the top.
+- **Download PDF:** the route answers with `Content-Disposition: attachment`. The button fetches it in the background and saves the file, so the tab never navigates to the PDF, and a failure can still show the quiet one-line message.
+- **Sheets (`components/ui/Sheet.tsx`):** an open sheet pushes one history entry (marked `cuentaSheet`), so the phone's back button closes it. Cancel, a tap outside, Discard or a successful send close it through `useSheetClose()`, which steps back off that entry before running the action, so a follow-up navigation is never undone.
 - PRD ref: `prd.md > Invoice`.
 
 ### Print Route
@@ -300,6 +304,7 @@ Carried forward from `prd.md > Look and Feel` and `design/DESIGN.md`.
 - **Logger:** `lib/log.ts` writes one JSON line per event: `{ts, route, outcome, ms, invoiceNumber?, cafe?, messageId?, error?}`.
 - **Route wrapper:** `lib/api/with-route.ts` wraps every API route handler to time it, log it, and turn thrown errors into a JSON `{error}` response with the right status code.
 - **Never logged:** emails, addresses, phones, invoice bodies, the PIN, tokens, or env values.
+- **No indexing:** `next.config.ts` sends `X-Robots-Tag: noindex, nofollow` on every response, static files included (the proxy skips those), and `public/robots.txt` disallows everything.
 - **Health:** `app/health/route.ts` runs `select 1` and returns `{ok, db: 'up'|'down', version}`. The version comes from `VERCEL_GIT_COMMIT_SHA` or `package.json`.
 - **Client:** `lib/api/client.ts` wraps `fetch`. On failure, it logs `console.error(route, err)` and returns a one-line message for the UI.
 - PRD ref: `prd.md > Operational Requirements`.
@@ -480,6 +485,10 @@ cuenta/
 │   ├── email-status.ts                 # Job: derive the Sent / resend failed / Not sent line
 │   ├── business.ts                     # Job: read Eileen's footer identity from env
 │   ├── session.ts                      # Job: sign and verify the PIN session cookie
+│   ├── pin-limit.ts                    # Job: lock the PIN route after too many wrong tries
+│   ├── client-ip.ts                    # Job: find the caller's IP from Vercel's headers
+│   ├── last-count-cafe.ts              # Job: name the last-cafe-counted cookie
+│   ├── invoice-input.ts                # Job: validate a submitted delivery
 │   ├── print-token.ts                  # Job: mint and verify 60-second per-invoice print tokens
 │   ├── log.ts                          # Job: write one structured JSON log line
 │   ├── ledger-stats.ts                 # Job: compute Open, Outstanding, This month
@@ -494,7 +503,7 @@ cuenta/
 ├── db/
 │   ├── client.ts                       # Job: create the Drizzle client for Neon
 │   ├── schema/                         # Job (each): one table definition
-│   │   ├── customers.ts  products.ts  standing-items.ts  counts.ts  invoices.ts  invoice-lines.ts
+│   │   ├── customers.ts  products.ts  standing-items.ts  counts.ts  invoices.ts  invoice-lines.ts  pin-attempts.ts
 │   └── migrations/                     # generated by drizzle-kit
 ├── seed/
 │   ├── mock-data.ts                    # Job: mock cafes, real products and prices, fake contacts
@@ -534,7 +543,7 @@ cuenta/
 - **Cost:** the free tier is enough. **Verify** the current daily and monthly limits.
 
 **Serverless Chromium plus puppeteer-core**
-- **Usage:** `browser.newPage()` → `page.goto(printUrl, { waitUntil: 'networkidle0' })` → `page.evaluate(() => document.fonts.ready)` → `page.pdf({...})`.
+- **Usage:** `browser.newPage()` → `page.goto(printUrl, { waitUntil: 'load' })` → `page.evaluate(...)` awaiting `document.fonts.ready` and every image's `decode()` → `page.pdf({...})`.
 - **Spike 1 pass criteria (learner-written):**
   - **Longevity:** last release within six months, and works on the current Vercel Node runtime.
   - **Size:** deploys on Hobby within the function size limit.

@@ -145,4 +145,13 @@ Activity mode:
 - **Mock cafes bill to `SEED_BILLING_EMAIL`, read from `.env.local`;** Alma keeps no email. The learner asked for their inbox on the mock cafes; it stays out of the public repo, and Alma is the PRD's "No email on file" case.
 - **Provider errors go to the log only** (addresses scrubbed). The browser sees just the quiet failure line, as the PRD specifies.
 - **The "No email on file" note sits outside the To label.** Inside it, the field's accessible name read "To No email on file for Alma".
+- **Navigation rules pinned for the phone (learner-directed):**
+  - The Invoice screen keeps the bottom nav and has "← Back to Ledger".
+  - Every sheet adds one history entry, so the phone's back button closes it, and in-sheet closes step off that entry before acting.
+  - Download PDF keeps `Content-Disposition: attachment` and a background fetch, so the tab never navigates.
+  - Verified at 390px: Download, Print, Cancel, Back, and Count's Discard all leave her on the right screen with no reload.
+  - The first sheet back-button version (popping history in cleanup) closed the sheet under dev StrictMode, and could undo a navigation made right after a confirm. It was replaced.
+- **Overdue reminders added to Later** in the PRD and scope (ask-first daily cron, one signed link, PDF reused, "Reminded [date]"), with a stub comment in `lib/email/invoice-email.ts`. Not built.
+- **Docs brought up to date** with every decision since spec approval: scope, PRD, spec, checklist, learner profile, and the three HTML review pages.
+- **Mock billing emails switched to the learner's inbox** in place in production (cafes 1, 2 and 4; Alma none). On-camera invoice `110172026-2` ($128.00) created in production for the learner's slice 5 send.
 

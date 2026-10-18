@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Sheet } from "@/components/ui/Sheet";
+import { Sheet, useSheetClose } from "@/components/ui/Sheet";
 import { api } from "@/lib/api/client";
 import sheet from "@/components/ui/Sheet.module.css";
 import styles from "./EmailSheet.module.css";
@@ -11,7 +11,18 @@ type Preview = { to: string; cafeName: string; subject: string; text: string; at
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export function EmailSheet({ invoiceId, onClose, onSent }: { invoiceId: string; onClose: () => void; onSent: () => void }) {
+type Props = { invoiceId: string; onClose: () => void; onSent: () => void };
+
+export function EmailSheet(props: Props) {
+  return (
+    <Sheet label="Email invoice" onClose={props.onClose}>
+      <EmailBody {...props} />
+    </Sheet>
+  );
+}
+
+function EmailBody({ invoiceId, onClose, onSent }: Props) {
+  const close = useSheetClose();
   const [preview, setPreview] = useState<Preview | null>(null);
   const [to, setTo] = useState("");
   const [message, setMessage] = useState("");
@@ -35,7 +46,7 @@ export function EmailSheet({ invoiceId, onClose, onSent }: { invoiceId: string; 
     const result = await api(`/api/invoices/${invoiceId}/email`, { method: "POST", body: { to: to.trim() } });
     setSending(false);
     if (result.ok) {
-      onSent();
+      close(onSent);
       return;
     }
     setFailed(result.status === 502);
@@ -45,7 +56,7 @@ export function EmailSheet({ invoiceId, onClose, onSent }: { invoiceId: string; 
   const canSend = !!preview && EMAIL_PATTERN.test(to.trim()) && !sending;
 
   return (
-    <Sheet label="Email invoice" onClose={sending ? () => {} : onClose}>
+    <>
       <h2 className={styles.title}>Email invoice</h2>
       {!preview ? (
         <p className="quiet">{message || "Loading…"}</p>
@@ -81,7 +92,7 @@ export function EmailSheet({ invoiceId, onClose, onSent }: { invoiceId: string; 
             {sending ? "Sending…" : message}
           </p>
           <div className={sheet.actions}>
-            <button className="btn" type="button" onClick={onClose} disabled={sending}>
+            <button className="btn" type="button" onClick={() => close(onClose)} disabled={sending}>
               Cancel
             </button>
             <button className="btn btn-primary" type="button" onClick={send} disabled={!canSend}>
@@ -90,6 +101,6 @@ export function EmailSheet({ invoiceId, onClose, onSent }: { invoiceId: string; 
           </div>
         </>
       )}
-    </Sheet>
+    </>
   );
 }

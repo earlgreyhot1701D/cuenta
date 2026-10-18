@@ -43,7 +43,7 @@ She comes back every delivery day. The count tells her what to bake and bring ne
 
 ## Inspiration & Identity
 - **Look:** her paper invoice come to life. White paper, black ink, one warm blush tint, dotted hairline rules, serif text.
-- **Navigation:** four tabs along the bottom: Count, Deliver, Ledger, Customers.
+- **Navigation:** four tabs along the bottom: Count, Deliver, Ledger, Customers. She is never on a page with no way back: the Invoice screen keeps the tabs and a "Back to Ledger" link, sheets close with Cancel or the phone's back button, and Download PDF never navigates the tab away.
 - **Devices:** Count and Ledger are phone screens, used standing in a cafe. Deliver and Invoice are laptop screens, used in the kitchen.
 - **Fidelity:** the printed invoice matches her existing Canva form exactly.
 - **References:** the learner has Stitch mockups of all five screens, coming in `3-prd`. Eileen's Canva invoice form is the fidelity reference.
@@ -64,7 +64,7 @@ She comes back every delivery day. The count tells her what to bake and bring ne
 **Project done (after submission):** Eileen completes one real delivery without the learner: count on her phone, invoice printed in the kitchen, one emailed to the cafe, ledger updated.
 
 ## The POC Boundary
-- **Login:** a single PIN gate.
+- **Login:** a single six-digit PIN gate with attempt limiting (5 wrong tries per IP, or 20 overall, in 15 minutes lock it for 15 minutes).
 - **Data:** Products and Customers, each cafe with a standing product list, a location code, and an optional seeded logo. Mock seed data only in the repo. The Customers tab is read-only for the hackathon.
 - **Count:** per cafe, with the last count and its date shown in grey beside blank steppers, plus a read-only Past counts list.
 - **Delivery:**
@@ -96,6 +96,7 @@ She comes back every delivery day. The count tells her what to bake and bring ne
 - Multi-user login
 - Low-stock alerts
 - Bake list
+- Overdue reminders: a daily job finds unpaid, past-due invoices and emails Eileen one list with a single signed link to send the reminders (ask-first; fully automatic per cafe is a later toggle)
 - Per-cafe logo *upload* (seeded logos are in now)
 
 ## Explicitly Cut
@@ -106,6 +107,7 @@ She comes back every delivery day. The count tells her what to bake and bring ne
 - **Real customer data in the repo:** mock data only. Real data goes in at Handoff from a gitignored file.
 
 ## Changes Since Approval
+- **During `5-build` (learner-directed):** the PIN gate hardened to six digits with attempt limiting, because four digits with no lockout was 10,000 guesses with no brake on a public URL. Navigation rules pinned for the phone. Overdue reminders added to Later.
 - **During `5-build` (learner-directed):** a read-only Past counts list on Count, since Eileen looks back through a paper book of counts today and will ask for it on day one. Built in the final polish slice, not Handoff.
 - **During `5-build` (learner-directed):** Resend domain verification is no longer a gate on email. The sender lives in env, and the switch happens in the final polish slice.
 - **During `3-prd` (learner-directed):** Alma replaces Corazon Cocina Ventura as the fourth account. Invoice numbers changed to Eileen's location-code + date scheme. Seeded per-cafe logos moved into the POC. The Customers tab is read-only until Handoff.

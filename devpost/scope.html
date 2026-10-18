@@ -175,24 +175,25 @@
     <details open>
       <summary><span>Now · in the proof of concept <span class="count">7</span></span></summary>
       <ul>
-        <li>A single PIN gate</li>
-        <li>Products and Customers, each cafe with a standing product list; mock seed data only in the repo</li>
-        <li>Count per cafe, with last-count pre-fill and its date</li>
+        <li>A single six-digit PIN gate with attempt limiting: 5 wrong tries per IP, or 20 overall, in 15 minutes lock it for 15 minutes</li>
+        <li>Products and Customers, each cafe with a standing product list, a location code, and an optional seeded logo; mock seed data only in the repo; the Customers tab is read-only for the hackathon</li>
+        <li>Count per cafe, with the last count and its date shown in grey beside blank steppers, plus a read-only Past counts list</li>
         <li>Delivery: totals in integer cents, invoice numbers as text (location code + MMDDYYYY, suggested, overwritable, unique), edit and void (never delete), quantities typed in by Eileen. The shelf count beside each line is greyed reference only and never pre-fills; the invoice never reads from a count, and a count never changes because of an invoice.</li>
-        <li>Invoice template matched to the Canva form; print CSS fitting one letter page; PDF</li>
-        <li>Real Resend email with the PDF attached, from invoices@lacondesabakingcompany.com, Reply-To her Gmail. The domain is verified in Block 4, an existing SPF record is merged, not replaced, and the test send goes to the learner's inbox.</li>
+        <li>Invoice template matched to the Canva form, including the cafe's logo when it has one; print CSS fitting one letter page; PDF</li>
+        <li>Real Resend email with the PDF attached, from invoices@lacondesabakingcompany.com, Reply-To her Gmail. The domain isn't a gate on the email build: until it verifies, sends go from Resend's onboarding sender to the learner's inbox. Switching to the real From and Reply-To is an env change in the build's final polish slice (checklist slice 8, before submission; not Block 8 Handoff). DNS records go in at her registrar, an existing SPF record is merged, not replaced, and the test send goes to the learner's inbox.</li>
         <li>Ledger: paid or unpaid with the paid date and an optional ACH reference, Net 30 due dates, overdue, month totals, filter by cafe. Plus a mobile pass, error and empty states, a mock-data audit, and a Vercel deploy.</li>
       </ul>
     </details>
     <details>
-      <summary><span>Later <span class="count">6</span></span></summary>
+      <summary><span>Later <span class="count">7</span></span></summary>
       <ul>
-        <li><strong>Block 8, Handoff:</strong> seed real data from a gitignored file, set the production PIN, add the URL to her home screen, and have Eileen run the path herself as the acceptance test</li>
+        <li><strong>Block 8, Handoff:</strong> seed real data from a gitignored file, set the production PIN, add the URL to her home screen, have Eileen run the path herself as the acceptance test, plus in-app editing of Products, Customers and standing lists, the email-template editor, and the full printed/emailed history line</li>
         <li>Stripe or other payments</li>
         <li>Multi-user login</li>
         <li>Low-stock alerts</li>
         <li>Bake list</li>
-        <li>Per-cafe logo upload</li>
+        <li>Overdue reminders: a daily job finds unpaid, past-due invoices and emails Eileen one list with a single signed link to send the reminders (ask-first; fully automatic per cafe is a later toggle)</li>
+        <li>Per-cafe logo upload (seeded logos are in now)</li>
       </ul>
     </details>
     <details>
@@ -209,7 +210,17 @@
 
   <section>
     <h2>Look &amp; feel</h2>
-    <p>Her paper invoice come to life: white paper, black ink, one warm blush tint, dotted hairline rules, serif text. Four bottom tabs: <em>Count, Deliver, Ledger, Customers</em>. Count and Ledger are phone screens; Deliver and Invoice are laptop screens. The Stitch mockups of all five screens come in at the PRD step.</p>
+    <p>Her paper invoice come to life: white paper, black ink, one warm blush tint, dotted hairline rules, serif text. Four bottom tabs: <em>Count, Deliver, Ledger, Customers</em>. She is never on a page with no way back: the Invoice screen keeps the tabs and a "Back to Ledger" link, sheets close with Cancel or the phone's back button, and Download PDF never navigates the tab away. Count and Ledger are phone screens; Deliver and Invoice are laptop screens. The Stitch mockups of all five screens come in at the PRD step; Eileen's Canva invoice form is the fidelity reference.</p>
+  </section>
+
+  <section>
+    <h2>Changes since approval</h2>
+    <ul>
+      <li><strong>During 5-build</strong> <span class="why">(learner-directed):</span> the PIN gate hardened to six digits with attempt limiting, because four digits with no lockout was 10,000 guesses with no brake on a public URL. Navigation rules pinned for the phone. Overdue reminders added to Later.</li>
+      <li><strong>During 5-build</strong> <span class="why">(learner-directed):</span> a read-only Past counts list on Count, since Eileen looks back through a paper book of counts today and will ask for it on day one. Built in the final polish slice, not Handoff.</li>
+      <li><strong>During 5-build</strong> <span class="why">(learner-directed):</span> Resend domain verification is no longer a gate on email. The sender lives in env, and the switch happens in the final polish slice.</li>
+      <li><strong>During 3-prd</strong> <span class="why">(learner-directed):</span> Alma replaces Corazon Cocina Ventura as the fourth account. Invoice numbers changed to Eileen's location-code + date scheme. Seeded per-cafe logos moved into the POC. The Customers tab is read-only until Handoff.</li>
+    </ul>
   </section>
 
   <footer>scope.md is the source of truth; this page is a companion for review.</footer>

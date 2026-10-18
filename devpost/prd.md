@@ -85,7 +85,7 @@ Source: `scope.md > Inspiration & Identity`, `design/DESIGN.md`.
 **The printed invoice** is indistinguishable from `design/canva-invoice-reference.png`:
 - **Header:** the LA CONDESA BAKING COMPANY wordmark on the left, INVOICE on the right
 - **Customer block:** "Invoice for:" with the cafe name, phone and address, plus the cafe's logo when it has one. The logo space is left empty when it doesn't.
-- **Number and date:** "Invoice #" and "Date:" at the right
+- **Number and date:** "Invoice #" and "Date:" at the right. The date prints as `10/17/2026` (learner-accepted in `5-build`).
 - **Line table:** DESCRIPTION / QTY / PRICE / TOTAL columns under a dotted rule
 - **Totals:** a dotted rule, then "INVOICE TOTAL $"
 - **Footer:**
@@ -96,7 +96,7 @@ Source: `scope.md > Inspiration & Identity`, `design/DESIGN.md`.
 
 **Invoice Typography** (learner-decided):
 - **"INVOICE":** Limelight (Google Fonts).
-- **Body text:** the system serif stack, Times New Roman first. The original is TeX Gyre Termes, a Times clone.
+- **Body text:** the system serif stack, Times New Roman first. The original is TeX Gyre Termes, a Times clone. **Tinos** comes next (added in `5-build`): it is metric-compatible with Times New Roman, so the PDF, rendered on a server with no system fonts, breaks lines exactly where her printout does.
 - **Images, not live text:** the wordmark "LA CONDESA / BAKING COMPANY", the footer block title, and the column headers DESCRIPTION / QTY / PRICE / TOTAL are PNGs exported from Canva. The original face, DK Otago, is licensed in a way that forbids web use, so the font file never enters the repo. The images go in `design/` before Block 3.
 
 ## Features and Behavior
@@ -208,9 +208,13 @@ Source: `scope.md > The Unique Kernel`.
 - Her Canva form (see Look and Feel), filled with the cafe's details and logo if any, the invoice number, the date, and **only the lines with a quantity**. Undelivered standing products don't appear at all, so there are no blank rows.
 - **Status line in grey:** "Sent Oct 18 9:14am", "Not sent" after a failed attempt, or nothing if it was never emailed.
 
+**Navigation (phone first, added in `5-build`):**
+- The Invoice screen keeps the bottom nav and has a "← Back to Ledger" link at the top. She is never on a page with no way back.
+- Every sheet (email confirm, confirms, Mark paid) closes with Cancel, a tap outside it, or the phone's back button, and returns her to the same screen. Back never jumps to the previous page while a sheet is open.
+
 **Actions:**
-- **Print:** opens the browser print dialog. The output is one Letter page matching the Canva form, with no app chrome.
-- **Download PDF:** saves the same PDF the email attaches (`Invoice-[number].pdf`), for her records. It sits between Print and Email invoice.
+- **Print:** opens the browser print dialog. The output is one Letter page matching the Canva form, with no app chrome. Cancelling the dialog leaves her on the same Invoice screen, state intact.
+- **Download PDF:** saves the same PDF the email attaches (`Invoice-[number].pdf`), for her records. It sits between Print and Email invoice. It's served as an attachment and downloads (the share sheet on iOS, saved on Android); the app tab never navigates to the PDF.
 - **Email invoice:** opens the confirm sheet. The button reads **Resend** after the first successful send.
 - **Edit:** opens Deliver loaded with this invoice.
 - **Void:** one confirm. The invoice gets a "Void" stamp and stays visible. Its number is never reused. There's no hard delete anywhere.
@@ -220,6 +224,8 @@ Source: `scope.md > The Unique Kernel`.
 - [ ] Corazon invoices show the heart logo; Little Heart and Alma invoices leave that space empty.
 - [ ] The printout fits one Letter page with no nav, buttons or browser-styled UI.
 - [ ] Download PDF saves `Invoice-[number].pdf`, identical to the email attachment.
+- [ ] At 390px, after Download PDF the Invoice screen is still showing with its buttons.
+- [ ] Cancel and the phone's back button both close the email sheet and leave her on the invoice.
 - [ ] Voiding asks once, stamps "Void", and the number stays taken.
 
 ### Email Invoice
@@ -234,6 +240,8 @@ Source: `scope.md > The POC Boundary` (Email).
 
 **Sending:**
 - From invoices@lacondesabakingcompany.com, with Reply-To set to Eileen's Gmail. The PDF matches the printed invoice.
+- Until the domain verifies, sends go from Resend's onboarding sender, which only delivers to the account owner's inbox. The sender and Reply-To live in env, so the switch is two values and a redeploy (`5-build`, slice 8).
+- **She never types the recipient.** To is pre-filled from the cafe's saved billing email; her only required action is one tap on Send.
 - The invoice is already saved before any send is attempted.
 
 **Results:**
@@ -372,6 +380,12 @@ To Block 8, Handoff:
 - **Low-stock alerts** from counts.
 - **A bake list** generated from counts.
 - **Logo upload** in Customers.
+- **Overdue reminders** (stub, added in `5-build`; not built now):
+  - A daily Vercel Cron job finds invoices that are unpaid, not void, and past due.
+  - Default mode is ask-first: Eileen gets one email listing them, with a single signed link that sends the reminders in one tap.
+  - The reminder email reuses the invoice PDF with a short Net 30 body.
+  - The Ledger row shows "Reminded [date]".
+  - Fully automatic per cafe is a later toggle.
 
 ## Non-Goals
 - **Ingredient tracking or recipe costing:** a different product.

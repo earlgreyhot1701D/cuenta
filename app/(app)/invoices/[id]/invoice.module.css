@@ -2,3 +2,12 @@
   max-width: 816px;
   border: 1px solid var(--ink);
 }
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch);
+  margin-bottom: 0.25rem;
+  text-decoration: none;
+  color: var(--ink-muted);
+}
