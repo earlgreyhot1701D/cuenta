@@ -178,3 +178,7 @@ The costliest mistake came from the plan itself. The first scope said each cafe 
 ---
 
 <p align="center"><b>AI assisted. Human approved. Powered by NLP.</b></p>
+
+## License
+
+Code is MIT licensed. La Condesa Baking Company branding and cafe logos are not, and belong to their owners.
