@@ -1,44 +1,41 @@
-// Job: the email confirm sheet: recipient pre-filled from the invoice, fixed subject and body, one tap to send.
+// Job: the Email pop-up: To filled from the invoice's saved email, a short preview, and Send pinned at the bottom.
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Sheet, useSheetClose } from "@/components/ui/Sheet";
 import { api } from "@/lib/api/client";
 import sheet from "@/components/ui/Sheet.module.css";
 import styles from "./EmailSheet.module.css";
 
-type Preview = { to: string; cafeName: string; subject: string; text: string; attachmentName: string };
+/** Everything the pop-up shows, handed over by the Invoice page so nothing waits on a second request. */
+export type EmailDraft = {
+  to: string;
+  subject: string;
+  text: string;
+  attachmentName: string;
+  lastSent: string | null;
+  sendLabel: string;
+};
+
+type Props = { invoiceId: string; draft: EmailDraft; onClose: () => void; onSent: () => void };
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-type Props = { invoiceId: string; onClose: () => void; onSent: () => void };
-
 export function EmailSheet(props: Props) {
   return (
-    <Sheet label="Email invoice" onClose={props.onClose}>
+    <Sheet label="Email pop-up" onClose={props.onClose}>
       <EmailBody {...props} />
     </Sheet>
   );
 }
 
-function EmailBody({ invoiceId, onClose, onSent }: Props) {
+function EmailBody({ invoiceId, draft, onClose, onSent }: Props) {
   const close = useSheetClose();
-  const [preview, setPreview] = useState<Preview | null>(null);
-  const [to, setTo] = useState("");
+  const [to, setTo] = useState(draft.to);
+  const [showFull, setShowFull] = useState(false);
   const [message, setMessage] = useState("");
   const [failed, setFailed] = useState(false);
   const [sending, setSending] = useState(false);
-
-  useEffect(() => {
-    api<Preview>(`/api/invoices/${invoiceId}/email-preview`).then((result) => {
-      if (result.ok) {
-        setPreview(result.data);
-        setTo(result.data.to);
-      } else {
-        setMessage(result.message);
-      }
-    });
-  }, [invoiceId]);
 
   async function send() {
     setSending(true);
@@ -53,54 +50,61 @@ function EmailBody({ invoiceId, onClose, onSent }: Props) {
     setMessage(result.message);
   }
 
-  const canSend = !!preview && EMAIL_PATTERN.test(to.trim()) && !sending;
+  const canSend = EMAIL_PATTERN.test(to.trim()) && !sending;
+  // Collapsed: the first two lines that have words, so a blank line never takes a slot.
+  const shortText = `${draft.text
+    .split("\n")
+    .filter((line) => line.trim())
+    .slice(0, 2)
+    .join("\n")} …`;
 
   return (
     <>
-      <h2 className={styles.title}>Email invoice</h2>
-      {!preview ? (
-        <p className="quiet">{message || "Loading…"}</p>
-      ) : (
-        <>
-          <div className={styles.field}>
-            <label className="label muted" htmlFor="email-to">
-              To
-            </label>
-            <input
-              id="email-to"
-              className="field"
-              type="email"
-              inputMode="email"
-              autoComplete="off"
-              aria-describedby={preview.to ? undefined : "email-to-missing"}
-              value={to}
-              onChange={(e) => setTo(e.target.value)}
-            />
-            {!preview.to && (
-              <span id="email-to-missing" className="quiet">
-                No email on file for {preview.cafeName}
-              </span>
-            )}
-          </div>
-          <div className={styles.field}>
-            <span className="label muted">Subject</span>
-            <span>{preview.subject}</span>
-          </div>
-          <pre className={styles.body}>{preview.text}</pre>
-          <p className={styles.attachment}>{preview.attachmentName} attached</p>
-          <p className="quiet" role="status">
-            {sending ? "Sending…" : message}
+      <h2 className={styles.title}>Email this invoice</h2>
+      <div className={styles.field}>
+        <label className="label muted" htmlFor="email-to">
+          To
+        </label>
+        <input
+          id="email-to"
+          className="field"
+          type="email"
+          inputMode="email"
+          autoComplete="off"
+          autoFocus={!draft.to}
+          aria-describedby={draft.to ? undefined : "email-to-missing"}
+          value={to}
+          onChange={(e) => setTo(e.target.value)}
+        />
+        {!draft.to && (
+          <span id="email-to-missing" className="quiet">
+            No email saved for this invoice. Type one to send.
+          </span>
+        )}
+      </div>
+      <div className={styles.field}>
+        <span className="label muted">Subject</span>
+        <span>{draft.subject}</span>
+      </div>
+      <pre className={styles.body}>{showFull ? draft.text : shortText}</pre>
+      <button type="button" className={styles.more} onClick={() => setShowFull((v) => !v)} aria-expanded={showFull}>
+        {showFull ? "Show less" : "Show full email"}
+      </button>
+      <p className={styles.attachment}>{draft.attachmentName} attached</p>
+
+      <div className={sheet.actions}>
+        {(message || sending || draft.lastSent) && (
+          <p className={`quiet ${sheet.actionsNote}`} role="status">
+            {sending ? "Sending…" : message || draft.lastSent}
           </p>
-          <div className={sheet.actions}>
-            <button className="btn" type="button" onClick={() => close(onClose)} disabled={sending}>
-              Cancel
-            </button>
-            <button className="btn btn-primary" type="button" onClick={send} disabled={!canSend}>
-              {failed ? "Retry" : "Send"}
-            </button>
-          </div>
-        </>
-      )}
+        )}
+        <button className="btn" type="button" onClick={() => close(onClose)} disabled={sending}>
+          Cancel
+        </button>
+        <button className="btn btn-primary" type="button" onClick={send} disabled={!canSend}>
+          {failed ? "Try again" : draft.sendLabel}
+        </button>
+      </div>
     </>
   );
 }

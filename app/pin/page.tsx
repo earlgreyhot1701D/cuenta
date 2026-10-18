@@ -3,6 +3,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { HelpLink } from "@/components/ui/HelpLink";
 import { Wordmark } from "@/components/ui/Wordmark";
 import { api } from "@/lib/api/client";
 import styles from "./pin.module.css";
@@ -29,6 +30,9 @@ export default function PinPage() {
 
   return (
     <main className={styles.page}>
+      <div className={styles.corner}>
+        <HelpLink />
+      </div>
       <Wordmark size="lg" />
       <form className={styles.form} onSubmit={submit}>
         <label className="label" htmlFor="pin">

@@ -36,7 +36,7 @@ export function formatShort(ymd: string): string {
   return `${MONTHS[m - 1]} ${d}`;
 }
 
-/** "Oct 18 9:14am" for a moment, shown in Pacific time. */
+/** "Oct 18, 9:14am" for a moment, shown in Pacific time. */
 export function formatStamp(moment: Date): string {
   const parts = new Intl.DateTimeFormat("en-US", {
     timeZone: TZ,
@@ -47,7 +47,7 @@ export function formatStamp(moment: Date): string {
     hour12: true,
   }).formatToParts(moment);
   const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
-  return `${get("month")} ${get("day")} ${get("hour")}:${get("minute")}${get("dayPeriod").toLowerCase()}`;
+  return `${get("month")} ${get("day")}, ${get("hour")}:${get("minute")}${get("dayPeriod").toLowerCase()}`;
 }
 
 /** "October 17, 2026" from YYYY-MM-DD. */

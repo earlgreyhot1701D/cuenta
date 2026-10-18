@@ -1,13 +1,13 @@
-// Job: the Invoice screen's action buttons: Print, Download PDF and Email (Edit and Void join in slice 7).
+// Job: the Invoice page's buttons: Print, Download PDF and Send email (Edit and Void join in slice 7).
 "use client";
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { EmailSheet } from "./EmailSheet";
+import { EmailSheet, type EmailDraft } from "./EmailSheet";
 import { attachmentName } from "@/lib/email/invoice-email";
 import styles from "./InvoiceActions.module.css";
 
-export function InvoiceActions({ invoiceId, number, emailed }: { invoiceId: string; number: string; emailed: boolean }) {
+export function InvoiceActions({ invoiceId, number, draft }: { invoiceId: string; number: string; draft: EmailDraft }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
@@ -49,7 +49,7 @@ export function InvoiceActions({ invoiceId, number, emailed }: { invoiceId: stri
           {busy ? "Making PDF…" : "Download PDF"}
         </button>
         <button className="btn" type="button" onClick={() => setEmailOpen(true)}>
-          {emailed ? "Resend" : "Email invoice"}
+          {draft.sendLabel}
         </button>
       </div>
       <p className="quiet" role="status">
@@ -58,6 +58,7 @@ export function InvoiceActions({ invoiceId, number, emailed }: { invoiceId: stri
       {emailOpen && (
         <EmailSheet
           invoiceId={invoiceId}
+          draft={draft}
           onClose={() => setEmailOpen(false)}
           onSent={() => {
             setEmailOpen(false);

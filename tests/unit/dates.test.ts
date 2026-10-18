@@ -27,6 +27,6 @@ describe("date math and formats", () => {
     expect(formatShort("2026-10-09")).toBe("Oct 9");
   });
   it("formats stamps in Pacific time", () => {
-    expect(formatStamp(new Date("2026-10-18T16:14:00Z"))).toBe("Oct 18 9:14am");
+    expect(formatStamp(new Date("2026-10-18T16:14:00Z"))).toBe("Oct 18, 9:14am");
   });
 });

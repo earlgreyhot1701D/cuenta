@@ -56,7 +56,7 @@ Slice numbers are this checklist's own. Where the plan names a Block, the slice 
   Learner check: On the deployed app, Download PDF for your test invoice, open it next to your printed copy from slice 3, and confirm they match.
   Commit: `Add token-gated print route and PDF download`
 
-- [ ] **5. Eileen can email the invoice with the PDF attached, and the stamp never lies**
+- [x] **5. Eileen can email the invoice with the PDF attached, and the stamp never lies**
   Becomes usable: Email invoice opens the confirm sheet: To pre-filled from the snapshot and editable, the fixed subject, the filled-in body preview, and the attachment line. Send delivers a real email from whatever `EMAIL_FROM` is set to (Resend's onboarding sender until the domain verifies), then "Sent [time]" stamps on the invoice and the button reads Resend. A failure keeps the sheet open with "Couldn't send. The invoice is saved. Try again or print it." and Retry, and never shows "Sent". A cafe with no email blocks Send until she types one.
   Why now: This is the last external dependency and the second half of the "oh, that's cool" moment. The Ledger's envelope mark reads this slice's state. It doesn't wait on DNS: the sender comes from env, so the verified domain is an env change in slice 8, with no code change.
   PRD ref: `prd.md > Email Invoice`
@@ -81,7 +81,7 @@ Slice numbers are this checklist's own. Where the plan names a Block, the slice 
   Why now: These are correction paths on top of a working loop. They reuse DeliveryForm and the Ledger, so they're cheap now and would be guesswork earlier. Cafe switching on Edit is decided here (`prd.md > Open Questions`).
   PRD ref: `prd.md > Deliver (New Delivery and Edit)` (Edit, Special order line), `prd.md > Invoice` (Void)
   Spec ref: `spec.md > Components` (Deliver Screen, Invoice Screen), `spec.md > Decisions and Open Issues`
-  Build: Add the Edit page, `PUT /api/invoices/[id]`, `POST /api/invoices/[id]/void`, the Confirm primitive, the special order LineRow with its validation, the void stamp on InvoiceDocument and LedgerRow, and the decision on cafe switching (recorded under Revisions).
+  Build: First, split `DeliveryForm` before adding anything: `useDeliveryLines.ts` (line state, per-line prices, totals), `SpecialOrderRow.tsx` next to `LineRow.tsx`, and `DeliveryForm` keeping only the header, the mode (new or edit) and submit. Each keeps its `Job:` line. Then add the Edit page, `PUT /api/invoices/[id]`, `POST /api/invoices/[id]/void`, the Confirm primitive, the special order LineRow with its validation, the void stamp on InvoiceDocument and LedgerRow, and the decision on cafe switching (recorded under Revisions).
   Verify (mechanical): Edit loads the snapshot prices even after a seed price change. A PUT that changes a quantity changes the Ledger total. Void sets `voided_at`, a reused number still returns 409, and the stats exclude the voided invoice. A special order line with a missing description, a negative price or a quantity of 0 returns 400. A valid one appears in the print screenshot.
   Learner check: Edit your test invoice's quantity and see the new total on the invoice and in the Ledger. Add a special order and print. In production, open the $97 test invoice `110172026` from its Ledger row and void it. Check the row greys out, the stats drop it, and the number stays taken.
   Commit: `Add invoice edit, void and special orders`
@@ -159,4 +159,13 @@ Activity mode:
 - **Mark unpaid's one confirm is a second step inside the same payment sheet**, not a sheet on top of a sheet. So one Back press still closes it.
 - **Void rows were checked before Void exists** (slice 7), by setting `voided_at` directly in `dev`: the row greys out with a Void stamp and no payment button, it's dropped from all three stats, and the payment API answers 409.
 - **The dev seed now includes an overdue invoice and a paid one**, so every row state has data.
-
+- **Slice 5 bugs found in the learner's test, all fixed:**
+  1. **To looked empty.** The data was right: the saved email was on the invoice, the preview API answered 200, and a headless browser showed it filled. But To depended on a second request after the pop-up opened. The Invoice page now hands the pop-up its full draft, so To is filled on first paint. The `email-preview` route was removed.
+  2. **The send failed.** Resend refused it with a 403: on the onboarding sender it delivers only to the Resend account owner's address, and the seeded inbox was a different address. The test data (`SEED_BILLING_EMAIL`, cafes 1, 2 and 4 in production and `dev`, and test invoice `110172026-2`'s saved email) now uses the owner address. That one test invoice's snapshot email was corrected by hand, an exception to the snapshot rule for mock data, and its failed-try mark was cleared so the walkthrough starts clean.
+  3. **Send was hard to find.** Cancel and Send are now pinned at the bottom of every sheet. The empty-To line is "No email saved for this invoice. Type one to send.", with the cursor in To. The preview shows two lines with "Show full email".
+- **"Resend" dropped as a button name** (it's the provider's name): Send email, then Send again with "Last sent Oct 17, 8:12pm". The same words appear on the Invoice page, the pop-up, the Ledger and How it works. A failed try reads "Try again".
+- **Ledger email label:** the envelope plus "Emailed Oct 17" (hover and screen readers get the full time), or "Not sent". A failed retry after a success reads "Emailed … · last try failed" rather than "Not sent", so the label never denies a send that happened. That's the agent's reading of "the stamp never lies", flagged for the learner.
+- **How it works page** at `/help` (open without the PIN; no data), with a "?" on every page and the PIN screen. Sections: Count, Deliver, Invoice page, Email pop-up, Ledger. Unbuilt features (Edit, Void, Past counts) join when they ship.
+- **Rule for the whole app: no icon without words.**
+- **Later stubs added:** Excel export of the Ledger, and an accounts receivable aging report.
+- **Slice 5 closed** by the learner's own send. Invoice `110172026-2` was emailed from production at Oct 17, 9:40pm Pacific (message ID `01a14d4f-a2b4-7e13-b9ac-8fd4fa65a417`) and arrived in the Resend account owner's inbox. The learner confirmed the Email pop-up fixes: To filled in, the two-line preview, and the buttons visible.

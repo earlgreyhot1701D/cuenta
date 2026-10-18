@@ -13,6 +13,7 @@ export type LedgerRecord = {
   paidReference: string | null;
   voidedAt: Date | null;
   emailSentAt: Date | null;
+  emailLastFailedAt: Date | null;
 };
 
 export async function listLedger(customerId?: string): Promise<LedgerRecord[]> {
@@ -29,6 +30,7 @@ export async function listLedger(customerId?: string): Promise<LedgerRecord[]> {
       paidReference: invoices.paidReference,
       voidedAt: invoices.voidedAt,
       emailSentAt: invoices.emailSentAt,
+      emailLastFailedAt: invoices.emailLastFailedAt,
     })
     .from(invoices)
     .leftJoin(invoiceLines, eq(invoiceLines.invoiceId, invoices.id))

@@ -4,6 +4,7 @@ import { LedgerList } from "@/components/ledger/LedgerList";
 import type { LedgerRowData } from "@/components/ledger/LedgerRow";
 import { StatRow } from "@/components/ledger/StatRow";
 import { todayPacific } from "@/lib/dates";
+import { emailLabel } from "@/lib/email-status";
 import { ledgerStats, rowState } from "@/lib/ledger-stats";
 import { listCustomers } from "@/lib/queries/customers";
 import { listLedger } from "@/lib/queries/ledger";
@@ -28,7 +29,7 @@ export default async function LedgerPage({ searchParams }: { searchParams: Promi
     totalCents: r.totalCents,
     paidOn: r.paidOn,
     paidReference: r.paidReference,
-    emailed: !!r.emailSentAt,
+    email: emailLabel(r),
     ...rowState(r, today),
   }));
 

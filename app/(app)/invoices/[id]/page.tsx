@@ -4,7 +4,9 @@ import { notFound } from "next/navigation";
 import { InvoiceActions } from "@/components/invoice/InvoiceActions";
 import { InvoiceDocument } from "@/components/invoice/InvoiceDocument";
 import { getBusiness } from "@/lib/business";
-import { emailStatus } from "@/lib/email-status";
+import { buildInvoiceEmail } from "@/lib/email/invoice-email";
+import { emailStatus, sendButtonLabel } from "@/lib/email-status";
+import { lineTotal, sumCents } from "@/lib/money";
 import { fitsOnePage } from "@/lib/invoice-capacity";
 import { getInvoice } from "@/lib/queries/invoices";
 import styles from "./invoice.module.css";
@@ -16,6 +18,18 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
   if (!found) notFound();
   const { invoice, lines } = found;
   const status = emailStatus(invoice);
+  const email = buildInvoiceEmail({
+    number: invoice.number,
+    cafeName: invoice.cafeName,
+    invoiceDate: invoice.invoiceDate,
+    totalCents: sumCents(lines.map((l) => lineTotal(l.unitPriceCents, l.quantity))),
+  });
+  const draft = {
+    to: invoice.cafeEmail ?? "",
+    ...email,
+    lastSent: invoice.emailSentAt ? status : null,
+    sendLabel: sendButtonLabel(invoice),
+  };
 
   return (
     <>
@@ -28,7 +42,7 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
         {status && <p className="quiet">{status}</p>}
         {!fitsOnePage(lines.length) && <p className="quiet">Too many lines for one page</p>}
       </div>
-      <InvoiceActions invoiceId={invoice.id} number={invoice.number} emailed={!!invoice.emailSentAt} />
+      <InvoiceActions invoiceId={invoice.id} number={invoice.number} draft={draft} />
       <div className={styles.frame} data-invoice-frame>
         <InvoiceDocument invoice={{ ...invoice, lines }} business={getBusiness()} />
       </div>

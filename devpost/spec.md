@@ -55,7 +55,7 @@ PRD ref: `prd.md > The Core Journey`.
    - The page renders `<InvoiceDocument>` from the saved copy.
    - **Print** calls `window.print()`. Print CSS hides the app chrome, so only the document prints.
    - **Download PDF** goes to `GET /api/invoices/[id]/pdf`. It checks the PIN session, mints a 60-second token, and has headless Chrome open `/print/invoice/[id]?t=…` and save a Letter PDF.
-   - **Email** opens the confirm sheet. Send calls `POST /api/invoices/[id]/email` with `{to}`. The server renders the same PDF, calls Resend, and records the result:
+   - **Send email** opens the Email pop-up. Send calls `POST /api/invoices/[id]/email` with `{to}`. The server renders the same PDF, calls Resend, and records the result:
      - **success:** `email_sent_at` and `email_message_id` are set
      - **failure:** `email_last_failed_at` is set
    - Either way, the server logs one line.
@@ -189,7 +189,7 @@ Carried forward from `prd.md > Look and Feel` and `design/DESIGN.md`.
 - **On failure:** returns 401, and the page shows "That's not it."
 - **Attempt limiting (`lib/pin-limit.ts`, table `pin_attempts`):** every wrong PIN adds a `fail` row with the client IP. When an IP reaches 5 fails within 15 minutes, a `lock` row for that IP is added; at 20 fails from anywhere, a global `lock` row (IP null) is added. Any lock row younger than 15 minutes for the caller's IP, or a global one, makes `POST /api/session` return 429 "Too many tries. Wait 15 minutes." before the PIN is even compared. Attempts during a lock aren't counted, so they don't extend it. The IP comes from `x-forwarded-for`, which Vercel sets.
 - **Logging:** each failure logs `{route, outcome, ip, ts}`, never the digits.
-- **The PIN check (`proxy.ts`):** requires a valid session for everything except `/pin`, `/api/session`, `/print/*`, `/health` and static assets. Pages redirect to `/pin`; API routes return 401.
+- **The PIN check (`proxy.ts`):** requires a valid session for everything except `/pin`, `/api/session`, `/print/*`, `/health`, `/help` (the How it works page, which holds no data) and static assets. Pages redirect to `/pin`; API routes return 401.
 - PRD ref: `prd.md > PIN Gate`.
 
 ### Count Screen
@@ -237,10 +237,10 @@ Carried forward from `prd.md > Look and Feel` and `design/DESIGN.md`.
 - PRD ref: `prd.md > Invoice`, `prd.md > Look and Feel`.
 
 ### Invoice Screen
-- **What it does:** `app/(app)/invoices/[id]/page.tsx` shows the `<InvoiceDocument>`, the grey status line, and the actions: Print, Download PDF, Email invoice / Resend, Edit, Void.
+- **What it does:** `app/(app)/invoices/[id]/page.tsx` shows the `<InvoiceDocument>`, the grey status line, and the actions: Print, Download PDF, Send email / Send again, Edit, Void. It also builds the email draft on the server (`buildInvoiceEmail`, saved `cafe_email`, `sendButtonLabel`) and hands it to the Email pop-up, so To is filled the moment the pop-up opens.
 - **Status line** (`lib/email-status.ts`):
-  - "Sent Oct 18 9:14am" when a send has succeeded
-  - "Sent Oct 18 9:14am · resend failed" when the latest attempt failed after an earlier success
+  - "Last sent Oct 18, 9:14am" when a send has succeeded
+  - "Last sent Oct 18, 9:14am · last try failed" when the latest attempt failed after an earlier success
   - "Not sent" only when no send has ever succeeded and an attempt failed
   - nothing when no send was ever attempted
   - The first email really reached the cafe, so the stamp never lies.
@@ -277,12 +277,14 @@ Carried forward from `prd.md > Look and Feel` and `design/DESIGN.md`.
   - the subject is `La Condesa Baking Company Invoice ${number}`
 - **Send:** the server renders the PDF, then `lib/email/send.ts` calls Resend `emails.send({ from, to, replyTo, subject, text, attachments: [{ filename: 'Invoice-${number}.pdf', content: pdfBuffer }] })`.
 - **Success:** sets `email_sent_at` and `email_message_id`, and clears `email_last_failed_at`.
-- **Any failure** (PDF, network or Resend): sets `email_last_failed_at` and returns 502. It never clears an earlier `email_sent_at`. The sheet stays open with the failure line and Retry.
+- **Any failure** (PDF, network or Resend): sets `email_last_failed_at` and returns 502. It never clears an earlier `email_sent_at`. The pop-up stays open with the failure line and **Try again**. Resend's reason goes to the log only, with addresses scrubbed.
 - **Ordering:** the invoice is always saved before this route can be called.
-- **Confirm sheet:** the client component `EmailSheet`.
-  - **To:** pre-filled from the snapshot `cafe_email`, and editable for this send only.
-  - **Missing email:** shows "No email on file for [cafe]" and disables Send.
-  - **Preview:** shows the subject, the body preview (from `GET /api/invoices/[id]/email-preview`) and the attachment line.
+- **Email pop-up:** the client component `EmailSheet`, given an `EmailDraft` by the Invoice page (no separate preview request; the old `email-preview` route was removed in `5-build`).
+  - **To:** the snapshot `cafe_email`, editable for this send only.
+  - **Missing email:** autofocus in To, "No email saved for this invoice. Type one to send.", and Send email disabled until the address is valid.
+  - **Preview:** the subject, the body collapsed to its first two non-empty lines with "Show full email", and the attachment line.
+  - **Buttons:** Cancel and Send email (black), in `Sheet.module.css`'s `.actions` row, which is `position: sticky` at the sheet's bottom so they never scroll away. After a send: "Send again" with "Last sent …" above.
+- **Onboarding sender:** while `EMAIL_FROM` is `onboarding@resend.dev`, Resend delivers only to the Resend account owner's address and refuses every other recipient with a 403. `SEED_BILLING_EMAIL` must be that owner address for test sends.
 - PRD ref: `prd.md > Email Invoice`.
 
 ### Ledger Screen
@@ -293,7 +295,7 @@ Carried forward from `prd.md > Look and Feel` and `design/DESIGN.md`.
   - **Mark paid:** `POST /api/invoices/[id]/payment {paidOn, reference}`
   - **Mark unpaid:** one confirm, then `DELETE /api/invoices/[id]/payment`
 - **Void rows:** no payment action.
-- **Envelope mark:** shown when `email_sent_at` is set.
+- **Email label:** `emailLabel()` gives the envelope plus "Emailed Oct 17" in grey, with "Emailed Oct 17, 8:12pm" as the `title` (hover) and `aria-label`. If no send succeeded and one failed, it reads "Not sent". No icon ever appears without words.
 - PRD ref: `prd.md > Ledger`.
 
 ### Customers Screen
@@ -315,7 +317,7 @@ Carried forward from `prd.md > Look and Feel` and `design/DESIGN.md`.
   - `addDays(date, 30)`
   - `daysBetween`
   - `formatShort` ("Oct 9")
-  - `formatStamp` ("Oct 18 9:14am", Pacific)
+  - `formatStamp` ("Oct 18, 9:14am", Pacific)
 - **No code reads the browser's clock** for a calendar date. The Deliver page gets its default date from the server.
 - **Money:** `lib/money.ts` handles integer cents throughout, with `formatUSD(cents)` and `parseUSD(input)` to cents. There's no floating-point money anywhere.
 - **Invoice number:** `lib/invoice-number.ts` has `suggestNumber(code, ymd)`, which turns `1` and `2026-10-17` into `110172026`.
@@ -448,6 +450,7 @@ cuenta/
 │   │   ├── invoices/[id]/page.tsx      # Job: show one invoice and its actions
 │   │   ├── invoices/[id]/edit/page.tsx # Job: load an invoice snapshot into the delivery form
 │   │   ├── ledger/page.tsx             # Job: load ledger rows and stats
+│   │   ├── help/page.tsx               # Job: the How it works page (open without the PIN)
 │   │   └── customers/page.tsx          # Job: show cafes read-only
 │   ├── print/invoice/[id]/page.tsx     # Job: token-gated, chrome-free invoice for the PDF renderer
 │   ├── health/route.ts                 # Job: report DB status and app version
@@ -461,7 +464,6 @@ cuenta/
 │           ├── payment/route.ts        # Job: mark paid or unpaid
 │           ├── pdf/route.ts            # Job: return the invoice PDF for download
 │           ├── email/route.ts          # Job: render the PDF and send it via Resend
-│           └── email-preview/route.ts  # Job: return the filled email text for the confirm sheet
 ├── proxy.ts                            # Job: require a PIN session (middleware.ts if the Next.js version expects it)
 ├── components/
 │   ├── nav/BottomNav.tsx               # Job: the four-tab nav with the unsaved-changes guard
@@ -472,17 +474,17 @@ cuenta/
 │   ├── invoice/InvoiceDocument.tsx     # Job: render the Canva-matched invoice from a snapshot
 │   ├── invoice/InvoiceDocument.module.css
 │   ├── invoice/InvoiceActions.tsx      # Job: Print, PDF, Email, Edit, Void buttons
-│   ├── invoice/EmailSheet.tsx          # Job: email confirm sheet with send/fail states
+│   ├── invoice/EmailSheet.tsx          # Job: the Email pop-up with its send/fail states
 │   ├── ledger/LedgerRow.tsx            # Job: one ledger row in its state
 │   ├── ledger/StatRow.tsx              # Job: Open / Outstanding / This month
 │   ├── ledger/PaymentSheet.tsx         # Job: mark paid / unpaid sheet
-│   └── ui/                             # Job (each): one primitive: Button, Sheet, Confirm, CafePicker, QuietMessage
+│   └── ui/                             # Job (each): one primitive: Sheet, Confirm, CafePicker, Wordmark, HelpLink ("?")
 ├── lib/
 │   ├── dates.ts                        # Job: Pacific calendar dates and display formats
 │   ├── money.ts                        # Job: integer-cents math and USD formatting
 │   ├── invoice-number.ts               # Job: suggest an invoice number from code and date
 │   ├── invoice-capacity.ts             # Job: the one-page line limit and its check
-│   ├── email-status.ts                 # Job: derive the Sent / resend failed / Not sent line
+│   ├── email-status.ts                 # Job: the email words: Last sent / Emailed / Not sent / Send email / Send again
 │   ├── business.ts                     # Job: read Eileen's footer identity from env
 │   ├── session.ts                      # Job: sign and verify the PIN session cookie
 │   ├── pin-limit.ts                    # Job: lock the PIN route after too many wrong tries
@@ -560,7 +562,7 @@ cuenta/
 
 ## Important Failure Modes
 - **Chromium cold start or bundle too large on Vercel:** Spike 1 decides. If it fails, use the hosted renderer on the same print URL. In the app, Download PDF and Email show their one-line failure, and **Print always works** because it's the browser's own.
-- **Resend send fails** (domain not verified, network, bad address): the invoice is already saved. `email_last_failed_at` is set. The invoice shows "Not sent", or "Sent … · resend failed" if an earlier send succeeded, and the sheet shows "Couldn't send. The invoice is saved. Try again or print it." with Retry. It never shows "Sent".
+- **Resend send fails** (domain not verified, network, bad address): the invoice is already saved. `email_last_failed_at` is set. The invoice shows "Not sent", or "Last sent … · last try failed" if an earlier send succeeded, and the pop-up shows "Couldn't send. The invoice is saved. Try again or print it." with Try again. It never shows "Last sent" for a send that failed.
 - **Neon cold start or outage:** pages show a one-line error and never a blank screen. `/health` tells "db down" apart from slow. On the demo day, open `/health` first to warm the database.
 - **Duplicate invoice number in a race:** the unique index is the final guard, and returns the same "Already used on…" message.
 - **Wrong date late in the day:** prevented by `todayPacific()`. The Block 1 check covers it.
@@ -606,7 +608,7 @@ cuenta/
 
 **Review decisions (learner):**
 - **Drizzle, CSS Modules, Vitest plus Playwright are accepted.** Drizzle gets a longevity check in Block 1: a release in the last six months.
-- **Resend status never lies.** An earlier success keeps "Sent [time]", and a later failure adds "resend failed". "Not sent" appears only when no send has ever succeeded.
+- **The email status never lies.** An earlier success keeps "Last sent [time]", and a later failure adds "last try failed". "Not sent" appears only when no send has ever succeeded.
 - **Corazon logo:** not in the public repo. The mock seed uses a generated placeholder; the real logo goes into the production seed at Handoff, from outside git.
 - **Eileen's footer details come from env** (`BUSINESS_*`). Placeholders in the repo and the mock deploy; real values only in production env. Handoff is a config step.
 - **`design/canva-invoice-reference.png` is gitignored:** kept on disk for the Block 3 side-by-side and never committed. The Stitch mockups (HTML and PNG) are gitignored too: they turned out to contain real addresses, phones and emails (found in `5-build`). Only `design/DESIGN.md` is committed.

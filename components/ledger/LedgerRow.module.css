@@ -35,9 +35,12 @@
   font-weight: 600;
 }
 
-.envelope {
+.email {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 14px;
   color: var(--ink-muted);
-  flex-shrink: 0;
 }
 
 .cafe {

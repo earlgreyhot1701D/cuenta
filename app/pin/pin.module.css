@@ -1,4 +1,5 @@
 .page {
+  position: relative;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -23,4 +24,12 @@
   font-size: 32px;
   letter-spacing: 0.45em;
   padding-left: 0.45em;
+}
+
+.corner {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 76px;
 }

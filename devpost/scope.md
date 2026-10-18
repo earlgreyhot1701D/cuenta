@@ -43,7 +43,7 @@ She comes back every delivery day. The count tells her what to bake and bring ne
 
 ## Inspiration & Identity
 - **Look:** her paper invoice come to life. White paper, black ink, one warm blush tint, dotted hairline rules, serif text.
-- **Navigation:** four tabs along the bottom: Count, Deliver, Ledger, Customers. She is never on a page with no way back: the Invoice screen keeps the tabs and a "Back to Ledger" link, sheets close with Cancel or the phone's back button, and Download PDF never navigates the tab away.
+- **Navigation:** four tabs along the bottom: Count, Deliver, Ledger, Customers. Every page has a small "?" that opens a plain-words How it works page. No icon appears without words she can read, and the send button says Send email or Send again, never "Resend". She is never on a page with no way back: the Invoice screen keeps the tabs and a "Back to Ledger" link, sheets close with Cancel or the phone's back button, and Download PDF never navigates the tab away.
 - **Devices:** Count and Ledger are phone screens, used standing in a cafe. Deliver and Invoice are laptop screens, used in the kitchen.
 - **Fidelity:** the printed invoice matches her existing Canva form exactly.
 - **References:** the learner has Stitch mockups of all five screens, coming in `3-prd`. Eileen's Canva invoice form is the fidelity reference.
@@ -56,7 +56,7 @@ She comes back every delivery day. The count tells her what to bake and bring ne
 **Hackathon done:** a judge can follow the four-step path on the deployed URL with mock data, under three minutes, and every step works.
 1. Count screen, pick Corazon Cocina. The last count shows in grey with its date under each product. Enter two numbers and save.
 2. New delivery for Corazon Cocina. The standing list shows prices and the latest shelf count beside each line. Enter quantities, totals compute live, create the invoice.
-3. The invoice matches her Canva form, with its invoice number (location code + date) and today's date. Print opens the browser dialog. Email invoice, confirm, and "Sent" is stamped on it, with a real send on camera.
+3. The invoice matches her Canva form, with its invoice number (location code + date) and today's date. Print opens the browser dialog. Send email, check the Email pop-up, tap Send email, and "Last sent" shows on it, with a real send on camera.
 4. On the Ledger, the new invoice shows as unpaid, due in 30 days, and the month total updates.
 
 **The "oh, that's cool" moment:** the printed invoice looks exactly like the paper one, and the email really arrives.
@@ -96,6 +96,8 @@ She comes back every delivery day. The count tells her what to bake and bring ne
 - Multi-user login
 - Low-stock alerts
 - Bake list
+- Ledger export to Excel, respecting the cafe filter and a date range
+- Accounts receivable aging report (current, 1–30, 31–60, 61–90, over 90 days; per cafe and total; PDF or Excel)
 - Overdue reminders: a daily job finds unpaid, past-due invoices and emails Eileen one list with a single signed link to send the reminders (ask-first; fully automatic per cafe is a later toggle)
 - Per-cafe logo *upload* (seeded logos are in now)
 
@@ -107,6 +109,7 @@ She comes back every delivery day. The count tells her what to bake and bring ne
 - **Real customer data in the repo:** mock data only. Real data goes in at Handoff from a gitignored file.
 
 ## Changes Since Approval
+- **During `5-build` (learner-directed):** a How it works page behind a "?" on every page, the "no icon without words" rule, and Send email / Send again replacing "Resend". Excel export and an aging report were added to Later.
 - **During `5-build` (learner-directed):** the PIN gate hardened to six digits with attempt limiting, because four digits with no lockout was 10,000 guesses with no brake on a public URL. Navigation rules pinned for the phone. Overdue reminders added to Later.
 - **During `5-build` (learner-directed):** a read-only Past counts list on Count, since Eileen looks back through a paper book of counts today and will ask for it on day one. Built in the final polish slice, not Handoff.
 - **During `5-build` (learner-directed):** Resend domain verification is no longer a gate on email. The sender lives in env, and the switch happens in the final polish slice.

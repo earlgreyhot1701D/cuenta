@@ -124,7 +124,7 @@
       <text x="545" y="197" text-anchor="middle" font-size="14">Email PDF</text>
       <path class="arrow" d="M480,120 L450,166"/>
       <path class="arrow" d="M510,120 L540,166"/>
-      <text x="495" y="238" text-anchor="middle" class="small">kitchen printer · real Resend send, "Sent" stamped</text>
+      <text x="495" y="238" text-anchor="middle" class="small">kitchen printer · real send, "Last sent" shown</text>
 
       <!-- return loop -->
       <path class="arrow" d="M670,120 C670,280 95,280 95,124"/>
@@ -185,13 +185,15 @@
       </ul>
     </details>
     <details>
-      <summary><span>Later <span class="count">7</span></span></summary>
+      <summary><span>Later <span class="count">9</span></span></summary>
       <ul>
         <li><strong>Block 8, Handoff:</strong> seed real data from a gitignored file, set the production PIN, add the URL to her home screen, have Eileen run the path herself as the acceptance test, plus in-app editing of Products, Customers and standing lists, the email-template editor, and the full printed/emailed history line</li>
         <li>Stripe or other payments</li>
         <li>Multi-user login</li>
         <li>Low-stock alerts</li>
         <li>Bake list</li>
+        <li>Ledger export to Excel, respecting the cafe filter and a date range</li>
+        <li>Accounts receivable aging report (current, 1–30, 31–60, 61–90, over 90 days; per cafe and total; PDF or Excel)</li>
         <li>Overdue reminders: a daily job finds unpaid, past-due invoices and emails Eileen one list with a single signed link to send the reminders (ask-first; fully automatic per cafe is a later toggle)</li>
         <li>Per-cafe logo upload (seeded logos are in now)</li>
       </ul>
@@ -210,12 +212,13 @@
 
   <section>
     <h2>Look &amp; feel</h2>
-    <p>Her paper invoice come to life: white paper, black ink, one warm blush tint, dotted hairline rules, serif text. Four bottom tabs: <em>Count, Deliver, Ledger, Customers</em>. She is never on a page with no way back: the Invoice screen keeps the tabs and a "Back to Ledger" link, sheets close with Cancel or the phone's back button, and Download PDF never navigates the tab away. Count and Ledger are phone screens; Deliver and Invoice are laptop screens. The Stitch mockups of all five screens come in at the PRD step; Eileen's Canva invoice form is the fidelity reference.</p>
+    <p>Her paper invoice come to life: white paper, black ink, one warm blush tint, dotted hairline rules, serif text. Four bottom tabs: <em>Count, Deliver, Ledger, Customers</em>. Every page has a small "?" that opens a plain-words How it works page. No icon appears without words she can read, and the send button says Send email or Send again, never "Resend". She is never on a page with no way back: the Invoice screen keeps the tabs and a "Back to Ledger" link, sheets close with Cancel or the phone's back button, and Download PDF never navigates the tab away. Count and Ledger are phone screens; Deliver and Invoice are laptop screens. The Stitch mockups of all five screens come in at the PRD step; Eileen's Canva invoice form is the fidelity reference.</p>
   </section>
 
   <section>
     <h2>Changes since approval</h2>
     <ul>
+      <li><strong>During 5-build</strong> <span class="why">(learner-directed):</span> a How it works page behind a "?" on every page, the "no icon without words" rule, and Send email / Send again replacing "Resend". Excel export and an aging report were added to Later.</li>
       <li><strong>During 5-build</strong> <span class="why">(learner-directed):</span> the PIN gate hardened to six digits with attempt limiting, because four digits with no lockout was 10,000 guesses with no brake on a public URL. Navigation rules pinned for the phone. Overdue reminders added to Later.</li>
       <li><strong>During 5-build</strong> <span class="why">(learner-directed):</span> a read-only Past counts list on Count, since Eileen looks back through a paper book of counts today and will ask for it on day one. Built in the final polish slice, not Handoff.</li>
       <li><strong>During 5-build</strong> <span class="why">(learner-directed):</span> Resend domain verification is no longer a gate on email. The sender lives in env, and the switch happens in the final polish slice.</li>
@@ -229,7 +232,7 @@
   const steps = [
     "Open the Count screen and pick Corazon Cocina. The last count shows in grey with its date under each product. Enter two numbers and save.",
     "Tap New delivery and pick Corazon Cocina. The standing product list appears with prices and the latest shelf count beside each line. Enter quantities; totals compute live. Tap Create invoice.",
-    "The invoice matches her Canva form, with its invoice number (location code + date) and today's date. Print opens the browser dialog. Email invoice, confirm, and “Sent” is stamped on it, with a real send on camera.",
+    "The invoice matches her Canva form, with its invoice number (location code + date) and today's date. Print opens the browser dialog. Send email, check the Email pop-up, tap Send email, and “Last sent” shows on it, with a real send on camera.",
     "Open the Ledger. The new invoice shows as unpaid, due in 30 days, and the month total updates."
   ];
   const body = document.getElementById("stepbody");

@@ -34,7 +34,7 @@ Source: `scope.md > The Core Loop`, `scope.md > What "Working" Looks Like`.
 1. **PIN (first open on a device).** The La Condesa wordmark, one six-digit field, one button. The right PIN is remembered on that device for 30 days. Later visits skip the PIN.
 2. **Count (phone, at a cafe).** Lands here after the PIN. She picks the cafe, taps or types counts for the products she's counting, and saves. Only the rows she entered get recorded.
 3. **Deliver (laptop, kitchen).** She picks the cafe. Its standing list appears with prices and the last shelf count in grey beside each line. She enters quantities and totals compute live. The date defaults to today and the invoice number is pre-filled. She taps Create invoice.
-4. **Invoice (laptop).** Her Canva form, rendered with only the lines she delivered. Print opens the browser print dialog. Email invoice opens a confirm sheet; she taps Send, and "Sent [date time]" stamps on the invoice.
+4. **Invoice (laptop).** Her Canva form, rendered with only the lines she delivered. Print opens the browser print dialog. Send email opens the Email pop-up; she taps Send email, and "Last sent [date, time]" shows on the invoice.
 5. **Ledger (phone).** The new invoice shows Unpaid, due in 30 days, and the stat row updates. When the ACH lands she taps Unpaid, enters the paid date, and the row goes muted as Paid.
 
 Count and Deliver never feed each other (`scope.md > The Core Loop`).
@@ -42,6 +42,8 @@ Count and Deliver never feed each other (`scope.md > The Core Loop`).
 **Judge path (hackathon done):** steps 2 through 5 on the deployed URL with mock data, under three minutes, using Corazon Cocina.
 
 ## Screens and Layout
+
+**How it works** (added in `5-build`): a small "?" in the top corner of every page, the PIN screen included, opens a plain-words page. It has one short section each for Count, Deliver, Invoice page, Email pop-up and Ledger: what the screen is for and what each button does, using the buttons' exact names.
 
 | Screen | Primary device | Reached from |
 |---|---|---|
@@ -53,7 +55,7 @@ Count and Deliver never feed each other (`scope.md > The Core Loop`).
 | Customers | both | bottom nav (read-only) |
 
 - **Bottom nav:** four tabs, Count · Deliver · Ledger · Customers, on every screen except PIN and the printout.
-- **Sheets:** the email confirm and Mark paid open as sheets over their screen, not as new pages.
+- **Pop-ups:** the Email pop-up and Mark paid open over their screen, not as new pages.
 - **References:** the layout and style of each screen follow the Stitch mockups in `design/`: `count_inventory`, `new_delivery`, `invoice_preview_actions`, `wholesale_ledger`, `customers_standing_orders`. **Stitch content is not a source.** Stitch invented products, fees, permit numbers, tiers, signer names, shift and drop times, and "Direct ACH". Everything a screen shows comes from this PRD.
 - **Count is one cafe at a time,** chosen with a picker. This overrides the Stitch mockup, which stacks all four.
 - **Other devices:** every screen must work on both phone and laptop. Each is laid out first for its primary device.
@@ -81,6 +83,10 @@ Source: `scope.md > Inspiration & Identity`, `design/DESIGN.md`.
 - Inline fields are underline-only
 
 **Messages:** errors and confirmations are one quiet line of serif text, never a red banner.
+
+**No icon without words** (added in `5-build`): every icon comes with words she can read, such as the envelope with "Emailed Oct 17". On a laptop, hovering shows the full detail, and screen readers hear the same words.
+
+**Button names** (added in `5-build`): the send button never says "Resend", which is also the email provider's name. It reads **Send email** the first time and **Send again** after a successful send. The same words are used on the Invoice page, in the Email pop-up, in the Ledger and on the How it works page.
 
 **The printed invoice** is indistinguishable from `design/canva-invoice-reference.png`:
 - **Header:** the LA CONDESA BAKING COMPANY wordmark on the left, INVOICE on the right
@@ -206,16 +212,16 @@ Source: `scope.md > The Unique Kernel`.
 
 **What shows:**
 - Her Canva form (see Look and Feel), filled with the cafe's details and logo if any, the invoice number, the date, and **only the lines with a quantity**. Undelivered standing products don't appear at all, so there are no blank rows.
-- **Status line in grey:** "Sent Oct 18 9:14am", "Not sent" after a failed attempt, or nothing if it was never emailed.
+- **Status line in grey:** "Last sent Oct 17, 8:12pm", "Last sent Oct 17, 8:12pm · last try failed" after a failed later attempt, "Not sent" if no send ever succeeded, or nothing if it was never emailed.
 
 **Navigation (phone first, added in `5-build`):**
 - The Invoice screen keeps the bottom nav and has a "← Back to Ledger" link at the top. She is never on a page with no way back.
-- Every sheet (email confirm, confirms, Mark paid) closes with Cancel, a tap outside it, or the phone's back button, and returns her to the same screen. Back never jumps to the previous page while a sheet is open.
+- Every pop-up (the Email pop-up, confirms, Mark paid) closes with Cancel, a tap outside it, or the phone's back button, and returns her to the same screen. Back never jumps to the previous page while a sheet is open.
 
 **Actions:**
 - **Print:** opens the browser print dialog. The output is one Letter page matching the Canva form, with no app chrome. Cancelling the dialog leaves her on the same Invoice screen, state intact.
-- **Download PDF:** saves the same PDF the email attaches (`Invoice-[number].pdf`), for her records. It sits between Print and Email invoice. It's served as an attachment and downloads (the share sheet on iOS, saved on Android); the app tab never navigates to the PDF.
-- **Email invoice:** opens the confirm sheet. The button reads **Resend** after the first successful send.
+- **Download PDF:** saves the same PDF the email attaches (`Invoice-[number].pdf`), for her records. It sits between Print and Send email. It's served as an attachment and downloads (the share sheet on iOS, saved on Android); the app tab never navigates to the PDF.
+- **Send email:** opens the Email pop-up. After the first successful send, the button reads **Send again**.
 - **Edit:** opens Deliver loaded with this invoice.
 - **Void:** one confirm. The invoice gets a "Void" stamp and stays visible. Its number is never reused. There's no hard delete anywhere.
 
@@ -225,18 +231,18 @@ Source: `scope.md > The Unique Kernel`.
 - [ ] The printout fits one Letter page with no nav, buttons or browser-styled UI.
 - [ ] Download PDF saves `Invoice-[number].pdf`, identical to the email attachment.
 - [ ] At 390px, after Download PDF the Invoice screen is still showing with its buttons.
-- [ ] Cancel and the phone's back button both close the email sheet and leave her on the invoice.
+- [ ] Cancel and the phone's back button both close the Email pop-up and leave her on the invoice.
 - [ ] Voiding asks once, stamps "Void", and the number stays taken.
 
 ### Email Invoice
 Source: `scope.md > The POC Boundary` (Email).
 
-**The confirm sheet:**
-- **To:** the cafe's billing email from Customers, as plain text. It's editable for this send only and doesn't change the customer record. If none is on file, the field is empty with "No email on file for [cafe]" under it, and Send stays disabled until she types one.
+**The Email pop-up:**
+- **To:** the invoice's saved billing email, filled in when the pop-up opens (no waiting on a second request). It's editable for this send only and doesn't change the customer record. If none is saved, the field is empty, the cursor goes in it, and one plain line reads "No email saved for this invoice. Type one to send." **Send email** stays disabled until there's an address.
 - **Subject:** fixed, not editable: "La Condesa Baking Company Invoice [number]".
-- **Body:** the fixed template with the cafe name, invoice total and due date filled in, shown in full and not editable. The template is edited in code until Handoff.
+- **Body:** the fixed template with the cafe name, invoice total and due date filled in, not editable. It's collapsed to its first two lines, with **Show full email**. The template is edited in code until Handoff.
 - **Attachment line:** "Invoice-[number].pdf attached".
-- **Buttons:** Cancel and Send. Send is one tap with no second confirm.
+- **Buttons:** **Cancel** and **Send email** (black), pinned to the bottom of the pop-up so they're always visible without scrolling, on phone and laptop. After a send the button reads **Send again**, with a grey "Last sent Oct 17, 8:12pm" line above it. One tap, with no second confirm.
 
 **Sending:**
 - From invoices@lacondesabakingcompany.com, with Reply-To set to Eileen's Gmail. The PDF matches the printed invoice.
@@ -245,17 +251,20 @@ Source: `scope.md > The POC Boundary` (Email).
 - The invoice is already saved before any send is attempted.
 
 **Results:**
-- **Success:** the sheet closes, "Sent [date time]" stamps on the invoice in grey, the button reads Resend, and the Ledger row shows a small envelope mark.
+- **Success:** the pop-up closes, "Last sent [date, time]" shows on the invoice in grey, the button reads Send again, and the Ledger row shows the envelope with "Emailed [date]".
 - **Failure** (the provider returns an error, the network is down, or the PDF didn't render):
-  - the sheet stays open with "Couldn't send. The invoice is saved. Try again or print it." and a Retry button
-  - the invoice shows "Not sent", and she can resend from the Ledger later
+  - the pop-up stays open with "Couldn't send. The invoice is saved. Try again or print it." and a **Try again** button
+  - the invoice shows "Not sent", and she can send it again later
   - a failed send never shows "Sent"
-- **Resend** uses the same number and the same subject. There's no "(revised)" wording in this version.
+- **Send again** uses the same number and the same subject. There's no "(revised)" wording in this version.
 
 **Checks:**
 - [ ] On camera, Send delivers a real email with `Invoice-[number].pdf` attached to the learner's inbox, and the logged message ID matches it.
 - [ ] A cafe with no email on file shows the message and blocks Send until one is typed.
-- [ ] A forced send failure shows the failure line and "Not sent", and never a Sent stamp.
+- [ ] A forced send failure shows the failure line and "Not sent", and never a "Last sent" line.
+- [ ] On a 390×640 phone and a laptop, Cancel and Send email are visible without scrolling, even with the full email shown.
+- [ ] An invoice with no saved email opens with the cursor in To, "No email saved for this invoice. Type one to send.", and Send email disabled.
+- [ ] No button or label anywhere says "Resend". After a send, the Invoice page, the pop-up and the Ledger say "Last sent …", "Send again" and "Emailed …".
 
 ### Ledger
 Source: `scope.md > The POC Boundary` (Ledger).
@@ -269,7 +278,7 @@ Source: `scope.md > The POC Boundary` (Ledger).
 
 **Unpaid row:**
 - Shows the invoice number, cafe, delivery date, due date (delivery date + 30 days), total, and an "Unpaid" button.
-- Shows an envelope mark if the invoice has been emailed.
+- Shows the envelope with a short grey label, "Emailed Oct 17", once emailed. On a laptop, hovering shows the full time, and screen readers hear the same words. If no send has succeeded and the last one failed, it reads "Not sent".
 
 **Overdue row** (unpaid and past its due date):
 - The due date is in blush, followed by "overdue 9 days".
@@ -342,7 +351,7 @@ These are requirements, not implementation. `4-spec` decides how to build them.
 - **Paid can be undone, without limit.**
 - **Invoices are snapshots, with editable per-line prices and special order lines** (added during `4-spec`). Price changes only ever apply going forward.
 - **Email confirm:** the recipient is editable per send; the subject and body are fixed. One tap sends. The invoice saves before the send, so a failure loses nothing.
-- **Resend keeps the same number and subject.** There's no "(revised)" wording for now.
+- **Send again keeps the same number and subject.** There's no "(revised)" wording for now.
 - **Customers is read-only until Handoff.** Admin screens cost time the judge never sees.
 - **Logging and `/health` are part of the plan from the start.** The logs prove on video that the send was real.
 
@@ -359,8 +368,9 @@ These are requirements, not implementation. `4-spec` decides how to build them.
 - **Count,** with blank steppers, partial save, the grey last count, and a read-only Past counts list
 - **Deliver,** with the standing list, grey shelf counts, live totals in cents, the suggested and unique invoice number, and Edit
 - **Invoice,** matching the Canva form, with seeded logos, Print, Download PDF, Void, and the status line
-- **Email,** with the confirm sheet, a real send with the PDF, success and failure states, and Resend
-- **Ledger,** with stats, filters, overdue, Mark paid and its undo, void rows, and the envelope mark
+- **Email,** with the Email pop-up, a real send with the PDF, success and failure states, and Send again
+- **How it works** page behind a "?" on every page
+- **Ledger,** with stats, filters, overdue, Mark paid and its undo, void rows, and the "Emailed [date]" label
 - **Read-only Customers**
 - **Structured logging, `/health`, and client error lines**
 - **Mock seed data:** four accounts and five products
@@ -370,7 +380,7 @@ These are requirements, not implementation. `4-spec` decides how to build them.
 To Block 8, Handoff:
 - **In-app editing of Products, Customers and standing lists:** an admin UI the judge path doesn't need. Seed edits cover it for now.
 - **Email template editor:** the template lives in one code file for now.
-- **Full history line** (the "Printed · Emailed" log) and **"Edited after sending" / "(revised)" wording:** a resend is a resend for now.
+- **Full history line** (the "Printed · Emailed" log) and **"Edited after sending" / "(revised)" wording:** a second send is just Send again for now.
 - **Changing the cafe on an existing invoice,** unless it comes free: void and recreate covers it.
 - **Real data seeding, the production PIN, and Eileen's own acceptance run:** the project finish line.
 
@@ -386,6 +396,12 @@ To Block 8, Handoff:
   - The reminder email reuses the invoice PDF with a short Net 30 body.
   - The Ledger row shows "Reminded [date]".
   - Fully automatic per cafe is a later toggle.
+- **Export the Ledger as Excel (.xlsx)** (stub, added in `5-build`; not built now):
+  - It respects the cafe filter and a date range.
+  - Columns: invoice number, cafe, delivery date, due date, total, status, paid date, reference.
+- **Accounts receivable aging report** (stub, added in `5-build`; not built now):
+  - Unpaid invoices grouped by how overdue: current, 1 to 30, 31 to 60, 61 to 90, and over 90 days. Per cafe and in total.
+  - Exportable as PDF or Excel, for Eileen's accountant or for following up on overdue bills.
 
 ## Non-Goals
 - **Ingredient tracking or recipe costing:** a different product.
