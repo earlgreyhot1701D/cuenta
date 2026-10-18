@@ -1,0 +1,14 @@
+# Keep private and non-app files out of Vercel uploads
+.env
+.env.*
+!.env.example
+.neon
+/design
+/devpost
+/private
+/agent
+/.agents
+/.claude
+/tests
+AGENTS.md
+skills-lock.json

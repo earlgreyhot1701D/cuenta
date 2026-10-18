@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   const start = Date.now();
-  const version = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? pkg.version;
+  const version = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) || pkg.version;
   let up = true;
   try {
     await db.execute(sql`select 1`);
