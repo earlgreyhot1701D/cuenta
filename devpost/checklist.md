@@ -118,6 +118,19 @@ Edit outcome:
 Reflection: 
 Activity mode: 
 
+## Block 8: Handoff (after submission)
+
+Not a slice. It starts only after the demo video is recorded and the submission commit is tagged. It happens in the **same production deployment and database**: Eileen's real data replaces the mock data, with no second deployment (learner decision). In this order:
+
+- [ ] 1. Record the demo video on production with the mock data (`spec.md > Where It Runs and How Someone Tries It`, Demo video).
+- [ ] 2. Tag the submission commit (for example `git tag submission`) and push the tag, so the judged code stays findable after Handoff changes.
+- [ ] 3. Back up the mock data with a Neon branch snapshot of `main` (for example a branch named `mock-snapshot`), so the judged state can be brought back.
+- [ ] 4. Seed Eileen's real products, prices, cafes, standing lists and the real Corazon logo into production from the gitignored `private/` file. Set the real `BUSINESS_*` footer values and `EMAIL_REPLY_TO` in Vercel, then redeploy.
+- [ ] 5. Rotate `APP_PIN` in Vercel to a new six-digit PIN that only Eileen knows, then redeploy. A new PIN alone leaves every existing 30-day session signed in (the demo browser, any judge's device), so rotate `SESSION_SECRET` in the same step; that signs everyone out.
+- [ ] 6. Hand her the URL. Add it to her phone's home screen, and have her run Count, Deliver, Invoice and Ledger herself as the acceptance test.
+
+A separate demo deployment is a Later item, only when a second customer wants a look (`scope.md > Later`).
+
 ## Revisions
 
 - Resend domain verification moved from a gate on email to a slice 8 polish item. Slice 5 builds and verifies the full send path with Resend's onboarding sender to the learner's own inbox, and `EMAIL_FROM`/`EMAIL_REPLY_TO` stay env-only, so the switch is two env values and a redeploy. The plan discovered that registrar access and DNS propagation are on Eileen's timeline, not the build's (learner decision at the gut check).
@@ -181,4 +194,7 @@ Activity mode:
 - **How it works covers the slice 7 and 8 buttons** (Edit, Void, "+ Add special order", Past counts, the leave prompt) and has a Customers section. The PRD's list of sections includes Customers.
 - **The judge-path test cleans up after itself.** It makes a uniquely numbered `E2E-…` invoice and voids it at the end, so production stats stay honest. It opens the Email pop-up and checks To is filled, but only really sends with `E2E_SEND=1`. Print is recorded, not opened, because headless Chrome has no print dialog.
 - **The mock-data audit reads real values from local-only files** (the gitignored Stitch mockups and `.env.local`) and checks every tracked file against them, plus the forbidden-file and 555-number rules. So the real values never have to be written into the repo. A planted real email and phone were caught before the first clean run.
+- **The leave-without-saving prompt on New Delivery is kept** (learner decision at the slice 8 checkpoint).
+- **Mock cafes bill to `delivered@resend.dev`, not the learner's inbox** (learner decision before the demo video: no personal email on screen). It's set in `seed/mock-data.ts`; `SEED_BILLING_EMAIL` is gone from the seed path, `.env.example` and the spec. Cafes 1, 2 and 4 were switched in place in production and `dev`; Alma still has none. On camera, the proof of the send is Resend's dashboard showing it Delivered with the PDF attached, plus the matching message ID in the Vercel log. The PRD check and the spec's demo steps say so. Saved invoice snapshots keep the email they were created with (`110172026-2` in production).
+- **Handoff stays one deployment** (learner decision). After the video and the tagged submission, Eileen's real data replaces the mock data in the same production database, with a new PIN. The order is under **Block 8: Handoff** above. The scope's Later list and the PRD's Deferred list point to it, and a separate demo deployment is a Later item.
 

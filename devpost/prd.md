@@ -260,7 +260,7 @@ Source: `scope.md > The POC Boundary` (Email).
 - **Send again** uses the same number and the same subject. There's no "(revised)" wording in this version.
 
 **Checks:**
-- [ ] On camera, Send delivers a real email with `Invoice-[number].pdf` attached to the learner's inbox, and the logged message ID matches it.
+- [ ] On camera, Send delivers a real email with `Invoice-[number].pdf` attached to the mock cafe's address (Resend's test inbox, `delivered@resend.dev`). Resend shows it Delivered, and the logged message ID matches it.
 - [ ] A cafe with no email on file shows the message and blocks Send until one is typed.
 - [ ] A forced send failure shows the failure line and "Not sent", and never a "Last sent" line.
 - [ ] On a 390×640 phone and a laptop, Cancel and Send email are visible without scrolling, even with the full email shown.
@@ -383,7 +383,7 @@ To Block 8, Handoff:
 - **Email template editor:** the template lives in one code file for now.
 - **Full history line** (the "Printed · Emailed" log) and **"Edited after sending" / "(revised)" wording:** a second send is just Send again for now.
 - **Changing the cafe on an existing invoice,** unless it comes free: void and recreate covers it.
-- **Real data seeding, the production PIN, and Eileen's own acceptance run:** the project finish line.
+- **Real data seeding, the production PIN, and Eileen's own acceptance run:** the project finish line. It happens in the same production deployment and database, after the video and the tagged submission, in the order in `checklist.md > Block 8: Handoff`.
 
 ## Possible Later Enhancements
 - **Stripe or other online payments.**
@@ -400,6 +400,7 @@ To Block 8, Handoff:
 - **Export the Ledger as Excel (.xlsx)** (stub, added in `5-build`; not built now):
   - It respects the cafe filter and a date range.
   - Columns: invoice number, cafe, delivery date, due date, total, status, paid date, reference.
+- **A separate demo deployment** with mock data, only when a second customer wants a look. Until then there's one deployment, and Handoff makes it Eileen's.
 - **Accounts receivable aging report** (stub, added in `5-build`; not built now):
   - Unpaid invoices grouped by how overdue: current, 1 to 30, 31 to 60, 61 to 90, and over 90 days. Per cafe and in total.
   - Exportable as PDF or Excel, for Eileen's accountant or for following up on overdue bills.

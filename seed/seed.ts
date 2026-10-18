@@ -8,7 +8,7 @@ import { suggestNumber } from "../lib/invoice-number";
 
 async function main() {
   const { db, schema } = await import("../db/client");
-  // Loaded after dotenv so SEED_BILLING_EMAIL from .env.local is visible.
+  // Loaded after dotenv so DATABASE_URL from .env.local is set before the client connects.
   const { mockCounts, mockCustomers, mockInvoices, mockProducts } = await import("./mock-data");
 
   await db.execute(sql`truncate invoice_lines, invoices, counts, standing_items, products, customers`);

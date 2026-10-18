@@ -10,8 +10,9 @@ export const mockProducts = [
 
 const PLACEHOLDER_LOGO = "/logos/placeholder.png";
 
-// Mock cafes bill to one test inbox from .env.local (never committed); Alma stays without email on purpose.
-const TEST_INBOX = process.env.SEED_BILLING_EMAIL || "billing@example.com";
+// Mock cafes bill to Resend's test inbox: sends really go through and show "delivered" in Resend,
+// and no personal address is ever on screen. Alma stays without email on purpose.
+const TEST_INBOX = "delivered@resend.dev";
 
 export const mockCustomers = [
   {

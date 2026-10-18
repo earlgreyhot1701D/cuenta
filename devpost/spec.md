@@ -107,7 +107,6 @@ PRD ref: `prd.md > The Core Journey`.
 | `RESEND_API_KEY` | Resend |
 | `EMAIL_FROM` | `onboarding@resend.dev` (Resend's onboarding sender, which only delivers to the account owner) until the domain verifies; then `invoices@lacondesabakingcompany.com`. Never hardcoded |
 | `EMAIL_REPLY_TO` | Eileen's Gmail |
-| `SEED_BILLING_EMAIL` | seed only: the test inbox every mock cafe with an email bills to (Alma stays without one). Local only, never committed |
 | `APP_URL` | the app's own public URL, which headless Chrome loads |
 | `BUSINESS_CHEF_LINE` | footer signature line ("Chef …"). Placeholder "Chef Example Name" except in production |
 | `BUSINESS_ADDRESS_LINES` | invoice footer address. Placeholder in the repo and the mock deploy ("619 Example Street…"); Eileen's real kitchen address only in production env |
@@ -122,10 +121,10 @@ PRD ref: `prd.md > The Core Journey`.
 **Demo video:** run the judge path (`prd.md > The Core Journey`) on the production URL.
 1. Count for Corazon Cocina
 2. Deliver
-3. Invoice: Print, then Email to the learner's inbox
+3. Invoice: Print, then Email (To is the mock cafe's `delivered@resend.dev`)
 4. Ledger
 
-Then show the email arriving and the matching Resend message ID in Vercel's function logs.
+Then show the send as Delivered in the Resend dashboard, with `Invoice-[number].pdf` attached, and the matching message ID in Vercel's function logs. No personal email address appears on screen.
 
 **Submission:** a short demo video and a public GitHub repository are both required. The deployed URL is an addition, not a substitute.
 
@@ -285,7 +284,8 @@ Carried forward from `prd.md > Look and Feel` and `design/DESIGN.md`.
   - **Missing email:** autofocus in To, "No email saved for this invoice. Type one to send.", and Send email disabled until the address is valid.
   - **Preview:** the subject, the body collapsed to its first two non-empty lines with "Show full email", and the attachment line.
   - **Buttons:** Cancel and Send email (black), in `Sheet.module.css`'s `.actions` row, which is `position: sticky` at the sheet's bottom so they never scroll away. After a send: "Send again" with "Last sent …" above.
-- **Onboarding sender:** while `EMAIL_FROM` is `onboarding@resend.dev`, Resend delivers only to the Resend account owner's address and refuses every other recipient with a 403. `SEED_BILLING_EMAIL` must be that owner address for test sends.
+- **Onboarding sender:** while `EMAIL_FROM` is `onboarding@resend.dev`, Resend delivers only to the Resend account owner's address and to its test addresses, and refuses every other recipient with a 403.
+- **Mock cafes bill to `delivered@resend.dev`** (Resend's test inbox), set in `seed/mock-data.ts`. Sends really go through and show "delivered" in Resend, and no personal address is ever on screen (learner decision before the demo video).
 - PRD ref: `prd.md > Email Invoice`.
 
 ### Ledger Screen

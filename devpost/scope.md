@@ -87,10 +87,7 @@ She comes back every delivery day. The count tells her what to bake and bring ne
 - **Polish:** mobile pass, error and empty states, a mock-data audit, deployed to Vercel.
 
 ## Later
-- **Block 8, Handoff (after the video):**
-  - seed her real products, prices and cafes into production from a gitignored local file
-  - set the production PIN and add the URL to her phone's home screen
-  - Eileen runs the path herself as the acceptance test
+- **Block 8, Handoff (after the video and the tagged submission), in the same production deployment and database:** back up the mock data with a Neon branch snapshot, seed her real data from the gitignored `private/` file, rotate `APP_PIN`, then hand her the URL (on her phone's home screen). Eileen runs the path herself as the acceptance test. The full order is in `checklist.md > Block 8: Handoff`.
   - in-app editing of Products, Customers and standing lists; the email-template editor; the full printed/emailed history line
 - Stripe or other payments
 - Multi-user login
@@ -100,6 +97,7 @@ She comes back every delivery day. The count tells her what to bake and bring ne
 - Accounts receivable aging report (current, 1–30, 31–60, 61–90, over 90 days; per cafe and total; PDF or Excel)
 - Overdue reminders: a daily job finds unpaid, past-due invoices and emails Eileen one list with a single signed link to send the reminders (ask-first; fully automatic per cafe is a later toggle)
 - Per-cafe logo *upload* (seeded logos are in now)
+- A separate demo deployment with mock data, only when a second customer wants a look. Until then, Handoff turns the one production deployment into Eileen's.
 
 ## Explicitly Cut
 - **Ingredient tracking and recipe costing:** a different product. Cuenta is about the route and the paperwork.
