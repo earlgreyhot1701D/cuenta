@@ -1,0 +1,109 @@
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: var(--row-min);
+  padding: 0.85rem 0 0.85rem 0.75rem;
+  border-bottom: var(--hairline);
+  border-left: 3px solid transparent;
+}
+
+.overdue {
+  border-left-color: var(--blush);
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+  flex: 1;
+  text-decoration: none;
+  color: inherit;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.number {
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.envelope {
+  color: var(--ink-muted);
+  flex-shrink: 0;
+}
+
+.cafe {
+  font-size: 17px;
+}
+
+.dates {
+  font-size: 10px;
+  color: var(--ink-muted);
+}
+
+.due {
+  color: var(--blush-ink);
+}
+
+.side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.total {
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.pay {
+  min-height: 40px;
+  padding: 0 0.85rem;
+  font-size: 11px;
+}
+
+.paidBtn {
+  border-color: var(--ink-muted);
+  color: var(--ink-muted);
+}
+
+.ref {
+  font-size: 13px;
+  color: var(--ink-muted);
+  max-width: 9rem;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.paid .number,
+.paid .cafe,
+.paid .total {
+  color: var(--ink-muted);
+}
+
+.void {
+  color: var(--ink-muted);
+}
+
+.void .number,
+.void .total {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.stamp {
+  border: 1px solid var(--ink-muted);
+  padding: 0.1rem 0.4rem;
+  font-size: 10px;
+}

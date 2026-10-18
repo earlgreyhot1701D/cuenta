@@ -4,6 +4,7 @@
   --ink-muted: #555555;
   --paper: #ffffff;
   --blush: #efe6e1;
+  --blush-ink: #9a6a5e; /* blush as text: the overdue due date (AA on white) */
   --rule: #222222;
 
   --font-display: var(--font-bodoni), "Bodoni 72", Didot, serif;

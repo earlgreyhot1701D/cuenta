@@ -1,4 +1,5 @@
 // Job: validate a submitted delivery (cafe, date, number, lines) before it becomes an invoice.
+import { isValidYmd } from "@/lib/dates";
 import type { StandingProduct } from "@/lib/queries/products";
 import type { NewLine } from "@/lib/queries/invoices";
 
@@ -10,18 +11,12 @@ export type DeliveryInput = {
 
 type RawLine = { productId?: unknown; unitPriceCents?: unknown; quantity?: unknown };
 
-function isValidDate(ymd: unknown): ymd is string {
-  if (typeof ymd !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(ymd)) return false;
-  const d = new Date(`${ymd}T00:00:00Z`);
-  return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === ymd;
-}
-
 /** Returns the clean input, or a one-line message saying what's wrong. */
 export function parseDelivery(
   body: { invoiceDate?: unknown; number?: unknown; lines?: unknown },
   standing: StandingProduct[],
 ): { ok: true; value: DeliveryInput } | { ok: false; message: string } {
-  if (!isValidDate(body.invoiceDate)) return { ok: false, message: "Check the date." };
+  if (!isValidYmd(body.invoiceDate)) return { ok: false, message: "Check the date." };
 
   const number = typeof body.number === "string" ? body.number.trim() : "";
   if (!number || number.length > 40) return { ok: false, message: "Enter an invoice number." };

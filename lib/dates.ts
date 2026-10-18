@@ -56,3 +56,10 @@ export function formatLong(ymd: string): string {
   const month = new Date(Date.UTC(y, m - 1, 1)).toLocaleString("en-US", { month: "long", timeZone: "UTC" });
   return `${month} ${d}, ${y}`;
 }
+
+/** True for a real calendar date written YYYY-MM-DD (rejects 2026-02-30). */
+export function isValidYmd(ymd: unknown): ymd is string {
+  if (typeof ymd !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(ymd)) return false;
+  const d = new Date(`${ymd}T00:00:00Z`);
+  return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === ymd;
+}

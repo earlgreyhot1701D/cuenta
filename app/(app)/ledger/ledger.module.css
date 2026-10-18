@@ -1,0 +1,25 @@
+.chips {
+  display: flex;
+  gap: 0.4rem;
+  overflow-x: auto;
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.25rem;
+  scrollbar-width: none;
+}
+
+.chip {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 0.85rem;
+  border: 1px solid var(--ink);
+  text-decoration: none;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.active {
+  background: var(--ink);
+  color: var(--paper);
+}

@@ -66,7 +66,7 @@ Slice numbers are this checklist's own. Where the plan names a Block, the slice 
   Learner check: Email the test invoice to your own inbox. Confirm it arrives (from Resend's onboarding sender for now) with Reply-To set to `EMAIL_REPLY_TO` and `Invoice-[number].pdf` attached, and the stamp appears. Then open the sheet for a cafe with no email on file.
   Commit: `Add email confirm sheet and Resend delivery`
 
-- [ ] **6. Eileen can see who owes her, and mark invoices paid and unpaid**
+- [x] **6. Eileen can see who owes her, and mark invoices paid and unpaid**
   Becomes usable: The Ledger lists invoices newest first, each with its number, cafe, date, due date, total and envelope mark. It has the Open / Outstanding / This month stats and per-cafe filter chips. Overdue rows get the blush due date, "overdue N days" and the left rule. Mark paid takes a paid date and an optional reference, and the row mutes to "Paid Oct 20". Mark unpaid flips it back after one confirm. Tapping a row opens the invoice. An empty filter shows "No invoices yet."
   Why now: This closes the core loop and the judge path's last step. It reads everything the earlier slices write.
   PRD ref: `prd.md > Ledger`, `prd.md > States and Boundaries` (empty Ledger)
@@ -154,4 +154,9 @@ Activity mode:
 - **Overdue reminders added to Later** in the PRD and scope (ask-first daily cron, one signed link, PDF reused, "Reminded [date]"), with a stub comment in `lib/email/invoice-email.ts`. Not built.
 - **Docs brought up to date** with every decision since spec approval: scope, PRD, spec, checklist, learner profile, and the three HTML review pages.
 - **Mock billing emails switched to the learner's inbox** in place in production (cafes 1, 2 and 4; Alma none). On-camera invoice `110172026-2` ($128.00) created in production for the learner's slice 5 send.
+- **Ledger stats follow the cafe filter.** On a cafe's chip, Open, Outstanding and This month show what that cafe owes; on All they cover every cafe. The PRD didn't say which; this is the agent's call, flagged at the slice 6 checkpoint.
+- **The overdue due date uses `--blush-ink` (`#9a6a5e`)**, a deep blush that passes AA on white. The blush token itself (`#EFE6E1`) is unreadable as text. The thin left rule stays the true blush.
+- **Mark unpaid's one confirm is a second step inside the same payment sheet**, not a sheet on top of a sheet. So one Back press still closes it.
+- **Void rows were checked before Void exists** (slice 7), by setting `voided_at` directly in `dev`: the row greys out with a Void stamp and no payment button, it's dropped from all three stats, and the payment API answers 409.
+- **The dev seed now includes an overdue invoice and a paid one**, so every row state has data.
 

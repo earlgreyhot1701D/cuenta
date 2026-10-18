@@ -68,3 +68,9 @@ export const mockCounts = [
   { code: 4, slug: "strawberry-tres-leches", quantity: 2, daysAgo: 6 },
   { code: 4, slug: "pixie-flan", quantity: 3, daysAgo: 6 },
 ];
+
+/** Past invoices so the Ledger shows each state: one overdue (unpaid, 39 days old), one paid. */
+export const mockInvoices = [
+  { code: 2, daysAgo: 39, lines: [["mexican-wedding-cookies", 12], ["coconut-rice-pudding", 6]] as const, paidDaysAgo: null, reference: null },
+  { code: 4, daysAgo: 20, lines: [["strawberry-tres-leches", 8], ["pixie-flan", 6]] as const, paidDaysAgo: 5, reference: "ACH 4471" },
+];

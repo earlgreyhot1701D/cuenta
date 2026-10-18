@@ -4,11 +4,12 @@ config({ path: ".env.local" });
 
 import { sql } from "drizzle-orm";
 import { addDays, todayPacific } from "../lib/dates";
+import { suggestNumber } from "../lib/invoice-number";
 
 async function main() {
   const { db, schema } = await import("../db/client");
   // Loaded after dotenv so SEED_BILLING_EMAIL from .env.local is visible.
-  const { mockCounts, mockCustomers, mockProducts } = await import("./mock-data");
+  const { mockCounts, mockCustomers, mockInvoices, mockProducts } = await import("./mock-data");
 
   await db.execute(sql`truncate invoice_lines, invoices, counts, standing_items, products, customers`);
 
@@ -41,7 +42,33 @@ async function main() {
     })),
   );
 
-  console.log(`Seeded ${customers.length} cafes, ${products.length} products, ${mockCounts.length} counts.`);
+  for (const mock of mockInvoices) {
+    const cafe = customers.find((c) => c.code === mock.code)!;
+    const invoiceDate = addDays(today, -mock.daysAgo);
+    const [invoice] = await db
+      .insert(schema.invoices)
+      .values({
+        number: suggestNumber(cafe.code, invoiceDate),
+        customerId: cafe.id,
+        invoiceDate,
+        cafeName: cafe.name,
+        cafePhone: cafe.phone,
+        cafeAddressLines: cafe.addressLines,
+        cafeEmail: cafe.billingEmail,
+        cafeLogoPath: cafe.logoPath,
+        paidOn: mock.paidDaysAgo === null ? null : addDays(today, -mock.paidDaysAgo),
+        paidReference: mock.reference,
+      })
+      .returning({ id: schema.invoices.id });
+    await db.insert(schema.invoiceLines).values(
+      mock.lines.map(([slug, quantity], position) => {
+        const product = products.find((p) => p.slug === slug)!;
+        return { invoiceId: invoice.id, productId: product.id, description: product.name, unitPriceCents: product.priceCents, quantity, position };
+      }),
+    );
+  }
+
+  console.log(`Seeded ${customers.length} cafes, ${products.length} products, ${mockCounts.length} counts, ${mockInvoices.length} invoices.`);
   process.exit(0);
 }
 
