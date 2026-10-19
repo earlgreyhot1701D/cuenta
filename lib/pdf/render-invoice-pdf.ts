@@ -1,4 +1,4 @@
-// Job: turn the token-gated print route into a one-page Letter PDF buffer.
+// Job: turn the token-gated print route into a Letter PDF buffer, one PDF page per invoice page.
 import { getBrowser } from "./browser";
 import { mintPrintToken } from "@/lib/print-token";
 

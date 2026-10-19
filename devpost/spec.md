@@ -236,10 +236,12 @@ Carried forward from `prd.md > Look and Feel` and `design/DESIGN.md`.
 - Lines with a quantity above 0 render in their saved order.
 - The logo renders when `cafeLogoPath` is set; otherwise its space stays empty.
 - **Footer:** the business identity comes from `lib/business.ts`, which reads the `BUSINESS_*` env vars and never source constants.
-- **One-page capacity:**
-  - `lib/invoice-capacity.ts` holds `MAX_LINES_ONE_PAGE`, measured in Block 3 at **8**: the form's 36pt spacing for up to 5 lines, tightening evenly to 22pt.
-  - Above it, the Invoice screen shows the quiet line "Too many lines for one page", and the PDF and email routes return 422 with that message.
-  - It never silently overflows to a second page.
+- **Pages** (revised Oct 18, decided by Eileen):
+  - `lib/invoice-capacity.ts` holds `MAX_LINES_ONE_PAGE`, measured in Block 3 at **8**: the form's 36pt spacing for up to 5 lines, tightening evenly to 22pt. `linePitch` applies to each page's own line count.
+  - `paginateLines` splits the delivered lines 8 per page. `pageLabel` returns "Page 1 of 2", or null for a one-page invoice.
+  - `InvoiceDocument` renders one `data-invoice-page` per page. Every page repeats the wordmark, INVOICE, number, date, "Invoice for:", cafe name and column headings, plus the VOID stamp when voided. Page 1 adds the cafe's phone, address and logo. The last page adds the total rule, INVOICE TOTAL, the contact block, "Order received by" and the Net 30 line.
+  - `styles/print.css` breaks after every invoice page but the last, so Print and the PDF renderer give one Letter page each. On screen, a 1px rule separates stacked pages.
+  - No line limit: the Invoice screen, the PDF route and the email route accept any number of lines.
 - PRD ref: `prd.md > Invoice`, `prd.md > Look and Feel`.
 
 ### Invoice Screen

@@ -8,7 +8,6 @@ import { buildInvoiceEmail } from "@/lib/email/invoice-email";
 import { formatStamp } from "@/lib/dates";
 import { emailStatus, sendButtonLabel } from "@/lib/email-status";
 import { lineTotal, sumCents } from "@/lib/money";
-import { fitsOnePage } from "@/lib/invoice-capacity";
 import { getInvoice } from "@/lib/queries/invoices";
 import styles from "./invoice.module.css";
 
@@ -42,7 +41,6 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
         <p className="quiet">{invoice.cafeName}</p>
         {invoice.voidedAt && <p className="quiet">Void · voided {formatStamp(invoice.voidedAt)}</p>}
         {status && <p className="quiet">{status}</p>}
-        {!fitsOnePage(lines.length) && <p className="quiet">Too many lines for one page</p>}
       </div>
       <InvoiceActions invoiceId={invoice.id} number={invoice.number} draft={draft} voided={!!invoice.voidedAt} />
       <div className={styles.frame} data-invoice-frame>

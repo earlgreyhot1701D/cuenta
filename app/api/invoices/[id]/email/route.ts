@@ -3,7 +3,6 @@ import { NextResponse } from "next/server";
 import { HttpError, withRoute } from "@/lib/api/with-route";
 import { buildInvoiceEmail } from "@/lib/email/invoice-email";
 import { sendEmail } from "@/lib/email/send";
-import { fitsOnePage } from "@/lib/invoice-capacity";
 import { lineTotal, sumCents } from "@/lib/money";
 import { printBaseUrl, renderInvoicePdf } from "@/lib/pdf/render-invoice-pdf";
 import { getInvoice, markEmailFailed, markEmailSent } from "@/lib/queries/invoices";
@@ -27,7 +26,6 @@ export const POST = withRoute<{ params: Promise<{ id: string }> }>(
     const body = await req.json().catch(() => ({}));
     const to = typeof body.to === "string" ? body.to.trim() : "";
     if (!EMAIL_PATTERN.test(to)) throw new HttpError(400, "Check the email address.");
-    if (!fitsOnePage(lines.length)) throw new HttpError(422, "Too many lines for one page");
 
     const email = buildInvoiceEmail({
       number: invoice.number,

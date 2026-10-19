@@ -52,6 +52,11 @@
   color: #3d3535;
 }
 
+.pageLabel {
+  font-size: calc(var(--pt) * 11.5);
+  color: #3d3d3d;
+}
+
 .metaValue {
   margin-left: calc(var(--pt) * 8);
   font-weight: 400;
@@ -133,6 +138,13 @@
 
 .thanks {
   font-style: italic;
+}
+
+/* On screen, a rule between stacked pages. Print and the PDF break pages instead (styles/print.css). */
+@media screen {
+  .page + .page {
+    border-top: 1px solid #111111;
+  }
 }
 
 /* A voided invoice stays readable under a rubber-stamp "VOID", on screen, in print and in the PDF. */

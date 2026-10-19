@@ -36,7 +36,7 @@ const SECTIONS = [
     what: "Your paper invoice, filled in. Only the products you delivered are on it.",
     items: [
       ["← Back to Ledger", "Returns to the Ledger."],
-      ["Print", "Opens your printer's window; the button reads Opening print… while it comes up. It prints one page, exactly like the paper form. Cancel leaves you here."],
+      ["Print", "Opens your printer's window; the button reads Opening print… while it comes up. It prints exactly like the paper form, with a second page when there are more than 8 lines. Cancel leaves you here."],
       ["Download PDF", "Saves the same PDF the email sends, for your records. This page stays open."],
       ["Send email", "Opens the Email pop-up. After a send, it reads Send again, and a grey line says \"Last sent Oct 17, 8:12pm\"."],
       ["Edit", "Opens the invoice to change quantities, prices, special orders, the date or the number. It shows the prices saved on the invoice, not today's. Save changes updates the invoice and the Ledger. To bill a different cafe, void it and make a new one."],

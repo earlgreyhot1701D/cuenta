@@ -98,7 +98,11 @@ Source: `scope.md > Inspiration & Identity`, `design/DESIGN.md`.
   - the blush contact block: La Condesa Baking Company, *Chef Eileen Foster Randall*, the kitchen address, phone and Gmail
   - "Order received by: ____"
   - the closing line "Payment Terms: Net 30 - Due in full within 30 days of invoice date, *Thank You!*"
-- **Page:** one US Letter page
+- **Page:** US Letter, up to 8 lines per page (revised Oct 18, decided by Eileen). Lines 1 to 8 are on page 1, and the rest continue on page 2 (page 3 if ever needed).
+  - Every page repeats the header: the wordmark, INVOICE, invoice number, date, "Invoice for:" and the cafe name. The column headings repeat too.
+  - Page 1 alone carries the cafe's phone, address and logo.
+  - The total, "Order received by", the contact block and the Net 30 line appear once, on the last page.
+  - A multi-page invoice shows "Page 1 of 2" under the date. A one-page invoice shows no page number, exactly like the paper form.
 
 **Invoice Typography** (learner-decided):
 - **"INVOICE":** Limelight (Google Fonts).
@@ -220,7 +224,7 @@ Source: `scope.md > The Unique Kernel`.
 - Every pop-up (the Email pop-up, confirms, Mark paid) closes with Cancel, a tap outside it, or the phone's back button, and returns her to the same screen. Back never jumps to the previous page while a sheet is open.
 
 **Actions:**
-- **Print:** opens the browser print dialog. The output is one Letter page matching the Canva form, with no app chrome. Cancelling the dialog leaves her on the same Invoice screen, state intact.
+- **Print:** opens the browser print dialog. The output matches the Canva form, one Letter page per 8 lines, with no app chrome. Cancelling the dialog leaves her on the same Invoice screen, state intact.
 - **Download PDF:** saves the same PDF the email attaches (`Invoice-[number].pdf`), for her records. It sits between Print and Send email. It's served as an attachment and downloads (the share sheet on iOS, saved on Android); the app tab never navigates to the PDF.
 - **Send email:** opens the Email pop-up. After the first successful send, the button reads **Send again**.
 - **Edit:** opens Deliver loaded with this invoice.
@@ -229,7 +233,7 @@ Source: `scope.md > The Unique Kernel`.
 **Checks:**
 - [ ] The printed page, laid next to `design/canva-invoice-reference.png`, matches its layout, fonts, header, footer block, contact details and Net 30 line. Only the delivered lines appear.
 - [ ] Corazon invoices show the heart logo; Little Heart and Alma invoices leave that space empty.
-- [ ] The printout fits one Letter page with no nav, buttons or browser-styled UI.
+- [ ] The printout has no nav, buttons or browser-styled UI. Up to 8 lines fit one Letter page; a 9-line invoice prints, downloads and emails as 2 pages, with the header and page numbers on both and the total and footer on page 2 only.
 - [ ] Download PDF saves `Invoice-[number].pdf`, identical to the email attachment.
 - [ ] At 390px, after Download PDF the Invoice screen is still showing with its buttons.
 - [ ] Cancel and the phone's back button both close the Email pop-up and leave her on the invoice.
