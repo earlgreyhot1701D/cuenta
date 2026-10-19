@@ -1,0 +1,1 @@
+ALTER TABLE "invoices" ADD COLUMN "email_last_sent_test" boolean DEFAULT false NOT NULL;

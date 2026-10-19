@@ -15,6 +15,8 @@ export type EmailDraft = {
   attachmentName: string;
   lastSent: string | null;
   sendLabel: string;
+  /** EMAIL_TEST_TO when test mode is on: the server sends there, whatever To says. */
+  testTo: string | null;
 };
 
 type Props = { invoiceId: string; draft: EmailDraft; onClose: () => void; onSent: () => void };
@@ -50,7 +52,8 @@ function EmailBody({ invoiceId, draft, onClose, onSent }: Props) {
     setMessage(result.message);
   }
 
-  const canSend = EMAIL_PATTERN.test(to.trim()) && !sending;
+  const testMode = draft.testTo !== null;
+  const canSend = (testMode || EMAIL_PATTERN.test(to.trim())) && !sending;
   // Collapsed: the first two lines that have words, so a blank line never takes a slot.
   const shortText = `${draft.text
     .split("\n")
@@ -61,9 +64,14 @@ function EmailBody({ invoiceId, draft, onClose, onSent }: Props) {
   return (
     <>
       <h2 className={styles.title}>Email this invoice</h2>
+      {testMode && (
+        <p className={styles.testMode} role="note">
+          Test mode: this sends to {draft.testTo}, not the cafe.
+        </p>
+      )}
       <div className={styles.field}>
         <label className="label muted" htmlFor="email-to">
-          To
+          {testMode ? "Cafe's email (not used in test mode)" : "To"}
         </label>
         <input
           id="email-to"
@@ -71,12 +79,13 @@ function EmailBody({ invoiceId, draft, onClose, onSent }: Props) {
           type="email"
           inputMode="email"
           autoComplete="off"
-          autoFocus={!draft.to}
-          aria-describedby={draft.to ? undefined : "email-to-missing"}
+          autoFocus={!draft.to && !testMode}
+          readOnly={testMode}
+          aria-describedby={draft.to || testMode ? undefined : "email-to-missing"}
           value={to}
           onChange={(e) => setTo(e.target.value)}
         />
-        {!draft.to && (
+        {!draft.to && !testMode && (
           <span id="email-to-missing" className="quiet">
             No email saved for this invoice. Type one to send.
           </span>

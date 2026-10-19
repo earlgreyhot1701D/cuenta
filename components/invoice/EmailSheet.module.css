@@ -42,3 +42,12 @@
   font-size: 15px;
   color: var(--ink-muted);
 }
+
+/* Test mode: one plain serif line in full ink, framed by a hairline so it can't be missed. */
+.testMode {
+  margin: 0 0 1rem;
+  padding: 0.6rem 0.85rem;
+  border: var(--hairline);
+  font-size: 16px;
+  color: var(--ink);
+}

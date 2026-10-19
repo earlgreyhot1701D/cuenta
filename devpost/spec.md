@@ -107,6 +107,7 @@ PRD ref: `prd.md > The Core Journey`.
 | `RESEND_API_KEY` | Resend |
 | `EMAIL_FROM` | `onboarding@resend.dev` (Resend's onboarding sender, which only delivers to the account owner) until the domain verifies; then `invoices@lacondesabakingcompany.com`. Never hardcoded |
 | `EMAIL_REPLY_TO` | Eileen's Gmail |
+| `EMAIL_TEST_TO` | test mode (added Oct 18). When set, every send goes to this address, whatever To says; empty or unset sends to the cafe. Set to Eileen's Gmail in Production at Handoff; turning it off is removing it and redeploying. Server-only |
 | `APP_URL` | the app's own public URL, which headless Chrome loads |
 | `BUSINESS_CHEF_LINE` | footer signature line ("Chef …"). Placeholder "Chef Example Name" except in production |
 | `BUSINESS_ADDRESS_LINES` | invoice footer address. Placeholder in the repo and the mock deploy ("619 Example Street…"); Eileen's real kitchen address only in production env |
@@ -248,6 +249,7 @@ Carried forward from `prd.md > Look and Feel` and `design/DESIGN.md`.
 - **What it does:** `app/(app)/invoices/[id]/page.tsx` shows the `<InvoiceDocument>`, the grey status line, and the actions: Print, Download PDF, Send email / Send again, Edit, Void. It also builds the email draft on the server (`buildInvoiceEmail`, saved `cafe_email`, `sendButtonLabel`) and hands it to the Email pop-up, so To is filled the moment the pop-up opens.
 - **Status line** (`lib/email-status.ts`):
   - "Last sent Oct 18, 9:14am" when a send has succeeded
+  - "Last sent Oct 18, 9:14am · test send" when that send went to the `EMAIL_TEST_TO` inbox. The Ledger's "Emailed …" label doesn't change (learner decision)
   - "Last sent Oct 18, 9:14am · last try failed" when the latest attempt failed after an earlier success
   - "Not sent" only when no send has ever succeeded and an attempt failed
   - nothing when no send was ever attempted
@@ -284,12 +286,14 @@ Carried forward from `prd.md > Look and Feel` and `design/DESIGN.md`.
   - `lib/email/invoice-email.ts` fills in the template: the cafe name, the total, and the due date from `lib/dates.ts`
   - the subject is `La Condesa Baking Company Invoice ${number}`
 - **Send:** the server renders the PDF, then `lib/email/send.ts` calls Resend `emails.send({ from, to, replyTo, subject, text, attachments: [{ filename: 'Invoice-${number}.pdf', content: pdfBuffer }] })`.
-- **Success:** sets `email_sent_at` and `email_message_id`, and clears `email_last_failed_at`.
+- **Success:** sets `email_sent_at`, `email_message_id` and `email_last_sent_test`, and clears `email_last_failed_at`.
+- **Test mode** (added Oct 18): `lib/email/test-mode.ts` reads `EMAIL_TEST_TO`. `sendEmail`, the only caller of Resend, sends to that address whenever it's set (`resolveRecipient`), so no route or pop-up can reach a cafe in test mode. It returns `test: true`, the route records it in `email_last_sent_test`, and the log line gets `test: true`, never the address. In test mode the route skips the To check, so a cafe with no email can still be tested.
 - **Any failure** (PDF, network or Resend): sets `email_last_failed_at` and returns 502. It never clears an earlier `email_sent_at`. The pop-up stays open with the failure line and **Try again**. Resend's reason goes to the log only, with addresses scrubbed.
 - **Ordering:** the invoice is always saved before this route can be called.
 - **Email pop-up:** the client component `EmailSheet`, given an `EmailDraft` by the Invoice page (no separate preview request; the old `email-preview` route was removed in `5-build`).
   - **To:** the snapshot `cafe_email`, editable for this send only.
   - **Missing email:** autofocus in To, "No email saved for this invoice. Type one to send.", and Send email disabled until the address is valid.
+  - **Test mode:** a hairline-framed line above To, "Test mode: this sends to [EMAIL_TEST_TO], not the cafe." The cafe's saved email stays visible, read-only, labelled "Cafe's email (not used in test mode)", and Send is enabled without a valid To.
   - **Preview:** the subject, the body collapsed to its first two non-empty lines with "Show full email", and the attachment line.
   - **Buttons:** Cancel and Send email (black), in `Sheet.module.css`'s `.actions` row, which is `position: sticky` at the sheet's bottom so they never scroll away. After a send: "Send again" with "Last sent …" above.
 - **Onboarding sender:** while `EMAIL_FROM` is `onboarding@resend.dev`, Resend delivers only to the Resend account owner's address and to its test addresses, and refuses every other recipient with a 403.
@@ -397,6 +401,7 @@ The "last counted" line is the newest row per `(customer, product)`. Rows are on
 | `paid_reference` | text | nullable |
 | `email_sent_at` | timestamptz | nullable; the latest **successful** send |
 | `email_message_id` | text | nullable; from that send |
+| `email_last_sent_test` | boolean | not null, default false; that send went to the `EMAIL_TEST_TO` inbox (migration `0003`, added Oct 18) |
 | `email_last_failed_at` | timestamptz | nullable; cleared by a later success |
 | `created_at`, `updated_at` | timestamptz | |
 

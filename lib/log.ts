@@ -8,6 +8,8 @@ export type LogFields = {
   invoiceNumber?: string;
   cafe?: string;
   messageId?: string;
+  /** The send went to the EMAIL_TEST_TO inbox. The address itself is never logged. */
+  test?: boolean;
   error?: string;
 };
 

@@ -106,11 +106,11 @@ export async function getInvoice(id: string): Promise<{ invoice: Invoice; lines:
   return { invoice, lines };
 }
 
-/** A successful send: stamp it, keep its message id, and clear any earlier failure. */
-export async function markEmailSent(id: string, messageId: string): Promise<void> {
+/** A successful send: stamp it, keep its message id, note whether it was a test send, and clear any earlier failure. */
+export async function markEmailSent(id: string, messageId: string, test: boolean): Promise<void> {
   await db
     .update(schema.invoices)
-    .set({ emailSentAt: new Date(), emailMessageId: messageId, emailLastFailedAt: null, updatedAt: new Date() })
+    .set({ emailSentAt: new Date(), emailMessageId: messageId, emailLastSentTest: test, emailLastFailedAt: null, updatedAt: new Date() })
     .where(eq(schema.invoices.id, id));
 }
 

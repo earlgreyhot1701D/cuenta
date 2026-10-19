@@ -1,7 +1,7 @@
 // Job: the words for an invoice's email state, the same on the Invoice page, the Email pop-up and the Ledger; never claiming a send that didn't happen.
 import { formatShort, formatStamp, todayPacific } from "@/lib/dates";
 
-type EmailState = { emailSentAt: Date | null; emailLastFailedAt: Date | null };
+type EmailState = { emailSentAt: Date | null; emailLastFailedAt: Date | null; emailLastSentTest?: boolean };
 
 function failedSinceSent({ emailSentAt, emailLastFailedAt }: EmailState): boolean {
   return !!emailSentAt && !!emailLastFailedAt && emailLastFailedAt > emailSentAt;
@@ -10,7 +10,8 @@ function failedSinceSent({ emailSentAt, emailLastFailedAt }: EmailState): boolea
 /** Invoice page and Email pop-up: "Last sent Oct 17, 8:12pm", "Not sent", or nothing if never tried. */
 export function emailStatus(invoice: EmailState): string | null {
   if (invoice.emailSentAt) {
-    return `Last sent ${formatStamp(invoice.emailSentAt)}${failedSinceSent(invoice) ? " · last try failed" : ""}`;
+    const test = invoice.emailLastSentTest ? " · test send" : "";
+    return `Last sent ${formatStamp(invoice.emailSentAt)}${test}${failedSinceSent(invoice) ? " · last try failed" : ""}`;
   }
   return invoice.emailLastFailedAt ? "Not sent" : null;
 }

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { HttpError, withRoute } from "@/lib/api/with-route";
 import { buildInvoiceEmail } from "@/lib/email/invoice-email";
 import { sendEmail } from "@/lib/email/send";
+import { emailTestTo } from "@/lib/email/test-mode";
 import { lineTotal, sumCents } from "@/lib/money";
 import { printBaseUrl, renderInvoicePdf } from "@/lib/pdf/render-invoice-pdf";
 import { getInvoice, markEmailFailed, markEmailSent } from "@/lib/queries/invoices";
@@ -25,7 +26,8 @@ export const POST = withRoute<{ params: Promise<{ id: string }> }>(
     // The recipient is used for this send only; it never changes the customer record and is never logged.
     const body = await req.json().catch(() => ({}));
     const to = typeof body.to === "string" ? body.to.trim() : "";
-    if (!EMAIL_PATTERN.test(to)) throw new HttpError(400, "Check the email address.");
+    // In test mode sendEmail replaces the recipient, so To may be blank (a cafe with no email on file).
+    if (!emailTestTo() && !EMAIL_PATTERN.test(to)) throw new HttpError(400, "Check the email address.");
 
     const email = buildInvoiceEmail({
       number: invoice.number,
@@ -36,14 +38,15 @@ export const POST = withRoute<{ params: Promise<{ id: string }> }>(
 
     try {
       const pdf = await renderInvoicePdf(invoice.id, printBaseUrl(req.url));
-      const { messageId } = await sendEmail({
+      const { messageId, test } = await sendEmail({
         to,
         subject: email.subject,
         text: email.text,
         attachment: { filename: email.attachmentName, content: pdf },
       });
-      await markEmailSent(invoice.id, messageId);
+      await markEmailSent(invoice.id, messageId, test);
       logCtx.messageId = messageId;
+      if (test) logCtx.test = true;
       return NextResponse.json({ ok: true, messageId });
     } catch (err) {
       await markEmailFailed(invoice.id);

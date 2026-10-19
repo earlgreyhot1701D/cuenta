@@ -5,6 +5,7 @@ import { InvoiceActions } from "@/components/invoice/InvoiceActions";
 import { InvoiceDocument } from "@/components/invoice/InvoiceDocument";
 import { getBusiness } from "@/lib/business";
 import { buildInvoiceEmail } from "@/lib/email/invoice-email";
+import { emailTestTo } from "@/lib/email/test-mode";
 import { formatStamp } from "@/lib/dates";
 import { emailStatus, sendButtonLabel } from "@/lib/email-status";
 import { lineTotal, sumCents } from "@/lib/money";
@@ -29,6 +30,7 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
     ...email,
     lastSent: invoice.emailSentAt ? status : null,
     sendLabel: sendButtonLabel(invoice),
+    testTo: emailTestTo(),
   };
 
   return (

@@ -1,7 +1,36 @@
-// Job: check the email status line never lies, and the template fills in the right numbers.
+// Job: check the email status line never lies, test mode always reaches the test inbox, and the template fills in the right numbers.
 import { describe, expect, it } from "vitest";
 import { emailLabel, emailStatus, sendButtonLabel } from "@/lib/email-status";
 import { buildInvoiceEmail } from "@/lib/email/invoice-email";
+import { emailTestTo, resolveRecipient } from "@/lib/email/test-mode";
+
+describe("email test mode", () => {
+  const testTo = "test-inbox@example.com";
+  it("sends every email to EMAIL_TEST_TO when it's set, whatever To says", () => {
+    const on = emailTestTo({ EMAIL_TEST_TO: testTo });
+    expect(on).toBe(testTo);
+    expect(resolveRecipient("cafe@example.com", on)).toBe(testTo);
+    expect(resolveRecipient("someone-else@example.com", on)).toBe(testTo);
+    expect(resolveRecipient("", on)).toBe(testTo);
+  });
+  it("trims spaces around the test address", () => {
+    expect(emailTestTo({ EMAIL_TEST_TO: `  ${testTo}  ` })).toBe(testTo);
+  });
+  it("sends to the typed To when EMAIL_TEST_TO is unset or blank", () => {
+    expect(emailTestTo({})).toBeNull();
+    expect(emailTestTo({ EMAIL_TEST_TO: "   " })).toBeNull();
+    expect(resolveRecipient("cafe@example.com", emailTestTo({}))).toBe("cafe@example.com");
+  });
+  it("notes a test send on the Last sent line only when the last send was a test", () => {
+    const sent = new Date("2026-10-18T03:12:00Z"); // Oct 17, 8:12pm Pacific
+    expect(emailStatus({ emailSentAt: sent, emailLastFailedAt: null, emailLastSentTest: true })).toBe("Last sent Oct 17, 8:12pm · test send");
+    expect(emailStatus({ emailSentAt: sent, emailLastFailedAt: null, emailLastSentTest: false })).toBe("Last sent Oct 17, 8:12pm");
+  });
+  it("leaves the Ledger label unchanged after a test send", () => {
+    const sent = new Date("2026-10-18T03:12:00Z");
+    expect(emailLabel({ emailSentAt: sent, emailLastFailedAt: null, emailLastSentTest: true })?.short).toBe("Emailed Oct 17");
+  });
+});
 
 const at = (iso: string) => new Date(iso);
 

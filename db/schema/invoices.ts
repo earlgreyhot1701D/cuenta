@@ -1,5 +1,5 @@
 // Job: define the invoices table, with the cafe details copied on as a snapshot.
-import { date, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { boolean, date, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { customers } from "./customers";
 
 export const invoices = pgTable("invoices", {
@@ -19,6 +19,8 @@ export const invoices = pgTable("invoices", {
   paidReference: text("paid_reference"),
   emailSentAt: timestamp("email_sent_at", { withTimezone: true }),
   emailMessageId: text("email_message_id"),
+  /** The last successful send went to the EMAIL_TEST_TO inbox, not the cafe. */
+  emailLastSentTest: boolean("email_last_sent_test").notNull().default(false),
   emailLastFailedAt: timestamp("email_last_failed_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
