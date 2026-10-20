@@ -6,7 +6,7 @@
 
 **Count, deliver, invoice, ledger for a wholesale bakery.** Built for La Condesa Baking Company in Santa Barbara.
 
-Live at [cuentasb.vercel.app](https://cuentasb.vercel.app). The app sits behind a PIN, so the demo video below walks through the whole thing.
+The app is private and sits behind a PIN, so the demo video below walks through the whole thing.
 
 ## Demo video
 

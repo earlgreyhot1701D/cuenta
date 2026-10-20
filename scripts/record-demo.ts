@@ -1,6 +1,6 @@
 // Job: record the demo video of the judge path on production, signed in without showing the PIN screen.
 //
-// Run: npx tsx scripts/record-demo.ts   (not part of the app; nothing imports it)
+// Run: DEMO_BASE_URL=<app address> npx tsx scripts/record-demo.ts   (not part of the app; nothing imports it)
 // 1. A headed window opens on /pin. Type the PIN there. Its sign-in is saved to .demo-auth.json (gitignored).
 // 2. A new, already signed-in window records Count → Deliver → Invoice → Download PDF → Email → Ledger → Customers → Ledger.
 // 3. The sign-in file is deleted at the end, even on failure. The raw video lands in demo-raw/ (gitignored).
@@ -11,7 +11,14 @@ import { existsSync, mkdirSync, rmSync } from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
-const BASE = process.env.DEMO_BASE_URL || "https://cuentasb.vercel.app";
+/** The app's address comes only from DEMO_BASE_URL, so the repo never names the live app. */
+function requireBaseUrl(): string {
+  const base = process.env.DEMO_BASE_URL?.trim();
+  if (!base) throw new Error("Set DEMO_BASE_URL to the app's address (for example http://localhost:3107).");
+  return base;
+}
+
+const BASE = requireBaseUrl();
 const AUTH = path.resolve(".demo-auth.json");
 const RAW = path.resolve("demo-raw");
 const SIZE = { width: 1280, height: 800 };

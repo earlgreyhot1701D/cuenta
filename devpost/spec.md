@@ -133,7 +133,6 @@ Then show the send as Delivered in the Resend dashboard, with `Invoice-[number].
 - Demo video: https://youtu.be/jktG-dGdQZc
 - Public repository: https://github.com/earlgreyhot1701D/cuenta (submitted code tagged `submission-2026-10-18`)
 - Planning pages: https://earlgreyhot1701d.github.io/cuenta/
-- Live app (PIN-gated, optional): https://cuentasb.vercel.app
 
 ## Look and Feel
 Carried forward from `prd.md > Look and Feel` and `design/DESIGN.md`.
