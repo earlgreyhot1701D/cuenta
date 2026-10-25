@@ -175,6 +175,73 @@ The costliest mistake came from the plan itself. The first scope said each cafe 
 - **An accounts receivable aging report:** unpaid invoices grouped by how overdue, per cafe and in total (stubbed).
 - **Overdue payment reminders:** a daily check that lists what's overdue and sends reminders in one tap after Eileen approves (stubbed).
 
+## Version 2.0 — Production Hardening Roadmap
+
+Cuenta's first release focuses on the essential bakery workflow: counting inventory, recording deliveries, generating invoices, and tracking payments.
+
+Version 2.0 will focus on strengthening reliability, security, and recoverability as the application transitions into sustained daily business use.
+
+These items are planned verification and improvement areas, not confirmed defects. Existing safeguards will be audited before additional changes are introduced.
+
+### 1. Authentication and Authorization
+
+- [ ] Verify that all protected routes and server actions enforce authorization.
+- [ ] Review PIN rotation, session expiration, and session invalidation.
+- [ ] Confirm rate limiting and lockout behavior across multiple serverless instances.
+- [ ] Review whether the existing six-digit PIN authentication model remains appropriate for ongoing use.
+
+**Acceptance criteria:** Unauthorized requests cannot access or modify protected records; lockouts and session invalidation behave consistently across deployments.
+
+### 2. Invoice Idempotency
+
+- [ ] Audit invoice creation and sending for duplicate submissions.
+- [ ] Verify behavior when an email request times out or fails after submission.
+- [ ] Add idempotency protections where needed.
+- [ ] Ensure retry behavior is clearly communicated to the user.
+
+**Acceptance criteria:** Repeated requests cannot unintentionally create duplicate invoices. Email delivery attempts are tracked, and retries cannot silently cause unexpected duplicate sends.
+
+### 3. Database Integrity
+
+- [ ] Review transactional boundaries for invoice and payment operations.
+- [ ] Verify unique constraints and invoice-number generation under concurrent requests.
+- [ ] Confirm financial records remain consistent when operations fail partway through.
+- [ ] Review migration and rollback procedures.
+
+**Acceptance criteria:** Concurrent operations preserve invoice uniqueness and financial consistency, including when requests fail or are retried.
+
+### 4. Backup, Recovery, and Data Portability
+
+- [ ] Document the database backup and retention strategy.
+- [ ] Test restoration into a separate environment.
+- [ ] Define recovery procedures for database or application outages.
+- [ ] Provide an export path for critical business records.
+- [ ] Document recovery responsibilities and procedures.
+
+**Acceptance criteria:** A verified restoration procedure exists, critical records can be exported, and business data can be recovered without relying on undocumented manual intervention.
+
+### 5. Failure-Path Testing
+
+Expand automated testing beyond successful workflows to include:
+
+- [ ] Database connection failures and timeouts.
+- [ ] Email-provider failures and ambiguous delivery responses.
+- [ ] Expired or invalid sessions.
+- [ ] Duplicate requests and concurrent operations.
+- [ ] Invalid monetary amounts and unexpected input.
+- [ ] PDF generation failures.
+- [ ] Partial failures during invoice and payment operations.
+
+**Acceptance criteria:** Critical failure scenarios are covered by automated tests, with predictable application behavior and actionable user feedback.
+
+### Release Philosophy
+
+Version 2.0 is not about adding complexity for its own sake. It is about making Cuenta more dependable as Eileen incorporates it into her daily business.
+
+New functionality will continue to be guided by real user feedback, while reliability and data protection remain engineering priorities.
+
+**The goal is simple: the yellow book should never become a single point of failure again — digital or otherwise.**
+
 ---
 
 <p align="center"><b>AI assisted. Human approved. Powered by NLP.</b></p>
